@@ -1,0 +1,40 @@
+<input type="text" value="{{ item.nome }}" name="nome" />
+            <input type="text" value="{{ item.cognome }}" name="cognome" />
+            <input type="text" value="{{ item.indirizzo }}" name="indirizzo" />
+            <input
+              type="number"
+              value="{{ item.numero_telefono }}"
+              name="numero_telefono"
+            />
+            <input
+              type="text"
+              value="{{ item.tipo_intervento }}"
+              name="tipo_intervento"
+            />
+            <div class="rounded-md bg-slate-100">
+              <input
+                type="text"
+                value="{{ item.modello_telefono.marca }}"
+                name="marca"
+              />
+              <input
+                type="text"
+                value="{{ item.modello_telefono.modello }}"
+                name="modello"
+              />
+            </div>
+            <input
+              type="text"
+              value="{{ item.modalita_pagamento }}"
+              name="modalita_pagamento"
+            />
+            <input
+              type="text"
+              value="{{ item.tipo_prodotto }}"
+              name="tipo_prodotto"
+            />
+            <input
+              type="text"
+              value="{{ item.canale_com }}"
+              name="canale_com"
+            />
