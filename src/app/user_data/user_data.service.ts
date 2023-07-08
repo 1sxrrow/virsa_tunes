@@ -28,6 +28,7 @@ export class UserDataService {
   private user: UserModel[] = [
     new UserModel(1, 'Marco', 'Rossi', 'Via dei Fiori 32', 3295630232, [
       {
+        id: 1,
         tipo_intervento: 'Riparazione',
         modello_telefono: { marca: 'apple', modello: 'iphone 12' },
         modalita_pagamento: 'Contanti',
@@ -36,6 +37,7 @@ export class UserDataService {
         data_intervento: new Date(),
       },
       {
+        id: 2,
         tipo_intervento: 'Vendita',
         modello_telefono: { marca: 'Samsung', modello: 'A20' },
         modalita_pagamento: 'Carta',
@@ -46,6 +48,7 @@ export class UserDataService {
     ]),
     new UserModel(2, 'Mario', 'Verdi', 'Via dei Pazzi 32', 1234567890, [
       {
+        id: 1,
         tipo_intervento: 'Vendita',
         modello_telefono: { marca: 'Samsung', modello: 'A20' },
         modalita_pagamento: 'Carta',

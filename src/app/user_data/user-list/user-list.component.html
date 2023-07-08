@@ -1,15 +1,5 @@
 <div class="flex flex-col">
-  <h1 class="text-4xl font-bold">Database</h1>
-  <div class="flex flex-row-reverse">
-    <div class="justify-end space-x-1">
-      <button
-        class="bg-white hover:bg-gray-100 text-gray-800 font-semibold py-2 px-4 border border-gray-400 rounded shadow mb-3"
-        (click)="AddClient()"
-      >
-        Aggiungi Cliente
-      </button>
-    </div>
-  </div>
+  <h1 class="text-4xl font-bold mb-3">Database</h1>
   <p-card>
     <p-table
       #dt1
@@ -28,6 +18,14 @@
     >
       <ng-template pTemplate="caption">
         <div class="flex">
+          <div>
+            <p-button
+              label="Aggiungi Cliente"
+              icon="pi pi-user-plus"
+              (click)="AddClient()"
+              styleClass="p-button-secondary"
+            ></p-button>
+          </div>
           <span class="p-input-icon-left ml-auto">
             <i class="pi pi-search"></i>
             <input
@@ -37,9 +35,10 @@
               placeholder="Search keyword"
             />
           </span>
-          <span class="p-input-icon-right">
+
+          <!-- <span class="p-input-icon-right">
             <i class="pi pi-times" (click)="clear(dt1)"></i>
-          </span>
+          </span> -->
         </div>
       </ng-template>
       <ng-template pTemplate="header">
@@ -50,6 +49,7 @@
           <th pSortableColumn="cognome">
             Cognome<p-sortIcon field="cognome"></p-sortIcon>
           </th>
+          <th>Interventi</th>
         </tr>
       </ng-template>
       <ng-template pTemplate="body" let-user>

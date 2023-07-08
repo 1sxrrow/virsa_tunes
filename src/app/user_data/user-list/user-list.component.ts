@@ -29,7 +29,8 @@ export class UserListComponent implements OnInit {
   }
 
   onRowSelect(event: any) {
-    this.router.navigate(['user', event.data.id - 1]);
+    console.log(event.data.id);
+    this.router.navigate(['users', event.data.id - 1]);
   }
 
   getInterventi(id: number) {

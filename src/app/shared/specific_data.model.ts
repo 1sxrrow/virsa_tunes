@@ -1,6 +1,7 @@
 import { ModelloTelefono } from './modello_telefono.model';
 
 export class SpecificDataModel {
+  id: number;
   tipo_intervento: string;
   modello_telefono: ModelloTelefono;
   modalita_pagamento: string;
@@ -9,6 +10,7 @@ export class SpecificDataModel {
   data_intervento: Date;
 
   constructor(
+    id: number,
     tipo_intervento: string,
     modello_telefono: ModelloTelefono,
     modalita_pagamento: string,
@@ -16,6 +18,7 @@ export class SpecificDataModel {
     canale_com: string,
     data_intervento: Date
   ) {
+    this.id = id;
     this.tipo_intervento = tipo_intervento;
     this.modello_telefono = new ModelloTelefono(
       modello_telefono.marca,

@@ -1,22 +1,28 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { UserDataService } from './user_data.service';
 import { UserModel } from '../shared/user_data.model';
 import { ActivatedRoute, Router } from '@angular/router';
 import { SpecificDataModel } from '../shared/specific_data.model';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-user-data',
   templateUrl: './user_data.component.html',
   styleUrls: ['./User_data.component.css'],
 })
-export class UserDataComponent implements OnInit {
+export class UserDataComponent implements OnInit, OnDestroy {
   userData: UserModel;
   tipoIntervento: string[];
   canaleComunicazioni: string[];
   condizioniProdotto: string[];
   tipoPagamento: string[];
   _specificData: SpecificDataModel[];
+
+  selectedUser!: SpecificDataModel;
+  private storedSub: Subscription;
+
   id: number;
+  loading: boolean = true;
 
   constructor(
     private _userDataService: UserDataService,
@@ -25,7 +31,7 @@ export class UserDataComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    this.activatedRoute.params.subscribe((params) => {
+    this.storedSub = this.activatedRoute.params.subscribe((params) => {
       this.id = +params['id'];
       this.userData = this._userDataService.getUserData(this.id);
     });
@@ -33,6 +39,12 @@ export class UserDataComponent implements OnInit {
     this.valEnums();
 
     this._specificData = this.getListOfSpecificData();
+
+    this.loading = false;
+  }
+
+  ngOnDestroy(): void {
+    this.storedSub.unsubscribe();
   }
 
   private valEnums() {
@@ -53,12 +65,16 @@ export class UserDataComponent implements OnInit {
     ).filter((key) => isNaN(+key));
   }
 
+  onRowSelect(event: any) {
+    console.log(event.data.id);
+    this.router.navigate(['users', event.data.id - 1]);
+  }
+
   goBack() {
     this.router.navigate(['../']);
   }
 
   getListOfSpecificData() {
-    console.log(this.userData.specific_data);
     return this.userData.specific_data.slice();
   }
 }

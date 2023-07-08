@@ -26,6 +26,7 @@ export class UserModel {
       for (let i = 0; i < specific_data.length; i++) {
         this.specific_data.push(
           new SpecificDataModel(
+            specific_data[i].id,
             specific_data[i].tipo_intervento,
             specific_data[i].modello_telefono,
             specific_data[i].modalita_pagamento,

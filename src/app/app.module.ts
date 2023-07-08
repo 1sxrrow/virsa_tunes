@@ -15,6 +15,8 @@ import { ButtonModule } from 'primeng/button';
 import { TableModule } from 'primeng/table';
 import { CardModule } from 'primeng/card';
 import { InputTextModule } from 'primeng/inputtext';
+import { AccordionModule } from 'primeng/accordion';
+
 const routes: Routes = [
   {
     path: '',
@@ -51,6 +53,7 @@ const routes: Routes = [
     TableModule,
     CardModule,
     InputTextModule,
+    AccordionModule,
   ],
   providers: [],
   bootstrap: [AppComponent],
