@@ -32,7 +32,8 @@ export class UserModel {
             specific_data[i].modalita_pagamento,
             specific_data[i].tipo_prodotto,
             specific_data[i].canale_com,
-            specific_data[i].data_intervento
+            specific_data[i].data_intervento,
+            specific_data[i].costo
           )
         );
       }

@@ -8,6 +8,7 @@ export class SpecificDataModel {
   tipo_prodotto: string;
   canale_com: string;
   data_intervento: Date;
+  costo: number;
 
   constructor(
     id: number,
@@ -16,7 +17,8 @@ export class SpecificDataModel {
     modalita_pagamento: string,
     tipo_prodotto: string,
     canale_com: string,
-    data_intervento: Date
+    data_intervento: Date,
+    costo: number
   ) {
     this.id = id;
     this.tipo_intervento = tipo_intervento;
@@ -28,5 +30,6 @@ export class SpecificDataModel {
     this.tipo_prodotto = tipo_prodotto;
     this.canale_com = canale_com;
     this.data_intervento = data_intervento;
+    this.costo = costo;
   }
 }

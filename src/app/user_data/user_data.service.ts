@@ -35,6 +35,7 @@ export class UserDataService {
         tipo_prodotto: 'Nuovo',
         canale_com: 'TikTok',
         data_intervento: new Date(),
+        costo: 200,
       },
       {
         id: 2,
@@ -44,6 +45,7 @@ export class UserDataService {
         tipo_prodotto: 'Usato',
         canale_com: 'Twitter',
         data_intervento: new Date(),
+        costo: 380,
       },
     ]),
     new UserModel(2, 'Mario', 'Verdi', 'Via dei Pazzi 32', 1234567890, [
@@ -55,6 +57,7 @@ export class UserDataService {
         tipo_prodotto: 'Usato',
         canale_com: 'Twitter',
         data_intervento: new Date(),
+        costo: 180,
       },
     ]),
   ];

@@ -19,7 +19,7 @@
     ></p-button>
   </div>
   <p-card>
-    <p-accordion *ngFor="let item of _specificData" styleClass="surface-700">
+    <!-- <p-accordion *ngFor="let item of _specificData" styleClass="surface-700">
       <p-accordionTab
         header="{{ item.tipo_intervento }} eseguita : {{
           item.data_intervento | date : 'dd/MM/yyyy'
@@ -159,32 +159,40 @@
           </div>
         </form>
       </p-accordionTab>
-    </p-accordion>
+    </p-accordion> -->
     <p-table
       #dt1
       [value]="_specificData"
       responsiveLayout="stack"
       [loading]="loading"
       [paginator]="true"
-      [rows]="5"
+      [rows]="10"
       [showCurrentPageReport]="true"
       [rowsPerPageOptions]="[10, 25, 50]"
       selectionMode="single"
-      [(selection)]="selectedUser"
+      [(selection)]="selectedSpecificData"
       dataKey="id"
       (onRowSelect)="onRowSelect($event)"
-      [globalFilterFields]="['nome', 'cognome']"
+      [globalFilterFields]="[
+        'tipo_intervento',
+        'data_intervento',
+        'canale_com',
+        'costo'
+      ]"
     >
       <ng-template pTemplate="header">
         <tr>
-          <th pSortableColumn="intervento">
+          <th pSortableColumn="tipo_intervento">
             Tipo Intervento<p-sortIcon field="tipo_intervento"></p-sortIcon>
           </th>
-          <th pSortableColumn="data">
+          <th pSortableColumn="data_intervento">
             Data<p-sortIcon field="data_intervento"></p-sortIcon>
           </th>
-          <th pSortableColumn="canale">
+          <th pSortableColumn="canale_com">
             Canale Comunicazione<p-sortIcon field="canale_com"></p-sortIcon>
+          </th>
+          <th pSortableColumn="costo">
+            Costo <p-sortIcon field="costo"></p-sortIcon>
           </th>
         </tr>
       </ng-template>
@@ -201,6 +209,9 @@
           <td>
             <span class="p-column-title">Canale Comuncazione</span
             >{{ specificData.canale_com }}
+          </td>
+          <td>
+            <span class="p-column-title">Costo</span>{{ specificData.costo }} €
           </td>
         </tr>
       </ng-template>

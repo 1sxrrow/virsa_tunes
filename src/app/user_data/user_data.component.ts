@@ -18,7 +18,7 @@ export class UserDataComponent implements OnInit, OnDestroy {
   tipoPagamento: string[];
   _specificData: SpecificDataModel[];
 
-  selectedUser!: SpecificDataModel;
+  selectedSpecificData!: SpecificDataModel;
   private storedSub: Subscription;
 
   id: number;
