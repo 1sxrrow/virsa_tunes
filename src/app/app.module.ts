@@ -15,11 +15,14 @@ import { ButtonModule } from 'primeng/button';
 import { TableModule } from 'primeng/table';
 import { CardModule } from 'primeng/card';
 import { InputTextModule } from 'primeng/inputtext';
-import { AccordionModule } from 'primeng/accordion';
 import { UserEditComponent } from './user_data/user-edit/user-edit.component';
 import { DropdownModule } from 'primeng/dropdown';
 import { InputNumberModule } from 'primeng/inputnumber';
 import { KeyFilterModule } from 'primeng/keyfilter';
+import { DialogModule } from 'primeng/dialog';
+import { ConfirmDialogModule } from 'primeng/confirmdialog';
+import { ToastModule } from 'primeng/toast';
+import { TooltipModule } from 'primeng/tooltip';
 
 const routes: Routes = [
   {
@@ -61,6 +64,10 @@ const routes: Routes = [
     DropdownModule,
     InputNumberModule,
     KeyFilterModule,
+    DialogModule,
+    ConfirmDialogModule,
+    ToastModule,
+    TooltipModule,
   ],
   providers: [],
   bootstrap: [AppComponent],

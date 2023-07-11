@@ -6,7 +6,7 @@
   </p>
   <div class="grid md:grid-cols-5 gap-4 mb-3">
     <p-button
-      label="Lista Utenti"
+      label="Lista Clienti"
       icon="pi pi-user"
       styleClass="p-button-raised p-button-info"
       (click)="goBack()"
@@ -16,150 +16,10 @@
       styleClass="p-button-raised p-button-info"
       class="p-input-icon-right col-start-6 col-end-6"
       icon="pi pi-plus"
+      (click)="newIntervento()"
     ></p-button>
   </div>
   <p-card>
-    <!-- <p-accordion *ngFor="let item of _specificData" styleClass="surface-700">
-      <p-accordionTab
-        header="{{ item.tipo_intervento }} eseguita : {{
-          item.data_intervento | date : 'dd/MM/yyyy'
-        }}"
-      >
-        <form
-          class="grid md:grid-cols-5 gap-4 max-w-6xl rounded-lg p-6 dark:bg-neutral-700 place-items-center col-start-1 col-end-6"
-        >
-          <ng-container *ngFor="let specific_data of getListOfSpecificData()">
-            <div class="mb-6">
-              <label for="nome" class="formLabel truncate"
-                >Tipo Intervento</label
-              >
-              <select
-                name="tipo_intervento"
-                id="tipo_intervento"
-                class="formInput"
-              >
-                <option [ngValue]="null" disabled>Seleziona Intervento</option>
-                <option
-                  value="{{ specific_data.tipo_intervento }}"
-                  [attr.selected]="
-                    intervento === specific_data.tipo_intervento ? true : null
-                  "
-                  *ngFor="let intervento of tipoIntervento"
-                >
-                  {{ intervento }}
-                </option>
-              </select>
-            </div>
-            <div class="mb-6">
-              <label for="marca_telefono" class="formLabel truncate"
-                >Marca Telefono</label
-              >
-              <input
-                type="text"
-                name="marca_telefono"
-                id="marca_telefono"
-                class="formInput"
-                required
-                value="{{ specific_data.modello_telefono.marca }}"
-              />
-            </div>
-
-            <div class="mb-6">
-              <label for="modello_telefono" class="formLabel truncate"
-                >Modello Telefono
-              </label>
-              <input
-                type="text"
-                name="modello_telefono"
-                id="modello_telefono"
-                class="formInput"
-                required
-                value="{{ specific_data.modello_telefono.modello }}"
-              />
-            </div>
-            <div class="mb-6">
-              <label
-                for="modello_telefono"
-                class="truncate block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-              >
-                Modalità Pagamento
-              </label>
-
-              <select
-                name="modalita_pagamento"
-                id="modalita_pagamento"
-                class="formInput"
-              >
-                <option [ngValue]="null" disabled>Seleziona Pagamento</option>
-                <option
-                  [value]="elemtipoPagamento"
-                  [attr.selected]="
-                    elemtipoPagamento === specific_data.modalita_pagamento
-                      ? true
-                      : null
-                  "
-                  *ngFor="let elemtipoPagamento of tipoPagamento"
-                >
-                  {{ elemtipoPagamento }}
-                </option>
-              </select>
-            </div>
-            <div class="mb-6">
-              <label
-                for="modello_telefono"
-                class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-              >
-                Tipo Prodotto
-              </label>
-
-              <select name="tipo_prodotto" id="tipo_prodotto" class="formInput">
-                <option [ngValue]="null" disabled>Seleziona Condizioni</option>
-                <option
-                  [value]="elemcondizioniProdotto"
-                  [attr.selected]="
-                    elemcondizioniProdotto === specific_data.tipo_prodotto
-                      ? true
-                      : null
-                  "
-                  *ngFor="let elemcondizioniProdotto of condizioniProdotto"
-                >
-                  {{ elemcondizioniProdotto }}
-                </option>
-              </select>
-            </div>
-            <div class="mb-6">
-              <label for="canale_com" class="formLabel truncate"
-                >Canale Comunicazione</label
-              >
-              <select name="canale_com" id="canale_com" class="formInput">
-                <option [ngValue]="null" disabled>Seleziona Canale</option>
-                <option
-                  [value]="canaleComunicazione"
-                  [attr.selected]="
-                    canaleComunicazione === specific_data.canale_com
-                      ? true
-                      : null
-                  "
-                  *ngFor="let canaleComunicazione of canaleComunicazioni"
-                >
-                  {{ canaleComunicazione }}
-                </option>
-              </select>
-            </div>
-          </ng-container>
-          <div
-            class="flex flex-col items-end justify-end col-start-5 col-end-5"
-          >
-            <button
-              type="button"
-              class="mt-4 text-white text-center bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
-            >
-              Submit
-            </button>
-          </div>
-        </form>
-      </p-accordionTab>
-    </p-accordion> -->
     <p-table
       #dt1
       [value]="_specificData"
@@ -194,6 +54,7 @@
           <th pSortableColumn="costo">
             Costo <p-sortIcon field="costo"></p-sortIcon>
           </th>
+          <th>Azioni</th>
         </tr>
       </ng-template>
       <ng-template pTemplate="body" let-specificData>
@@ -213,10 +74,131 @@
           <td>
             <span class="p-column-title">Costo</span>{{ specificData.costo }} €
           </td>
+          <td>
+            <p-button
+              styleClass="p-button-danger"
+              icon="pi pi-times-circle"
+              pTooltip="Cancella Utente"
+              tooltipPosition="bottom"
+              (click)="deleteIntervento(specificData.id)"
+            ></p-button>
+          </td>
+        </tr>
+      </ng-template>
+      <ng-template pTemplate="emptymessage">
+        <tr>
+          <td colspan="7">Nessun intervento per questo cliente.</td>
         </tr>
       </ng-template>
     </p-table>
   </p-card>
+
+  <!-- Inizio modale per inserimento nuovo intervento -->
+  <p-dialog
+    [modal]="true"
+    [(visible)]="newInt"
+    header="Nuovo Cliente"
+    aria-hidden="true"
+    [style]="{ width: '50vw' }"
+  >
+    <div class="mb-6">
+      <label for="nome" class="formLabel truncate">Tipo Intervento</label>
+      <select name="tipo_intervento" id="tipo_intervento" class="formInput">
+        <option [ngValue]="null" disabled>Seleziona Intervento</option>
+        <option [value]="intervento" *ngFor="let intervento of tipoIntervento">
+          {{ intervento }}
+        </option>
+      </select>
+    </div>
+    <div class="mb-6">
+      <label for="marca_telefono" class="formLabel truncate"
+        >Marca Telefono</label
+      >
+      <input
+        type="text"
+        name="marca_telefono"
+        id="marca_telefono"
+        class="formInput"
+        required
+      />
+    </div>
+
+    <div class="mb-6">
+      <label for="modello_telefono" class="formLabel truncate"
+        >Modello Telefono
+      </label>
+      <input
+        type="text"
+        name="modello_telefono"
+        id="modello_telefono"
+        class="formInput"
+        required
+      />
+    </div>
+    <div class="mb-6">
+      <label
+        for="modello_telefono"
+        class="truncate block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+      >
+        Modalità Pagamento
+      </label>
+
+      <select
+        name="modalita_pagamento"
+        id="modalita_pagamento"
+        class="formInput"
+      >
+        <option [ngValue]="null" disabled>Seleziona Pagamento</option>
+        <option
+          [value]="elemtipoPagamento"
+          *ngFor="let elemtipoPagamento of tipoPagamento"
+        >
+          {{ elemtipoPagamento }}
+        </option>
+      </select>
+    </div>
+    <div class="mb-6">
+      <label
+        for="modello_telefono"
+        class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+      >
+        Tipo Prodotto
+      </label>
+
+      <select name="tipo_prodotto" id="tipo_prodotto" class="formInput">
+        <option [ngValue]="null" disabled>Seleziona Condizioni</option>
+        <option
+          [value]="elemcondizioniProdotto"
+          *ngFor="let elemcondizioniProdotto of condizioniProdotto"
+        >
+          {{ elemcondizioniProdotto }}
+        </option>
+      </select>
+    </div>
+
+    <div class="mb-6">
+      <label for="canale_com" class="formLabel truncate"
+        >Canale Comunicazione</label
+      >
+      <select name="canale_com" id="canale_com" class="formInput">
+        <option [ngValue]="null" disabled>Seleziona Canale</option>
+        <option
+          [value]="canaleComunicazione"
+          *ngFor="let canaleComunicazione of canaleComunicazioni"
+        >
+          {{ canaleComunicazione }}
+        </option>
+      </select>
+    </div>
+    <div class="flex flex-col items-end justify-end col-start-5 col-end-5">
+      <button
+        type="button"
+        class="mt-4 text-white text-center bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
+      >
+        Aggiungi
+      </button>
+    </div>
+  </p-dialog>
 </div>
 
 <!-- prettier-ignore -->

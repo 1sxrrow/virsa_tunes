@@ -16,13 +16,18 @@ export class UserDataComponent implements OnInit, OnDestroy {
   canaleComunicazioni: string[];
   condizioniProdotto: string[];
   tipoPagamento: string[];
-  _specificData: SpecificDataModel[];
+  _specificData: SpecificDataModel[] = [];
+
+  // Per modale
+  newInt = false;
+  visible = false;
 
   selectedSpecificData!: SpecificDataModel;
-  private storedSub: Subscription;
+  storedSub: Subscription;
+  storedSubSpecificData: Subscription;
 
   id: number;
-  loading: boolean = true;
+  loading = true;
 
   constructor(
     private _userDataService: UserDataService,
@@ -31,20 +36,28 @@ export class UserDataComponent implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit(): void {
+    this.valEnums();
+
     this.storedSub = this.activatedRoute.params.subscribe((params) => {
       this.id = +params['id'];
       this.userData = this._userDataService.getUserData(this.id);
     });
-
-    this.valEnums();
-
-    this._specificData = this.getListOfSpecificData();
+    if (this._specificData.length === 0) {
+      this._specificData = this._userDataService.getListOfSpecificData(this.id);
+    }
+    this.storedSubSpecificData =
+      this._userDataService.specificDataChanged.subscribe(
+        (specificData: SpecificDataModel[]) => {
+          this._specificData = specificData;
+        }
+      );
 
     this.loading = false;
+    this.newInt = false;
   }
 
   ngOnDestroy(): void {
-    this.storedSub.unsubscribe();
+    this.storedSubSpecificData.unsubscribe();
   }
 
   private valEnums() {
@@ -67,14 +80,17 @@ export class UserDataComponent implements OnInit, OnDestroy {
 
   onRowSelect(event: any) {
     console.log(event.data.id);
-    this.router.navigate(['users', event.data.id - 1]);
   }
 
   goBack() {
     this.router.navigate(['../']);
   }
 
-  getListOfSpecificData() {
-    return this.userData.specific_data.slice();
+  deleteIntervento(id_intervento: number) {
+    this._userDataService.deleteSpecificData(this.id, id_intervento);
+  }
+
+  newIntervento() {
+    this.newInt = true;
   }
 }

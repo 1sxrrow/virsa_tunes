@@ -50,34 +50,73 @@
             Cognome<p-sortIcon field="cognome"></p-sortIcon>
           </th>
           <th>Interventi</th>
+          <th>Azioni</th>
         </tr>
       </ng-template>
-      <ng-template pTemplate="body" let-user>
+      <ng-template pTemplate="body" let-user *ngIf="!newUser">
         <tr [pSelectableRow]="user">
           <td><span class="p-column-title">Nome</span>{{ user.nome }}</td>
           <td><span class="p-column-title">Cognome</span>{{ user.cognome }}</td>
-          <td><span class="p-column-title">Interventi</span></td>
+          <td>
+            <span class="p-column-title">Interventi</span
+            >{{ getInterventi(user.id) }}
+          </td>
+          <td>
+            <p-button
+              styleClass="p-button-danger"
+              pTooltip="Cancella Utente"
+              tooltipPosition="bottom"
+              icon="pi pi-times-circle"
+              (click)="deleteIntervento(specificData.id)"
+            ></p-button>
+          </td>
         </tr>
       </ng-template>
-      <!-- <ng-template pTemplate="paginatorleft">
-        <p-button
-          type="button"
-          icon="pi pi-plus"
-          styleClass="p-button-text"
-        ></p-button>
-      </ng-template>
-      <ng-template pTemplate="paginatorright">
-        <p-button
-          type="button"
-          icon="pi pi-cloud"
-          styleClass="p-button-text"
-        ></p-button>
-      </ng-template> -->
       <ng-template pTemplate="emptymessage">
         <tr>
-          <td colspan="7">No customers found.</td>
+          <td colspan="7">Nessun cliente trovato.</td>
         </tr>
       </ng-template>
     </p-table>
   </p-card>
+  <p-dialog
+    header="Nuovo Cliente"
+    [(visible)]="newUser"
+    aria-hidden="true"
+    [style]="{ width: '50vw' }"
+    [modal]="true"
+  >
+    <div class="grid items-center">
+      <form #formGroup>
+        <div class="grid grid-cols-2 mb-2">
+          <input pInputText type="text" placeholder="nome" #iNome />
+          <input
+            pInputText
+            type="text"
+            class="ml-2"
+            placeholder="cognome"
+            #iCognome
+          />
+        </div>
+        <div class="grid grid-cols-2 mb-2">
+          <input pInputText type="celluar" placeholder="telefono" #iTelefono />
+          <input
+            pInputText
+            type="text"
+            class="ml-2"
+            placeholder="indirizzo"
+            #indirizzo
+          />
+        </div>
+      </form>
+    </div>
+    <div class="grid justify-center">
+      <p-button
+        styleClass="p-button-raised p-button-secondary"
+        label="Aggiungi"
+        (onClick)="addNewUser()"
+      ></p-button>
+    </div>
+  </p-dialog>
+  <p-toast></p-toast>
 </div>
