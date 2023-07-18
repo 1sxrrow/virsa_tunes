@@ -1,4 +1,4 @@
-import { Injectable, OnInit } from '@angular/core';
+import { Injectable } from '@angular/core';
 import { UserModel } from '../shared/user_data.model';
 import { Subject } from 'rxjs';
 import { SpecificDataModel } from '../shared/specific_data.model';
@@ -80,7 +80,6 @@ export class UserDataService {
   }
 
   getUserDatas() {
-    console.log(this.user.slice());
     return this.user.slice();
   }
 
@@ -116,7 +115,6 @@ export class UserDataService {
     indirizzo?: string,
     numero_telefono?: number
   ) {
-    console.log('adding');
     this.user.push(
       new UserModel(
         this.getLastId() + 1,
@@ -130,12 +128,37 @@ export class UserDataService {
     this.usersChanged.next(this.user.slice());
   }
 
+  deleteUser(id: number) {
+    this.user = this.user.filter(function (user) {
+      return user.id !== id;
+    });
+
+    this.usersChanged.next(this.user.slice());
+  }
+
+  editUser(
+    id_input: number,
+    nome: string,
+    cognome: string,
+    numero_telefono_i: number,
+    indirizzo: string
+  ) {
+    this.user.map((userItem) => {
+      if (userItem.id === id_input) {
+        userItem.cognome = cognome;
+        userItem.nome = nome;
+        userItem.indirizzo = indirizzo;
+        userItem.numero_telefono = numero_telefono_i;
+      }
+    });
+    this.usersChanged.next(this.user.slice());
+  }
+
   getListOfSpecificData(id_user: number) {
     return this.user[id_user].specific_data.slice();
   }
 
   deleteSpecificData(id_user: number, id_intervento: number) {
-    console.log('sono in deleteSpecifiData nel service');
     this.user[id_user].specific_data = this.user[id_user].specific_data.filter(
       function (intervento) {
         return intervento.id !== id_intervento;
@@ -146,6 +169,10 @@ export class UserDataService {
   }
 
   getLastId() {
-    return this.user[this.user.length - 1].id;
+    if (this.user.length - 1 <= 0) {
+      return 0;
+    } else {
+      return this.user[this.user.length - 1].id;
+    }
   }
 }

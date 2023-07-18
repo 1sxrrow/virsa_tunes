@@ -22,7 +22,7 @@
             <p-button
               label="Aggiungi Cliente"
               icon="pi pi-user-plus"
-              (click)="AddClient()"
+              (click)="addUser()"
               styleClass="p-button-secondary"
             ></p-button>
           </div>
@@ -43,17 +43,17 @@
       </ng-template>
       <ng-template pTemplate="header">
         <tr>
-          <th pSortableColumn="nome">
+          <th pSortableColumn="nome" style="width: 25%">
             Nome<p-sortIcon field="nome"></p-sortIcon>
           </th>
-          <th pSortableColumn="cognome">
+          <th pSortableColumn="cognome" style="width: 25%">
             Cognome<p-sortIcon field="cognome"></p-sortIcon>
           </th>
-          <th>Interventi</th>
-          <th>Azioni</th>
+          <th style="width: 25%">Interventi</th>
+          <th style="width: 15%">Azioni</th>
         </tr>
       </ng-template>
-      <ng-template pTemplate="body" let-user *ngIf="!newUser">
+      <ng-template pTemplate="body" let-user *ngIf="!showModal">
         <tr [pSelectableRow]="user">
           <td><span class="p-column-title">Nome</span>{{ user.nome }}</td>
           <td><span class="p-column-title">Cognome</span>{{ user.cognome }}</td>
@@ -63,11 +63,19 @@
           </td>
           <td>
             <p-button
+              styleClass="p-button-info"
+              pTooltip="Info"
+              tooltipPosition="bottom"
+              icon="pi pi-info-circle"
+              class="mr-5"
+              (click)="showInfoUser(user)"
+            ></p-button>
+            <p-button
               styleClass="p-button-danger"
               pTooltip="Cancella Utente"
               tooltipPosition="bottom"
               icon="pi pi-times-circle"
-              (click)="deleteIntervento(specificData.id)"
+              (click)="deleteUser(user.id)"
             ></p-button>
           </td>
         </tr>
@@ -80,32 +88,42 @@
     </p-table>
   </p-card>
   <p-dialog
-    header="Nuovo Cliente"
-    [(visible)]="newUser"
+    [header]="modalTitle"
+    [(visible)]="showModal"
     aria-hidden="true"
     [style]="{ width: '50vw' }"
     [modal]="true"
   >
     <div class="grid items-center">
-      <form #formGroup>
+      <form [formGroup]="userInfoForm">
         <div class="grid grid-cols-2 mb-2">
-          <input pInputText type="text" placeholder="nome" #iNome />
+          <input
+            pInputText
+            type="text"
+            placeholder="nome"
+            formControlName="nome"
+          />
           <input
             pInputText
             type="text"
             class="ml-2"
             placeholder="cognome"
-            #iCognome
+            formControlName="cognome"
           />
         </div>
         <div class="grid grid-cols-2 mb-2">
-          <input pInputText type="celluar" placeholder="telefono" #iTelefono />
+          <input
+            pInputText
+            type="celluar"
+            placeholder="telefono"
+            formControlName="numero_telefono"
+          />
           <input
             pInputText
             type="text"
             class="ml-2"
             placeholder="indirizzo"
-            #indirizzo
+            formControlName="indirizzo"
           />
         </div>
       </form>
@@ -114,7 +132,14 @@
       <p-button
         styleClass="p-button-raised p-button-secondary"
         label="Aggiungi"
+        [hidden]="isInfo"
         (onClick)="addNewUser()"
+      ></p-button>
+      <p-button
+        styleClass="p-button-raised p-button-secondary"
+        label="Modifica"
+        [hidden]="!isInfo"
+        (onClick)="editUser()"
       ></p-button>
     </div>
   </p-dialog>
