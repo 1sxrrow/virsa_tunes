@@ -4,6 +4,7 @@ import { UserModel } from '../shared/user_data.model';
 import { ActivatedRoute, Router } from '@angular/router';
 import { SpecificDataModel } from '../shared/specific_data.model';
 import { Subscription } from 'rxjs';
+import { FormControl, FormGroup, Validators } from '@angular/forms';
 
 @Component({
   selector: 'app-user-data',
@@ -19,8 +20,12 @@ export class UserDataComponent implements OnInit, OnDestroy {
   _specificData: SpecificDataModel[] = [];
 
   // Per modale
-  newInt = false;
+  showModal = false;
   visible = false;
+  modalTitle: string;
+  isModify = false;
+  savedSpecificDataId: number;
+  specificDataForm: FormGroup;
 
   selectedSpecificData!: SpecificDataModel;
   storedSub: Subscription;
@@ -53,7 +58,8 @@ export class UserDataComponent implements OnInit, OnDestroy {
       );
 
     this.loading = false;
-    this.newInt = false;
+    this.showModal = false;
+    this.initForm();
   }
 
   ngOnDestroy(): void {
@@ -79,7 +85,7 @@ export class UserDataComponent implements OnInit, OnDestroy {
   }
 
   onRowSelect(event: any) {
-    console.log(event.data.id);
+    this.modifyIntervento(event.data.id);
   }
 
   goBack() {
@@ -91,6 +97,32 @@ export class UserDataComponent implements OnInit, OnDestroy {
   }
 
   newIntervento() {
-    this.newInt = true;
+    this.showModalFunction('Aggiungi Intervento', false);
+  }
+
+  modifyIntervento(id: number) {
+    this.showModalFunction('Modifica Intervento', true, id);
+  }
+
+  showModalFunction(modalTitle: string, isModify: boolean, id?: number) {
+    this.showModal = !this.showModal;
+    this.modalTitle = modalTitle;
+    this.isModify = isModify;
+    if (this.isModify) {
+      this.savedSpecificDataId = id;
+    }
+  }
+
+  /**
+   * Metodo lanciato per inizializzare dati del form del modale
+   * @returns {any}
+   **/
+  initForm() {
+    this.specificDataForm = new FormGroup({
+      nome: new FormControl('', Validators.required),
+      cognome: new FormControl('', Validators.required),
+      numero_telefono: new FormControl(''),
+      indirizzo: new FormControl(''),
+    });
   }
 }

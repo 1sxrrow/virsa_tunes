@@ -62,16 +62,6 @@ export class UserListComponent implements OnInit {
     this.showModalFunction('Aggiungi Cliente', false);
   }
 
-  editUser() {
-    this.userDataService.editUser(
-      this.savedUserId,
-      this.userInfoForm.value['nome'],
-      this.userInfoForm.value['cognome'],
-      this.userInfoForm.value['numero_telefono'],
-      this.userInfoForm.value['indirizzo']
-    );
-  }
-
   updateUsers() {
     this.users = this.userDataService.getUserDatas();
   }
@@ -88,6 +78,10 @@ export class UserListComponent implements OnInit {
     return this.userDataService.getTotalInterventi(id - 1);
   }
 
+  /**
+   * Metodo per far vedere il modale per Aggiunta/modifica utente
+   * @returns {any}
+   **/
   showModalFunction(modalTitle: string, isinfo: boolean, id?: number) {
     this.showModal = !this.showModal;
     this.modalTitle = modalTitle;
@@ -97,20 +91,55 @@ export class UserListComponent implements OnInit {
     }
   }
 
+  /**
+   * Metodo per aggiunta di un utente
+   * @returns {any}
+   **/
   addNewUser() {
     this.userDataService.addNewUser(
       this.userInfoForm.value['nome'],
-      this.userInfoForm.value['cognome']
+      this.userInfoForm.value['cognome'],
+      this.userInfoForm.value['indirizzo'] === undefined
+        ? undefined
+        : this.userInfoForm.value['indirizzo'],
+      this.userInfoForm.value['numero_telefono'] === undefined
+        ? undefined
+        : this.userInfoForm.value['numero_telefono']
     );
     this.showModal = !this.showModal;
     this.callModalSuccess('Aggiunto', 'Nuovo utente aggiunto');
   }
 
-  deleteUser(user_id: number) {
-    this.userDataService.deleteUser(user_id);
-    this.callModalSuccess('Rimosso', 'Utente rimosso con successo');
+  /**
+   * Modifica i dati base dell'utente
+   * @returns {any}
+   **/
+  editUser() {
+    //TODO: verificare che i dati siano effettivamente da modificare
+    this.userDataService.editUser(
+      this.savedUserId,
+      this.userInfoForm.value['nome'],
+      this.userInfoForm.value['cognome'],
+      this.userInfoForm.value['numero_telefono'],
+      this.userInfoForm.value['indirizzo']
+    );
+    this.callModalSuccess('Modificato', 'Dati utente modificati', 'warn');
+    this.showModal = !this.showModal;
   }
 
+  /**
+   * Elimina utente, lancia modale per rimozione
+   * @param {number} user_id
+   * @returns {any}
+   **/
+  deleteUser(user_id: number) {
+    this.userDataService.deleteUser(user_id);
+    this.callModalSuccess('Rimosso', 'Utente rimosso con successo', 'error');
+  }
+
+  /**
+   * Metodo lanciato per aprire modale con dati cliente per modificarli
+   */
   showInfoUser(user: any) {
     console.log(user);
     this.userInfoForm = new FormGroup({
@@ -122,6 +151,10 @@ export class UserListComponent implements OnInit {
     this.showModalFunction('Info Cliente', true, user.id);
   }
 
+  /**
+   * Metodo lanciato per inizializzare dati del form del modale
+   * @returns {any}
+   **/
   initForm() {
     this.userInfoForm = new FormGroup({
       nome: new FormControl('', Validators.required),
@@ -131,9 +164,17 @@ export class UserListComponent implements OnInit {
     });
   }
 
-  callModalSuccess(summary: string, detail: string) {
+  /**
+   * Mostra toast dialog a destra
+   * @param {string} summary -> titolo
+   * @param {string} detail -> descrizion
+   * @param {string} serverity? -> success , info , warn , error
+   * @returns {any}
+   **/
+  callModalSuccess(summary: string, detail: string, severity?: string) {
+    console.log(severity);
     this.messageService.add({
-      severity: 'success',
+      severity: severity === undefined ? 'success' : severity,
       summary: summary,
       detail: detail,
     });

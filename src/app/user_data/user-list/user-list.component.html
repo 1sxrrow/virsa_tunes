@@ -54,7 +54,7 @@
         </tr>
       </ng-template>
       <ng-template pTemplate="body" let-user *ngIf="!showModal">
-        <tr [pSelectableRow]="user">
+        <tr [pSelectableRowDblClick]="user">
           <td><span class="p-column-title">Nome</span>{{ user.nome }}</td>
           <td><span class="p-column-title">Cognome</span>{{ user.cognome }}</td>
           <td>
