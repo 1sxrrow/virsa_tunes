@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { UserModel } from '../shared/user_data.model';
 import { Subject } from 'rxjs';
 import { SpecificDataModel } from '../shared/specific_data.model';
+import { ModelloTelefono } from '../shared/modello_telefono.model';
 
 enum tipoIntervento {
   'Vendita',
@@ -152,6 +153,39 @@ export class UserDataService {
       }
     });
     this.usersChanged.next(this.user.slice());
+  }
+
+  addNewIntervento(
+    id_user: number,
+    tipo_intervento: string,
+    marca: string,
+    modello: string,
+    modalita_pagamento: string,
+    tipo_prodotto: string,
+    canale_com: string,
+    data_intervento: Date,
+    costo: number
+  ) {
+    let user: UserModel[] = this.user.filter(function (user) {
+      return user.id === id_user;
+    });
+    let id = this.getLastIdSpecificData(user[0].specific_data) + 1;
+    user[0].specific_data.push(
+      new SpecificDataModel(
+        3,
+        tipo_intervento,
+        new ModelloTelefono(marca, modello),
+        modalita_pagamento,
+        tipo_prodotto,
+        canale_com,
+        data_intervento,
+        costo
+      )
+    );
+  }
+
+  getLastIdSpecificData(specific_data: SpecificDataModel[]): number {
+    return specific_data[specific_data.length - 1].id;
   }
 
   getListOfSpecificData(id_user: number) {

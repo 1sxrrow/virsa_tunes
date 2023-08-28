@@ -1,0 +1,12 @@
+{
+  "hosting": [
+    {
+      "target": "tailwind_try",
+      "source": ".",
+      "frameworksBackend": {}
+    }
+  ],
+  "database": {
+    "rules": "database.rules.json"
+  }
+}

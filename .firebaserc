@@ -1,0 +1,14 @@
+{
+  "targets": {
+    "test-771fa": {
+      "hosting": {
+        "tailwind_try": [
+          "test-771fa"
+        ]
+      }
+    }
+  },
+  "projects": {
+    "default": "test-771fa"
+  }
+}
