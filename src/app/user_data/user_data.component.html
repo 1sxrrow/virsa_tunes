@@ -78,7 +78,7 @@
             <p-button
               styleClass="p-button-danger"
               icon="pi pi-times-circle"
-              pTooltip="Cancella Utente"
+              pTooltip="Cancella Intervento"
               tooltipPosition="bottom"
               (click)="deleteIntervento(specificData.id)"
             ></p-button>
@@ -102,101 +102,126 @@
     [style]="{ width: '50vw' }"
   >
     <form [formGroup]="specificDataForm">
-      <div class="mb-6">
-        <label for="nome" class="formLabel truncate">Tipo Intervento</label>
-        <select name="tipo_intervento" id="tipo_intervento" class="formInput">
-          <option [ngValue]="null" disabled>Seleziona Intervento</option>
-          <option
-            [value]="intervento"
-            *ngFor="let intervento of tipoIntervento"
+      <div class="grid md:grid-cols-3 gap-4 mb-3">
+        <div class="mb-6">
+          <label for="tipo_intervento" class="formLabel truncate">
+            Tipo Intervento
+          </label>
+          <select
+            name="tipo_intervento"
+            id="tipo_intervento"
+            class="formInput"
+            formControlName="tipo_intervento"
           >
-            {{ intervento }}
-          </option>
-        </select>
-      </div>
-      <div class="mb-6">
-        <label for="marca_telefono" class="formLabel truncate"
-          >Marca Telefono</label
-        >
-        <input
-          type="text"
-          name="marca_telefono"
-          id="marca_telefono"
-          class="formInput"
-          required
-        />
-      </div>
+            <option [ngValue]="null" disabled>Seleziona Intervento</option>
+            <option
+              [value]="intervento"
+              *ngFor="let intervento of tipoIntervento"
+            >
+              {{ intervento }}
+            </option>
+          </select>
+        </div>
 
-      <div class="mb-6">
-        <label for="modello_telefono" class="formLabel truncate"
-          >Modello Telefono
-        </label>
-        <input
-          type="text"
-          name="modello_telefono"
-          id="modello_telefono"
-          class="formInput"
-          required
-        />
-      </div>
-      <div class="mb-6">
-        <label
-          for="modello_telefono"
-          class="truncate block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-        >
-          Modalità Pagamento
-        </label>
-
-        <select
-          name="modalita_pagamento"
-          id="modalita_pagamento"
-          class="formInput"
-        >
-          <option [ngValue]="null" disabled>Seleziona Pagamento</option>
-          <option
-            [value]="elemtipoPagamento"
-            *ngFor="let elemtipoPagamento of tipoPagamento"
+        <div class="mb-6">
+          <label for="marca_telefono" class="formLabel truncate"
+            >Marca Telefono</label
           >
-            {{ elemtipoPagamento }}
-          </option>
-        </select>
-      </div>
-      <div class="mb-6">
-        <label
-          for="modello_telefono"
-          class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-        >
-          Tipo Prodotto
-        </label>
+          <input
+            type="text"
+            name="marca_telefono"
+            id="marca_telefono"
+            class="formInput"
+            formControlName="marca_telefono"
+            required
+          />
+        </div>
 
-        <select name="tipo_prodotto" id="tipo_prodotto" class="formInput">
-          <option [ngValue]="null" disabled>Seleziona Condizioni</option>
-          <option
-            [value]="elemcondizioniProdotto"
-            *ngFor="let elemcondizioniProdotto of condizioniProdotto"
-          >
-            {{ elemcondizioniProdotto }}
-          </option>
-        </select>
-      </div>
+        <div class="mb-6">
+          <label for="modello_telefono" class="formLabel truncate"
+            >Modello Telefono
+          </label>
+          <input
+            type="text"
+            name="modello_telefono"
+            id="modello_telefono"
+            class="formInput"
+            formControlName="modello_telefono"
+            required
+          />
+        </div>
 
-      <div class="mb-6">
-        <label for="canale_com" class="formLabel truncate"
-          >Canale Comunicazione</label
-        >
-        <select name="canale_com" id="canale_com" class="formInput">
-          <option [ngValue]="null" disabled>Seleziona Canale</option>
-          <option
-            [value]="canaleComunicazione"
-            *ngFor="let canaleComunicazione of canaleComunicazioni"
+        <div class="mb-6">
+          <label
+            for="modalita_pagamento"
+            class="truncate block mb-2 text-sm font-medium text-gray-900 dark:text-white"
           >
-            {{ canaleComunicazione }}
-          </option>
-        </select>
+            Modalità Pagamento
+          </label>
+
+          <select
+            name="modalita_pagamento"
+            id="modalita_pagamento"
+            formControlName="modalita_pagamento"
+            class="formInput"
+          >
+            <option [ngValue]="null" disabled>Seleziona Pagamento</option>
+            <option
+              [value]="elemtipoPagamento"
+              *ngFor="let elemtipoPagamento of tipoPagamento"
+            >
+              {{ elemtipoPagamento }}
+            </option>
+          </select>
+        </div>
+        <div class="mb-6">
+          <label
+            for="modello_telefono"
+            class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+          >
+            Tipo Prodotto
+          </label>
+
+          <select
+            name="tipo_prodotto"
+            id="tipo_prodotto"
+            class="formInput"
+            formControlName="tipo_prodotto"
+          >
+            <option [ngValue]="null" disabled>Seleziona Condizioni</option>
+            <option
+              [value]="elemcondizioniProdotto"
+              *ngFor="let elemcondizioniProdotto of condizioniProdotto"
+            >
+              {{ elemcondizioniProdotto }}
+            </option>
+          </select>
+        </div>
+
+        <div class="mb-6">
+          <label for="canale_com" class="formLabel truncate"
+            >Canale Comunicazione</label
+          >
+          <select
+            name="canale_com"
+            id="canale_com"
+            class="formInput"
+            formControlName="canale_com"
+          >
+            <option [ngValue]="null" disabled>Seleziona Canale</option>
+            <option
+              [value]="canaleComunicazione"
+              *ngFor="let canaleComunicazione of canaleComunicazioni"
+            >
+              {{ canaleComunicazione }}
+            </option>
+          </select>
+        </div>
       </div>
       <div class="flex flex-col items-end justify-end col-start-5 col-end-5">
         <button
           type="button"
+          (click)="addNewIntervento()"
           class="mt-4 text-white text-center bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
         >
           Aggiungi
@@ -204,6 +229,7 @@
       </div>
     </form>
   </p-dialog>
+  <p-toast></p-toast>
 </div>
 
 <!-- prettier-ignore -->
