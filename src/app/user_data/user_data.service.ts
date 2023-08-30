@@ -3,6 +3,7 @@ import { UserModel } from '../shared/user_data.model';
 import { Subject } from 'rxjs';
 import { SpecificDataModel } from '../shared/specific_data.model';
 import { ModelloTelefono } from '../shared/modello_telefono.model';
+import { FirebaseStoreService } from '../shared/firebase.store.service';
 
 enum tipoIntervento {
   'Vendita',
@@ -67,7 +68,7 @@ export class UserDataService {
       },
     ]),
   ];
-  constructor() {
+  constructor(private firebaseStoreService: FirebaseStoreService) {
     this.setStandardUsers();
   }
 
@@ -98,34 +99,15 @@ export class UserDataService {
     indirizzo: string,
     numero_telefono: number
   ) {
-    this.user.push(
-      new UserModel(
-        this.getLastId() + 1,
-        nome,
-        cognome,
-        indirizzo,
-        numero_telefono
-      )
+    let u = new UserModel(
+      this.getLastId() + 1,
+      nome,
+      cognome,
+      indirizzo,
+      numero_telefono
     );
-    this.usersChanged.next(this.user.slice());
-  }
-
-  addNewUser(
-    nome: string,
-    cognome: string,
-    indirizzo?: string,
-    numero_telefono?: number
-  ) {
-    this.user.push(
-      new UserModel(
-        this.getLastId() + 1,
-        nome,
-        cognome,
-        indirizzo,
-        numero_telefono
-      )
-    );
-    this.user;
+    this.user.push(u);
+    this.firebaseStoreService.AddUser(u);
     this.usersChanged.next(this.user.slice());
   }
 

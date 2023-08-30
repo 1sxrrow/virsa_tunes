@@ -5,6 +5,7 @@ import { Router } from '@angular/router';
 import { Table } from 'primeng/table';
 import { MessageService } from 'primeng/api';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
+import { FirebaseStoreService } from 'src/app/shared/firebase.store.service';
 
 @Component({
   selector: 'app-user-list',
@@ -26,6 +27,7 @@ export class UserListComponent implements OnInit {
   users: UserModel[] = [];
   constructor(
     private userDataService: UserDataService,
+    private firebaseStoreService: FirebaseStoreService,
     private router: Router,
     private messageService: MessageService
   ) {}
@@ -53,6 +55,18 @@ export class UserListComponent implements OnInit {
         console.log(err);
       }
     );
+
+    let s = this.firebaseStoreService.GetUserList();
+    console.log(s);
+    s.snapshotChanges().subscribe((data) => {
+      this.users = [];
+      data.forEach((item) => {
+        let a = item.payload.toJSON();
+        a['$key'] = item.key;
+        this.users.push(a as UserModel);
+      });
+    });
+
     this.loading = false;
     this.initForm();
   }
@@ -96,7 +110,7 @@ export class UserListComponent implements OnInit {
    * @returns {any}
    **/
   addNewUser() {
-    this.userDataService.addNewUser(
+    this.userDataService.addUser(
       this.userInfoForm.value['nome'],
       this.userInfoForm.value['cognome'],
       this.userInfoForm.value['indirizzo'] === undefined
