@@ -1,12 +1,10 @@
-export const environment = {
-  firebase: {
-    projectId: 'test-771fa',
-    appId: '1:31252347143:web:05b88e3c8717f8214d2da2',
-    databaseURL: 'https://test-771fa-default-rtdb.firebaseio.com',
-    storageBucket: 'test-771fa.appspot.com',
-    apiKey: 'AIzaSyBTyEpTTitY1PogFUQlXzrVFsGETY_MUJM',
-    authDomain: 'test-771fa.firebaseapp.com',
-    messagingSenderId: '31252347143',
-    measurementId: 'G-QM0VRLN0VF',
-  },
+export const firebaseConfig = {
+  apiKey: 'AIzaSyDvFLK_myJsgNPrNY77j_HHR1tuDp9zcfk',
+  authDomain: 'virsatunes-database.firebaseapp.com',
+  databaseURL:
+    'https://virsatunes-database-default-rtdb.europe-west1.firebasedatabase.app',
+  projectId: 'virsatunes-database',
+  storageBucket: 'virsatunes-database.appspot.com',
+  messagingSenderId: '613472222894',
+  appId: '1:613472222894:web:c2b774c5d93a1d4cfe773f',
 };

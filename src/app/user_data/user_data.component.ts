@@ -13,6 +13,7 @@ import { Subscription } from 'rxjs';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { MessageService } from 'primeng/api';
 import { Dropdown } from 'primeng/dropdown';
+import { FirebaseStoreService } from '../shared/firebase.store.service';
 
 @Component({
   selector: 'app-user-data',
@@ -44,32 +45,47 @@ export class UserDataComponent implements OnInit, OnDestroy, AfterViewInit {
 
   id: number;
   loading = true;
+  nome: string;
+  cognome: string;
 
   constructor(
     private userDataService: UserDataService,
     private activatedRoute: ActivatedRoute,
     private messageService: MessageService,
+    private firebaseStoreService: FirebaseStoreService,
     private router: Router
   ) {}
 
   ngOnInit(): void {
     this.valEnums();
-
-    this.storedSub = this.activatedRoute.params.subscribe((params) => {
+    // recupero dati utente da database Firebase.
+    this.activatedRoute.params.subscribe((params) => {
       this.id = +params['id'];
-      this.userData = this.userDataService.getUserData(this.id);
+      let s = this.firebaseStoreService.GetUser(this.id);
+      s.snapshotChanges().subscribe((data) => {
+        this.userData = data.payload.toJSON() as UserModel;
+        this.nome = this.userData.nome;
+        this.cognome = this.userData.cognome;
+        this.loading = false;
+        // TODOMappare oggetto specific_data in array perchè firebase lo crea in un object
+        let specific_data = this.userData.specific_data;
+        console.log(specific_data);
+        const mapped: SpecificDataModel[] = Object.keys(specific_data).map(
+          (key) => data[key]
+        );
+        console.log(mapped);
+        this._specificData = mapped;
+      });
     });
-    if (this._specificData.length === 0) {
-      this._specificData = this.userDataService.getListOfSpecificData(this.id);
-    }
+    console.log('prima di specific data subscribe');
     this.storedSubSpecificData =
       this.userDataService.specificDataChanged.subscribe(
         (specificData: SpecificDataModel[]) => {
+          console.log(specificData);
           this._specificData = specificData;
         }
       );
 
-    this.loading = false;
     this.showModal = false;
     this.initForm();
   }
@@ -147,7 +163,7 @@ export class UserDataComponent implements OnInit, OnDestroy, AfterViewInit {
 
   addNewIntervento() {
     this.userDataService.addNewIntervento(
-      1,
+      this.userData.id,
       this.specificDataForm.value['tipo_intervento'],
       this.specificDataForm.value['marca_telefono'] === undefined
         ? undefined
@@ -167,7 +183,8 @@ export class UserDataComponent implements OnInit, OnDestroy, AfterViewInit {
       new Date(),
       this.specificDataForm.value['costo'] === undefined
         ? undefined
-        : this.specificDataForm.value['costo']
+        : this.specificDataForm.value['costo'],
+      this.userData
     );
     this.showModal = !this.showModal;
     this.callModalSuccess('Aggiunto', 'Nuovo utente aggiunto');

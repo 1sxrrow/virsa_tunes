@@ -6,6 +6,7 @@ import { Table } from 'primeng/table';
 import { MessageService } from 'primeng/api';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { FirebaseStoreService } from 'src/app/shared/firebase.store.service';
+import { SpecificDataModel } from 'src/app/shared/specific_data.model';
 
 @Component({
   selector: 'app-user-list',
@@ -37,25 +38,6 @@ export class UserListComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    console.log(this.users.length);
-    if (this.users.length === 0) {
-      this.users = this.userDataService.getUserDatas();
-    }
-    this.userDataService.usersChanged.subscribe(
-      (users: UserModel[]) => {
-        console.log('sottoscrivo');
-        this.users = users;
-      },
-      (err) => {
-        this.messageService.add({
-          severity: 'error',
-          summary: 'Errore',
-          detail: 'Errore in inserimento nuovo utente',
-        });
-        console.log(err);
-      }
-    );
-
     let s = this.firebaseStoreService.GetUserList();
     console.log(s);
     s.snapshotChanges().subscribe((data) => {
@@ -63,11 +45,17 @@ export class UserListComponent implements OnInit {
       data.forEach((item) => {
         let a = item.payload.toJSON();
         a['$key'] = item.key;
-        this.users.push(a as UserModel);
+        let b = a as UserModel;
+        if (!b.specific_data) {
+          b.specific_data = [];
+        } else {
+        }
+        this.users.push(b);
       });
+      this.userDataService.users = this.users;
+      this.loading = false;
     });
 
-    this.loading = false;
     this.initForm();
   }
 
@@ -85,11 +73,11 @@ export class UserListComponent implements OnInit {
   }
 
   onRowSelect(event: any) {
-    this.router.navigate(['users', event.data.id - 1]);
+    this.router.navigate(['users', event.data.id]);
   }
 
   getInterventi(id: number) {
-    return this.userDataService.getTotalInterventi(id - 1);
+    return this.userDataService.getTotalInterventi(id);
   }
 
   /**

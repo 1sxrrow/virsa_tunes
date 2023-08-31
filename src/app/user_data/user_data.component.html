@@ -1,6 +1,7 @@
-<div class="flex flex-col">
+<div *ngIf="loading"><app-circle-spinner></app-circle-spinner></div>
+<div *ngIf="!loading" class="flex flex-col">
   <p class="text-left text-4xl font-bold mb-3">
-    {{ userData.nome }} {{ userData.cognome }}
+    {{ nome }} {{ cognome }}
     <i class="pi pi-arrow-right align-middle"></i>
     <span class="ml-2 font-normal text-3xl">Lista Interventi</span>
   </p>

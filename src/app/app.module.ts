@@ -24,9 +24,10 @@ import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { ToastModule } from 'primeng/toast';
 import { TooltipModule } from 'primeng/tooltip';
 import { FIREBASE_OPTIONS } from '@angular/fire/compat';
-import { environment } from 'src/environments/environment';
+import { firebaseConfig } from 'src/environments/environment';
 import { provideDatabase, getDatabase } from '@angular/fire/database';
 import { initializeApp, provideFirebaseApp } from '@angular/fire/app';
+import { CircleSpinnerComponent } from './shared/circle-spinner/circle-spinner.component';
 
 const routes: Routes = [
   {
@@ -53,6 +54,7 @@ const routes: Routes = [
     HeaderComponent,
     UserListComponent,
     UserEditComponent,
+    CircleSpinnerComponent,
   ],
   imports: [
     BrowserModule,
@@ -72,10 +74,10 @@ const routes: Routes = [
     ConfirmDialogModule,
     ToastModule,
     TooltipModule,
-    provideFirebaseApp(() => initializeApp(environment.firebase)),
+    provideFirebaseApp(() => initializeApp(firebaseConfig)),
     provideDatabase(() => getDatabase()),
   ],
-  providers: [{ provide: FIREBASE_OPTIONS, useValue: environment.firebase }],
+  providers: [{ provide: FIREBASE_OPTIONS, useValue: firebaseConfig }],
   bootstrap: [AppComponent],
 })
 export class AppModule {}

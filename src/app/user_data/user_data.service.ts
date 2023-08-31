@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { UserModel } from '../shared/user_data.model';
-import { Subject } from 'rxjs';
+import { Subject, map } from 'rxjs';
 import { SpecificDataModel } from '../shared/specific_data.model';
 import { ModelloTelefono } from '../shared/modello_telefono.model';
 import { FirebaseStoreService } from '../shared/firebase.store.service';
@@ -32,45 +32,8 @@ export class UserDataService {
   usersChanged = new Subject<UserModel[]>();
   specificDataChanged = new Subject<SpecificDataModel[]>();
 
-  user: UserModel[] = [
-    new UserModel(1, 'Marco', 'Rossi', 'Via dei Fiori 32', 3295630232, [
-      {
-        id: 1,
-        tipo_intervento: 'Riparazione',
-        modello_telefono: { marca: 'apple', modello: 'iphone 12' },
-        modalita_pagamento: 'Contanti',
-        tipo_prodotto: 'Nuovo',
-        canale_com: 'TikTok',
-        data_intervento: new Date(),
-        costo: 200,
-      },
-      {
-        id: 2,
-        tipo_intervento: 'Vendita',
-        modello_telefono: { marca: 'Samsung', modello: 'A20' },
-        modalita_pagamento: 'Carta',
-        tipo_prodotto: 'Usato',
-        canale_com: 'Twitter',
-        data_intervento: new Date(),
-        costo: 380,
-      },
-    ]),
-    new UserModel(2, 'Mario', 'Verdi', 'Via dei Pazzi 32', 1234567890, [
-      {
-        id: 1,
-        tipo_intervento: 'Vendita',
-        modello_telefono: { marca: 'Samsung', modello: 'A20' },
-        modalita_pagamento: 'Carta',
-        tipo_prodotto: 'Usato',
-        canale_com: 'Twitter',
-        data_intervento: new Date(),
-        costo: 180,
-      },
-    ]),
-  ];
-  constructor(private firebaseStoreService: FirebaseStoreService) {
-    this.setStandardUsers();
-  }
+  users: UserModel[] = [];
+  constructor(private firebaseStoreService: FirebaseStoreService) {}
 
   public tipoIntervento = tipoIntervento;
   public canaleComunicazione = canaleComunicazione;
@@ -78,45 +41,69 @@ export class UserDataService {
   public condizioniProdotto = condizioniProdotto;
 
   setStandardUsers() {
-    this.usersChanged.next(this.user.slice());
+    this.usersChanged.next(this.users.slice());
   }
 
   getUserDatas() {
-    return this.user.slice();
+    return this.users.slice();
   }
 
-  getUserData(index: number) {
-    return this.user[index];
+  getUserData(id: number) {
+    if (this.users.length === 0) {
+      let user = this.firebaseStoreService.GetUser(id);
+
+      user.snapshotChanges().pipe(
+        map((data) => {
+          let a = data.payload.toJSON();
+          return a as UserModel;
+        })
+      );
+    } else {
+      let user: UserModel[] = this.users.filter(function (user) {
+        return user.id === id;
+      });
+      return user[0];
+    }
   }
 
   getTotalInterventi(id: number) {
-    return this.user[id]?.specific_data?.length;
+    let user: UserModel[] = this.users.filter(function (user) {
+      return user.id === id;
+    });
+    let s = user[0].specific_data;
+    if (typeof s === null || s === undefined) {
+      return 0;
+    } else {
+      return Object.keys(s).length;
+    }
   }
 
   addUser(
     nome: string,
     cognome: string,
     indirizzo: string,
-    numero_telefono: number
+    numero_telefono: number,
+    specific_data?: SpecificDataModel[]
   ) {
     let u = new UserModel(
       this.getLastId() + 1,
       nome,
       cognome,
       indirizzo,
-      numero_telefono
+      numero_telefono,
+      specific_data
     );
-    this.user.push(u);
+    this.users.push(u);
     this.firebaseStoreService.AddUser(u);
-    this.usersChanged.next(this.user.slice());
+    this.usersChanged.next(this.users.slice());
   }
 
   deleteUser(id: number) {
-    this.user = this.user.filter(function (user) {
+    this.users = this.users.filter(function (user) {
       return user.id !== id;
     });
-
-    this.usersChanged.next(this.user.slice());
+    this.firebaseStoreService.DeleteUser(id.toString());
+    this.usersChanged.next(this.users.slice());
   }
 
   editUser(
@@ -124,17 +111,29 @@ export class UserDataService {
     nome: string,
     cognome: string,
     numero_telefono_i: number,
-    indirizzo: string
+    indirizzo: string,
+    specific_data?: SpecificDataModel[]
   ) {
-    this.user.map((userItem) => {
+    this.users.map((userItem) => {
       if (userItem.id === id_input) {
         userItem.cognome = cognome;
         userItem.nome = nome;
         userItem.indirizzo = indirizzo;
         userItem.numero_telefono = numero_telefono_i;
+        userItem.specific_data = specific_data;
       }
     });
-    this.usersChanged.next(this.user.slice());
+    this.firebaseStoreService.UpdateUser(
+      new UserModel(
+        id_input,
+        nome,
+        cognome,
+        indirizzo,
+        numero_telefono_i,
+        specific_data
+      )
+    );
+    this.usersChanged.next(this.users.slice());
   }
 
   addNewIntervento(
@@ -146,24 +145,38 @@ export class UserDataService {
     tipo_prodotto: string,
     canale_com: string,
     data_intervento: Date,
-    costo: number
+    costo: number,
+    user_input?: UserModel
   ) {
-    let user: UserModel[] = this.user.filter(function (user) {
-      return user.id === id_user;
-    });
-    let id = this.getLastIdSpecificData(user[0].specific_data) + 1;
-    user[0].specific_data.push(
-      new SpecificDataModel(
-        3,
-        tipo_intervento,
-        new ModelloTelefono(marca, modello),
-        modalita_pagamento,
-        tipo_prodotto,
-        canale_com,
-        data_intervento,
-        costo
-      )
+    let id = 0;
+    let user_work: UserModel;
+    // verifica se ho modello UserInput in input uso quello altrimenti recupero da users
+    if (user_input) {
+      user_work = user_input;
+    } else {
+      let user: UserModel[] = this.users.filter(function (user) {
+        return user.id === id_user;
+      });
+      user_work = user[0];
+    }
+    if (user_work.specific_data) {
+      id = this.getLastIdSpecificData(user_work.specific_data) + 1;
+    } else {
+      user_work.specific_data = [];
+      id = 1;
+    }
+    let intervento = new SpecificDataModel(
+      id,
+      tipo_intervento,
+      new ModelloTelefono(marca, modello),
+      modalita_pagamento,
+      tipo_prodotto,
+      canale_com,
+      data_intervento,
+      costo
     );
+    user_work.specific_data.push(intervento);
+    this.firebaseStoreService.UpdateUser(user_work);
   }
 
   getLastIdSpecificData(specific_data: SpecificDataModel[]): number {
@@ -171,24 +184,34 @@ export class UserDataService {
   }
 
   getListOfSpecificData(id_user: number) {
-    return this.user[id_user].specific_data.slice();
+    let user: UserModel[] = this.users.filter(function (user) {
+      return user.id === id_user;
+    });
+
+    //check if specificData is empty
+    console.log(user[0]);
+    if (Object.keys(user[0].specific_data).length === 0) {
+      return null;
+    } else {
+      return this.users[id_user].specific_data;
+    }
   }
 
   deleteSpecificData(id_user: number, id_intervento: number) {
-    this.user[id_user].specific_data = this.user[id_user].specific_data.filter(
-      function (intervento) {
-        return intervento.id !== id_intervento;
-      }
-    );
+    this.users[id_user].specific_data = this.users[
+      id_user
+    ].specific_data.filter(function (intervento) {
+      return intervento.id !== id_intervento;
+    });
 
-    this.specificDataChanged.next(this.user[id_user].specific_data.slice());
+    this.specificDataChanged.next(this.users[id_user].specific_data.slice());
   }
 
   getLastId() {
-    if (this.user.length - 1 <= 0) {
+    if (this.users.length <= 0) {
       return 0;
     } else {
-      return this.user[this.user.length - 1].id;
+      return this.users[this.users.length - 1].id;
     }
   }
 }
