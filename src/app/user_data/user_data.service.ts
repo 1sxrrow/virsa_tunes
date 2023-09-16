@@ -217,6 +217,18 @@ export class UserDataService {
     this.firebaseStoreService.UpdateUser(user_input);
   }
 
+  deleteIntervento(id_intervento: number, user_input: UserModel) {
+    let spec_retrieved: SpecificDataModel[] = Object.values(
+      user_input.specific_data
+    );
+    let i = spec_retrieved.filter(function (data) {
+      return data.id === id_intervento;
+    });
+    spec_retrieved.splice(spec_retrieved.indexOf(i[0]), 1);
+    user_input.specific_data = spec_retrieved;
+    this.firebaseStoreService.UpdateUser(user_input);
+  }
+
   getLastIdSpecificData(specific_data: SpecificDataModel[]): number {
     let spec = Object.values(specific_data);
     console.log(spec[spec.length - 1].id);

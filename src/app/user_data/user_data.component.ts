@@ -11,15 +11,19 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { SpecificDataModel } from '../shared/specific_data.model';
 import { Subscription } from 'rxjs';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
-import { MessageService } from 'primeng/api';
+import {
+  ConfirmEventType,
+  ConfirmationService,
+  MessageService,
+} from 'primeng/api';
 import { Dropdown } from 'primeng/dropdown';
 import { FirebaseStoreService } from '../shared/firebase.store.service';
 
 @Component({
   selector: 'app-user-data',
   templateUrl: './user_data.component.html',
-  styleUrls: ['./user_data.component.scss'],
-  providers: [MessageService],
+  styleUrls: ['./user_data.component.css'],
+  providers: [ConfirmationService, MessageService],
 })
 export class UserDataComponent implements OnInit, OnDestroy, AfterViewInit {
   userData: UserModel;
@@ -54,6 +58,7 @@ export class UserDataComponent implements OnInit, OnDestroy, AfterViewInit {
   constructor(
     private userDataService: UserDataService,
     private activatedRoute: ActivatedRoute,
+    private confirmationService: ConfirmationService,
     private messageService: MessageService,
     private firebaseStoreService: FirebaseStoreService,
     private router: Router
@@ -123,15 +128,31 @@ export class UserDataComponent implements OnInit, OnDestroy, AfterViewInit {
 
   onRowSelect(event: any) {
     this.isInfo = false;
-    this.modifyIntervento(event.data.id);
+    this.showDataIntervento(event.data.id);
   }
 
   goBack() {
     this.router.navigate(['../']);
   }
 
+  confirmDeleteIntervento(id_intervento: number) {
+    this.confirmationService.confirm({
+      message: 'Sei sicuro di voler procedere?',
+      header: 'Conferma',
+      icon: 'pi pi-exclamation-triangle',
+      accept: () => {
+        this.deleteIntervento(id_intervento);
+        this.callModalToast('Eliminato', 'Intervento rimosso', 'info');
+      },
+      reject: (type: ConfirmEventType) => {
+        this.callModalToast('Interrotto', 'Rimozione interrotta', 'warn');
+      },
+    });
+  }
+
   deleteIntervento(id_intervento: number) {
-    this.userDataService.deleteSpecificData(this.id, id_intervento);
+    //this.userDataService.deleteSpecificData(this.id, id_intervento);
+    this.userDataService.deleteIntervento(id_intervento, this.userData);
   }
 
   newIntervento() {
@@ -140,7 +161,7 @@ export class UserDataComponent implements OnInit, OnDestroy, AfterViewInit {
     this.showModalFunction('Aggiungi Intervento', false);
   }
 
-  modifyIntervento(id: number) {
+  showDataIntervento(id: number) {
     this.modifyInterventoId = id;
     this.specificDataForm = new FormGroup({
       canale_com: new FormControl(this.selectedSpecificData.canale_com),
@@ -191,9 +212,10 @@ export class UserDataComponent implements OnInit, OnDestroy, AfterViewInit {
       this.userData
     );
     this.showModal = !this.showModal;
-    this.callModalSuccess('Aggiunto', 'Nuovo utente aggiunto');
+    this.callModalToast('Aggiunto', 'Nuovo utente aggiunto');
   }
 
+  //Metodo di modifica scatenato alla pressione del pulsante di modifica nel componentø
   modifyUserIntervento() {
     this.userDataService.modifyIntervento(
       this.userData.id,
@@ -221,7 +243,7 @@ export class UserDataComponent implements OnInit, OnDestroy, AfterViewInit {
       this.userData
     );
     this.showModal = !this.showModal;
-    this.callModalSuccess('Modificato', 'Utente modificato', 'info');
+    this.callModalToast('Modificato', 'Utente modificato', 'info');
   }
 
   showModalFunction(modalTitle: string, isModify: boolean, id?: number) {
@@ -256,7 +278,7 @@ export class UserDataComponent implements OnInit, OnDestroy, AfterViewInit {
    * @param {string} serverity? -> success , info , warn , error
    * @returns {any}
    **/
-  callModalSuccess(summary: string, detail: string, severity?: string) {
+  callModalToast(summary: string, detail: string, severity?: string) {
     console.log(severity);
     this.messageService.add({
       severity: severity === undefined ? 'success' : severity,

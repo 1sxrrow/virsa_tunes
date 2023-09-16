@@ -81,7 +81,7 @@
               icon="pi pi-times-circle"
               pTooltip="Cancella Intervento"
               tooltipPosition="bottom"
-              (click)="deleteIntervento(specificData.id)"
+              (click)="confirmDeleteIntervento(specificData.id)"
             ></p-button>
           </td>
         </tr>
@@ -93,6 +93,31 @@
       </ng-template>
     </p-table>
   </p-card>
+
+  <!-- Dialog di conferma per rimozione elemento -->
+  <p-confirmDialog #cd [style]="{ width: '50vw', color: 'white' }">
+    <ng-template pTemplate="footer">
+      <button
+        type="button"
+        pButton
+        icon="pi pi-times"
+        iconPos="right"
+        label="cancella"
+        class="border border-gray-300 p-2"
+        (click)="cd.reject()"
+      ></button>
+
+      <button
+        type="button"
+        pButton
+        icon="pi pi-check"
+        iconPos="right"
+        label="conferma"
+        class="border border-gray-300 p-2"
+        (click)="cd.accept()"
+      ></button>
+    </ng-template>
+  </p-confirmDialog>
 
   <!-- Inizio modale per inserimento nuovo/modifica intervento -->
   <p-dialog
