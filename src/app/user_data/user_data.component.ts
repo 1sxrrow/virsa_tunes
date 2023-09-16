@@ -18,7 +18,7 @@ import { FirebaseStoreService } from '../shared/firebase.store.service';
 @Component({
   selector: 'app-user-data',
   templateUrl: './user_data.component.html',
-  styleUrls: ['./User_data.component.css'],
+  styleUrls: ['./user_data.component.scss'],
   providers: [MessageService],
 })
 export class UserDataComponent implements OnInit, OnDestroy, AfterViewInit {
@@ -47,6 +47,9 @@ export class UserDataComponent implements OnInit, OnDestroy, AfterViewInit {
   loading = true;
   nome: string;
   cognome: string;
+  isInfo = false;
+
+  modifyInterventoId: number;
 
   constructor(
     private userDataService: UserDataService,
@@ -67,12 +70,10 @@ export class UserDataComponent implements OnInit, OnDestroy, AfterViewInit {
         this.nome = this.userData.nome;
         this.cognome = this.userData.cognome;
         this.loading = false;
-        // TODOMappare oggetto specific_data in array perchè firebase lo crea in un object
+        // TODO Mappare oggetto specific_data in array perchè firebase lo crea in un object
         let specific_data = this.userData.specific_data;
         console.log(specific_data);
-        const mapped: SpecificDataModel[] = Object.keys(specific_data).map(
-          (key) => data[key]
-        );
+        const mapped: SpecificDataModel[] = Object.values(specific_data);
         console.log(mapped);
         this._specificData = mapped;
       });
@@ -121,6 +122,7 @@ export class UserDataComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   onRowSelect(event: any) {
+    this.isInfo = false;
     this.modifyIntervento(event.data.id);
   }
 
@@ -133,11 +135,13 @@ export class UserDataComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   newIntervento() {
+    this.isInfo = true;
     this.initForm();
     this.showModalFunction('Aggiungi Intervento', false);
   }
 
   modifyIntervento(id: number) {
+    this.modifyInterventoId = id;
     this.specificDataForm = new FormGroup({
       canale_com: new FormControl(this.selectedSpecificData.canale_com),
       costo: new FormControl(this.selectedSpecificData.costo),
@@ -188,6 +192,36 @@ export class UserDataComponent implements OnInit, OnDestroy, AfterViewInit {
     );
     this.showModal = !this.showModal;
     this.callModalSuccess('Aggiunto', 'Nuovo utente aggiunto');
+  }
+
+  modifyUserIntervento() {
+    this.userDataService.modifyIntervento(
+      this.userData.id,
+      this.modifyInterventoId,
+      this.specificDataForm.value['tipo_intervento'],
+      this.specificDataForm.value['marca_telefono'] === undefined
+        ? undefined
+        : this.specificDataForm.value['marca_telefono'],
+      this.specificDataForm.value['modello_telefono'] === undefined
+        ? undefined
+        : this.specificDataForm.value['modello_telefono'],
+      this.specificDataForm.value['modalita_pagamento'] === undefined
+        ? undefined
+        : this.specificDataForm.value['modalita_pagamento'],
+      this.specificDataForm.value['tipo_prodotto'] === undefined
+        ? undefined
+        : this.specificDataForm.value['tipo_prodotto'],
+      this.specificDataForm.value['canale_com'] === undefined
+        ? undefined
+        : this.specificDataForm.value['canale_com'],
+      new Date(),
+      this.specificDataForm.value['costo'] === undefined
+        ? undefined
+        : this.specificDataForm.value['costo'],
+      this.userData
+    );
+    this.showModal = !this.showModal;
+    this.callModalSuccess('Modificato', 'Utente modificato', 'info');
   }
 
   showModalFunction(modalTitle: string, isModify: boolean, id?: number) {

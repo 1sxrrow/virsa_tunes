@@ -175,12 +175,52 @@ export class UserDataService {
       data_intervento,
       costo
     );
-    user_work.specific_data.push(intervento);
+
+    let t: SpecificDataModel[] = Object.values(user_work.specific_data);
+    t.push(intervento);
+    user_work.specific_data = t;
+
     this.firebaseStoreService.UpdateUser(user_work);
   }
 
+  modifyIntervento(
+    id_user: number,
+    id_intervento: number,
+    tipo_intervento: string,
+    marca: string,
+    modello: string,
+    modalita_pagamento: string,
+    tipo_prodotto: string,
+    canale_com: string,
+    data_intervento: Date,
+    costo: number,
+    user_input?: UserModel
+  ) {
+    let spec_retrieved: SpecificDataModel[] = Object.values(
+      user_input.specific_data
+    );
+    spec_retrieved.forEach((specific_data, i) => {
+      if (specific_data.id === id_intervento) {
+        spec_retrieved[i] = new SpecificDataModel(
+          id_intervento,
+          tipo_intervento,
+          new ModelloTelefono(marca, modello),
+          modalita_pagamento,
+          tipo_prodotto,
+          canale_com,
+          data_intervento,
+          costo
+        );
+      }
+    });
+    user_input.specific_data = spec_retrieved;
+    this.firebaseStoreService.UpdateUser(user_input);
+  }
+
   getLastIdSpecificData(specific_data: SpecificDataModel[]): number {
-    return specific_data[specific_data.length - 1].id;
+    let spec = Object.values(specific_data);
+    console.log(spec[spec.length - 1].id);
+    return spec[spec.length - 1].id;
   }
 
   getListOfSpecificData(id_user: number) {

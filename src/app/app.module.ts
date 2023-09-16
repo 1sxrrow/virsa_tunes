@@ -28,6 +28,7 @@ import { firebaseConfig } from 'src/environments/environment';
 import { provideDatabase, getDatabase } from '@angular/fire/database';
 import { initializeApp, provideFirebaseApp } from '@angular/fire/app';
 import { CircleSpinnerComponent } from './shared/circle-spinner/circle-spinner.component';
+import { CurrencyPipe } from '@angular/common';
 
 const routes: Routes = [
   {
@@ -77,7 +78,10 @@ const routes: Routes = [
     provideFirebaseApp(() => initializeApp(firebaseConfig)),
     provideDatabase(() => getDatabase()),
   ],
-  providers: [{ provide: FIREBASE_OPTIONS, useValue: firebaseConfig }],
+  providers: [
+    { provide: FIREBASE_OPTIONS, useValue: firebaseConfig },
+    CurrencyPipe,
+  ],
   bootstrap: [AppComponent],
 })
 export class AppModule {}
