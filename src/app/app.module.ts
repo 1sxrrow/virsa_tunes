@@ -29,6 +29,7 @@ import { provideDatabase, getDatabase } from '@angular/fire/database';
 import { initializeApp, provideFirebaseApp } from '@angular/fire/app';
 import { CircleSpinnerComponent } from './shared/circle-spinner/circle-spinner.component';
 import { CurrencyPipe } from '@angular/common';
+import { LoginComponent } from './login/login.component';
 
 const routes: Routes = [
   {
@@ -56,6 +57,7 @@ const routes: Routes = [
     UserListComponent,
     UserEditComponent,
     CircleSpinnerComponent,
+    LoginComponent,
   ],
   imports: [
     BrowserModule,

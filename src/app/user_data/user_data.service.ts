@@ -4,29 +4,12 @@ import { Subject, map } from 'rxjs';
 import { SpecificDataModel } from '../shared/specific_data.model';
 import { ModelloTelefono } from '../shared/modello_telefono.model';
 import { FirebaseStoreService } from '../shared/firebase.store.service';
-
-enum tipoIntervento {
-  'Vendita',
-  'Riparazione',
-}
-
-enum canaleComunicazione {
-  'Instagram',
-  'TikTok',
-  'Facebook',
-  'Twitter',
-}
-
-enum condizioniProdotto {
-  'Nuovo',
-  'Usato',
-}
-
-enum tipoPagamento {
-  'Contanti',
-  'Carta',
-}
-
+import {
+  tipoIntervento,
+  canaleComunicazione,
+  tipoPagamento,
+  condizioniProdotto,
+} from '../shared/enums';
 @Injectable({ providedIn: 'root' })
 export class UserDataService {
   usersChanged = new Subject<UserModel[]>();
