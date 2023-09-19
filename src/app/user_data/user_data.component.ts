@@ -18,6 +18,7 @@ import {
 } from 'primeng/api';
 import { Dropdown } from 'primeng/dropdown';
 import { FirebaseStoreService } from '../shared/firebase.store.service';
+import { Dialog } from 'primeng/dialog';
 
 @Component({
   selector: 'app-user-data',
@@ -64,6 +65,23 @@ export class UserDataComponent implements OnInit, OnDestroy, AfterViewInit {
     private router: Router
   ) {}
 
+  // metodo per verificare quale dato nel form non funziona
+  public findInvalidControls() {
+    const invalid = [];
+    const controls = this.specificDataForm.controls;
+    for (const name in controls) {
+      if (controls[name].invalid) {
+        invalid.push(name);
+      }
+    }
+    console.log(invalid);
+  }
+
+  //alla chiusura del dialog viene deselezionato la riga DA TESTARE MEGLIO
+  closeDialog() {
+    this.selectedSpecificData = null;
+  }
+
   ngOnInit(): void {
     this.valEnums();
     // recupero dati utente da database Firebase.
@@ -91,7 +109,6 @@ export class UserDataComponent implements OnInit, OnDestroy, AfterViewInit {
           this._specificData = specificData;
         }
       );
-
     this.showModal = false;
     this.initForm();
   }
@@ -131,6 +148,10 @@ export class UserDataComponent implements OnInit, OnDestroy, AfterViewInit {
     this.showDataIntervento(event.data.id);
   }
 
+  onHide() {
+    this.selectedSpecificData = null;
+  }
+
   goBack() {
     this.router.navigate(['../']);
   }
@@ -164,24 +185,37 @@ export class UserDataComponent implements OnInit, OnDestroy, AfterViewInit {
   showDataIntervento(id: number) {
     this.modifyInterventoId = id;
     this.specificDataForm = new FormGroup({
-      canale_com: new FormControl(this.selectedSpecificData.canale_com),
-      costo: new FormControl(this.selectedSpecificData.costo),
+      canale_com: new FormControl(
+        this.selectedSpecificData.canale_com,
+        Validators.required
+      ),
+      costo: new FormControl(
+        this.selectedSpecificData.costo,
+        Validators.required
+      ),
       data_intervento: new FormControl(
         this.selectedSpecificData.data_intervento
       ),
       modalita_pagamento: new FormControl(
-        this.selectedSpecificData.modalita_pagamento
+        this.selectedSpecificData.modalita_pagamento,
+        Validators.required
       ),
       marca_telefono: new FormControl(
-        this.selectedSpecificData.modello_telefono.marca
+        this.selectedSpecificData.modello_telefono.marca,
+        Validators.required
       ),
       modello_telefono: new FormControl(
-        this.selectedSpecificData.modello_telefono.modello
+        this.selectedSpecificData.modello_telefono.modello,
+        Validators.required
       ),
       tipo_intervento: new FormControl(
-        this.selectedSpecificData.tipo_intervento
+        this.selectedSpecificData.tipo_intervento,
+        Validators.required
       ),
-      tipo_prodotto: new FormControl(this.selectedSpecificData.tipo_prodotto),
+      tipo_prodotto: new FormControl(
+        this.selectedSpecificData.tipo_prodotto,
+        Validators.required
+      ),
     });
     this.showModalFunction('Modifica Intervento', true, id);
   }
@@ -261,16 +295,17 @@ export class UserDataComponent implements OnInit, OnDestroy, AfterViewInit {
    **/
   initForm() {
     this.specificDataForm = new FormGroup({
-      canale_com: new FormControl(''),
-      costo: new FormControl(''),
+      canale_com: new FormControl('', Validators.required),
+      costo: new FormControl('', Validators.required),
       data_intervento: new FormControl(''),
-      modalita_pagamento: new FormControl(''),
-      marca_telefono: new FormControl(''),
-      modello_telefono: new FormControl(''),
-      tipo_intervento: new FormControl(''),
-      tipo_prodotto: new FormControl(''),
+      modalita_pagamento: new FormControl('', Validators.required),
+      marca_telefono: new FormControl('', Validators.required),
+      modello_telefono: new FormControl('', Validators.required),
+      tipo_intervento: new FormControl('', Validators.required),
+      tipo_prodotto: new FormControl('', Validators.required),
     });
   }
+  ngValue;
   /**
    * Mostra toast dialog a destra
    * @param {string} summary -> titolo

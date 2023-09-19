@@ -95,27 +95,30 @@ export class UserDataService {
     cognome: string,
     numero_telefono_i: number,
     indirizzo: string,
-    specific_data?: SpecificDataModel[]
+    specific_data_i?: SpecificDataModel[]
   ) {
+    let specific_data_tmp = specific_data_i;
     this.users.map((userItem) => {
       if (userItem.id === id_input) {
         userItem.cognome = cognome;
         userItem.nome = nome;
         userItem.indirizzo = indirizzo;
         userItem.numero_telefono = numero_telefono_i;
-        userItem.specific_data = specific_data;
+        // userItem.specific_data = specific_data;
+        if (!specific_data_i) {
+          specific_data_tmp = userItem.specific_data;
+        }
       }
     });
-    this.firebaseStoreService.UpdateUser(
-      new UserModel(
-        id_input,
-        nome,
-        cognome,
-        indirizzo,
-        numero_telefono_i,
-        specific_data
-      )
-    );
+    let u: UserModel = {
+      id: id_input,
+      nome: nome,
+      cognome: cognome,
+      indirizzo: indirizzo,
+      numero_telefono: numero_telefono_i,
+      specific_data: specific_data_tmp,
+    };
+    this.firebaseStoreService.UpdateUser(u);
     this.usersChanged.next(this.users.slice());
   }
 

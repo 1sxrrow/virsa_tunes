@@ -29,7 +29,7 @@ import { provideDatabase, getDatabase } from '@angular/fire/database';
 import { initializeApp, provideFirebaseApp } from '@angular/fire/app';
 import { CircleSpinnerComponent } from './shared/circle-spinner/circle-spinner.component';
 import { CurrencyPipe } from '@angular/common';
-import { LoginComponent } from './login/login.component';
+import { AuthGuard } from './login/auth.guard';
 
 const routes: Routes = [
   {
@@ -43,8 +43,13 @@ const routes: Routes = [
       { path: '', component: UserListComponent },
       { path: ':id', component: UserDataComponent },
     ],
+    canActivate: [AuthGuard],
   },
-
+  {
+    path: 'login',
+    loadChildren: () =>
+      import('./login/login.module').then((m) => m.LoginModule),
+  },
   { path: 'not-found', component: NotFoundComponent },
   { path: '**', redirectTo: '/not-found' },
 ];
@@ -57,7 +62,6 @@ const routes: Routes = [
     UserListComponent,
     UserEditComponent,
     CircleSpinnerComponent,
-    LoginComponent,
   ],
   imports: [
     BrowserModule,

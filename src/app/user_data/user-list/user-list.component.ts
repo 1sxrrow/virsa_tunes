@@ -145,8 +145,8 @@ export class UserListComponent implements OnInit {
   showInfoUser(user: any) {
     console.log(user);
     this.userInfoForm = new FormGroup({
-      nome: new FormControl(user.nome),
-      cognome: new FormControl(user.cognome),
+      nome: new FormControl(user.nome, Validators.required),
+      cognome: new FormControl(user.cognome, Validators.required),
       numero_telefono: new FormControl(user.numero_telefono),
       indirizzo: new FormControl(user.indirizzo),
     });

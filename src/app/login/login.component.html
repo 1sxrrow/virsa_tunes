@@ -1,1 +1,54 @@
-<p>login works!</p>
+<div>
+  <div class="grid place-items-center w-auto">
+    <div
+      class="block border border-gray-600 p-8 rounded-lg bg-slate-900 w-8/12"
+    >
+      <div class="grid place-items-center">
+        <h1 class="font-extrabold text-xl mb-2 text-white place-items-start">
+          Login
+        </h1>
+        <span class="p-float-label">
+          <input
+            #emailInput
+            pInputText
+            id="email"
+            [(ngModel)]="emailValue"
+            class="w-96"
+          />
+          <label htmlFor="email">E-mail</label>
+        </span>
+        <span>
+          <small
+            #emailHelp
+            [hidden]="!emailMessage"
+            class="text-red-400"
+          ></small>
+        </span>
+        <span class="p-float-label mt-4 mb-2">
+          <input
+            pInputText
+            #passwordInput
+            type="password"
+            id="password"
+            [(ngModel)]="passwordValue"
+            class="w-96"
+          />
+          <label htmlFor="password">Password</label>
+        </span>
+        <span>
+          <small
+            #passwordHelp
+            [hidden]="!passwordMessage"
+            class="text-red-400 mb-2"
+          ></small>
+        </span>
+        <p-button
+          class="grid place-items-end mt-2"
+          label="Login"
+          styleClass="p-button-secondary"
+          (click)="CheckLogin()"
+        ></p-button>
+      </div>
+    </div>
+  </div>
+</div>

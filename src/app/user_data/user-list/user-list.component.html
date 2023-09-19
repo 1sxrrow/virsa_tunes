@@ -135,12 +135,14 @@
         label="Aggiungi"
         [hidden]="isInfo"
         (onClick)="addNewUser()"
+        [disabled]="!userInfoForm.valid"
       ></p-button>
       <p-button
         styleClass="p-button-raised p-button-secondary"
         label="Modifica"
         [hidden]="!isInfo"
         (onClick)="editUser()"
+        [disabled]="!userInfoForm.valid || !userInfoForm.touched"
       ></p-button>
     </div>
   </p-dialog>
