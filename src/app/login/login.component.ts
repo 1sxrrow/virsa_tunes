@@ -8,6 +8,7 @@ import {
 import { AngularFireAuth } from '@angular/fire/compat/auth';
 import { Router } from '@angular/router';
 import { AuthService } from './auth.service';
+import { User, getAuth, updateProfile } from 'firebase/auth';
 
 @Component({
   selector: 'app-login',
@@ -56,6 +57,7 @@ export class LoginComponent {
       .signInWithEmailAndPassword(this.emailValue, this.passwordValue)
       .then((result) => {
         console.log(result);
+        this.checkUsername(result.user);
         this.router.navigate(['/users']);
       })
       .catch((error) => {
@@ -157,5 +159,17 @@ export class LoginComponent {
 
   hideAfterChange(input: ElementRef, boolVal: boolean) {
     //Rimuovere ng-dirty ng-invalid dopo 5 sec.
+  }
+
+  checkUsername(user: any) {
+    if (!user.displayName) {
+      updateProfile(this.authService.userState, {
+        displayName: user.email.substring(0, user.email.indexOf('@')),
+      }).then(() => {
+        console.log('profile updated');
+      });
+    } else {
+      console.log('profile has displayName already set!');
+    }
   }
 }

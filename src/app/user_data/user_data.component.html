@@ -103,29 +103,7 @@
   </p-card>
 
   <!-- Dialog di conferma per rimozione elemento -->
-  <p-confirmDialog #cd [style]="{ width: '50vw', color: 'white' }">
-    <ng-template pTemplate="footer">
-      <button
-        type="button"
-        pButton
-        icon="pi pi-times"
-        iconPos="right"
-        label="cancella"
-        class="border border-gray-300 p-2"
-        (click)="cd.reject()"
-      ></button>
-
-      <button
-        type="button"
-        pButton
-        icon="pi pi-check"
-        iconPos="right"
-        label="conferma"
-        class="border border-gray-300 p-2"
-        (click)="cd.accept()"
-      ></button>
-    </ng-template>
-  </p-confirmDialog>
+  <app-confirm-dialog></app-confirm-dialog>
 
   <!-- Inizio modale per inserimento nuovo/modifica intervento -->
   <p-dialog

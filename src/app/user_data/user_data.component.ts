@@ -18,7 +18,7 @@ import {
 } from 'primeng/api';
 import { Dropdown } from 'primeng/dropdown';
 import { FirebaseStoreService } from '../shared/firebase.store.service';
-import { Dialog } from 'primeng/dialog';
+import { AuthService } from '../login/auth.service';
 
 @Component({
   selector: 'app-user-data',
@@ -62,7 +62,8 @@ export class UserDataComponent implements OnInit, OnDestroy, AfterViewInit {
     private confirmationService: ConfirmationService,
     private messageService: MessageService,
     private firebaseStoreService: FirebaseStoreService,
-    private router: Router
+    private router: Router,
+    private authService: AuthService
   ) {}
 
   // metodo per verificare quale dato nel form non funziona
@@ -77,7 +78,7 @@ export class UserDataComponent implements OnInit, OnDestroy, AfterViewInit {
     console.log(invalid);
   }
 
-  //alla chiusura del dialog viene deselezionato la riga DA TESTARE MEGLIO
+  //alla chiusura del dialog viene deselezionato la riga
   closeDialog() {
     this.selectedSpecificData = null;
   }
@@ -111,6 +112,7 @@ export class UserDataComponent implements OnInit, OnDestroy, AfterViewInit {
       );
     this.showModal = false;
     this.initForm();
+    console.log(this.authService.userState);
   }
 
   ngOnDestroy(): void {

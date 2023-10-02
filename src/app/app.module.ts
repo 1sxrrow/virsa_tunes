@@ -30,6 +30,7 @@ import { initializeApp, provideFirebaseApp } from '@angular/fire/app';
 import { CircleSpinnerComponent } from './shared/circle-spinner/circle-spinner.component';
 import { CurrencyPipe } from '@angular/common';
 import { AuthGuard } from './login/auth.guard';
+import { PersonalConfirmDialogModule } from './shared/confirm-dialog/confirm.dialog.module';
 
 const routes: Routes = [
   {
@@ -78,7 +79,7 @@ const routes: Routes = [
     InputNumberModule,
     KeyFilterModule,
     DialogModule,
-    ConfirmDialogModule,
+    PersonalConfirmDialogModule,
     ToastModule,
     TooltipModule,
     provideFirebaseApp(() => initializeApp(firebaseConfig)),

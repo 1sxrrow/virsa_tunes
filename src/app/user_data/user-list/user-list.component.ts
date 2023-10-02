@@ -1,18 +1,21 @@
-import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { UserModel } from 'src/app/shared/user_data.model';
 import { UserDataService } from '../user_data.service';
 import { Router } from '@angular/router';
 import { Table } from 'primeng/table';
-import { MessageService } from 'primeng/api';
+import {
+  ConfirmEventType,
+  ConfirmationService,
+  MessageService,
+} from 'primeng/api';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { FirebaseStoreService } from 'src/app/shared/firebase.store.service';
-import { SpecificDataModel } from 'src/app/shared/specific_data.model';
 
 @Component({
   selector: 'app-user-list',
   templateUrl: './user-list.component.html',
   styleUrls: ['./user-list.component.css'],
-  providers: [MessageService],
+  providers: [ConfirmationService, MessageService],
 })
 export class UserListComponent implements OnInit {
   selectedUser!: UserModel;
@@ -25,10 +28,13 @@ export class UserListComponent implements OnInit {
   visible = false;
   savedUserId: number;
 
+  utenteUltimaModifica: string;
+  utenteInserimento: string;
   users: UserModel[] = [];
   constructor(
     private userDataService: UserDataService,
     private firebaseStoreService: FirebaseStoreService,
+    private confirmationService: ConfirmationService,
     private router: Router,
     private messageService: MessageService
   ) {}
@@ -109,7 +115,7 @@ export class UserListComponent implements OnInit {
         : this.userInfoForm.value['numero_telefono']
     );
     this.showModal = !this.showModal;
-    this.callModalSuccess('Aggiunto', 'Nuovo utente aggiunto');
+    this.callModalToast('Aggiunto', 'Nuovo utente aggiunto');
   }
 
   /**
@@ -125,7 +131,7 @@ export class UserListComponent implements OnInit {
       this.userInfoForm.value['numero_telefono'],
       this.userInfoForm.value['indirizzo']
     );
-    this.callModalSuccess('Modificato', 'Dati utente modificati', 'warn');
+    this.callModalToast('Modificato', 'Dati utente modificati', 'warn');
     this.showModal = !this.showModal;
   }
 
@@ -136,7 +142,6 @@ export class UserListComponent implements OnInit {
    **/
   deleteUser(user_id: number) {
     this.userDataService.deleteUser(user_id);
-    this.callModalSuccess('Rimosso', 'Utente rimosso con successo', 'error');
   }
 
   /**
@@ -150,6 +155,13 @@ export class UserListComponent implements OnInit {
       numero_telefono: new FormControl(user.numero_telefono),
       indirizzo: new FormControl(user.indirizzo),
     });
+    this.utenteInserimento = user.utente_inserimento;
+    this.utenteUltimaModifica = user.ultimo_utente_modifica;
+    console.log(
+      this.utenteInserimento,
+      this.utenteUltimaModifica,
+      user.utenteInserimento
+    );
     this.showModalFunction('Info Cliente', true, user.id);
   }
 
@@ -163,7 +175,11 @@ export class UserListComponent implements OnInit {
       cognome: new FormControl('', Validators.required),
       numero_telefono: new FormControl(''),
       indirizzo: new FormControl(''),
+      utente_inserimento: new FormControl(''),
+      utente_ultima_modifica: new FormControl(''),
     });
+    this.utenteInserimento = undefined;
+    this.utenteUltimaModifica = undefined;
   }
 
   /**
@@ -173,12 +189,31 @@ export class UserListComponent implements OnInit {
    * @param {string} serverity? -> success , info , warn , error
    * @returns {any}
    **/
-  callModalSuccess(summary: string, detail: string, severity?: string) {
+  callModalToast(summary: string, detail: string, severity?: string) {
     console.log(severity);
     this.messageService.add({
       severity: severity === undefined ? 'success' : severity,
       summary: summary,
       detail: detail,
+    });
+  }
+
+  confirmDeleteUser(user_id: number) {
+    this.confirmationService.confirm({
+      message: 'Sei sicuro di voler procedere?',
+      header: 'Conferma',
+      icon: 'pi pi-exclamation-triangle',
+      accept: () => {
+        this.deleteUser(user_id);
+        this.callModalToast('Eliminato', 'Utente rimosso', 'info');
+      },
+      reject: (type: ConfirmEventType) => {
+        this.callModalToast(
+          'Interrotto',
+          'Rimozione utente interrotta',
+          'warn'
+        );
+      },
     });
   }
 }

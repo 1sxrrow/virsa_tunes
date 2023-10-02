@@ -6,7 +6,6 @@ import {
 } from '@angular/fire/compat/database';
 import { FirebaseOperation } from '@angular/fire/compat/database/interfaces';
 import { UserModel } from './user_data.model';
-import { map } from 'rxjs/operators';
 
 @Injectable({ providedIn: 'root' })
 export class FirebaseStoreService {
@@ -24,6 +23,7 @@ export class FirebaseStoreService {
       numero_telefono: user.numero_telefono,
       id: user.id,
       specific_data: user.specific_data,
+      utente_inserimento: user.utenteInserimento,
     });
   }
   // Fetch Single User Object
@@ -50,6 +50,7 @@ export class FirebaseStoreService {
       numero_telefono: user.numero_telefono,
       id: user.id,
       specific_data: user.specific_data,
+      ultimo_utente_modifica: user.ultimoUtenteModifica,
     });
   }
   // Delete User

@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, OnInit } from '@angular/core';
 import { UserModel } from '../shared/user_data.model';
 import { Subject, map } from 'rxjs';
 import { SpecificDataModel } from '../shared/specific_data.model';
@@ -10,13 +10,17 @@ import {
   tipoPagamento,
   condizioniProdotto,
 } from '../shared/enums';
+import { AuthService } from '../login/auth.service';
 @Injectable({ providedIn: 'root' })
 export class UserDataService {
   usersChanged = new Subject<UserModel[]>();
   specificDataChanged = new Subject<SpecificDataModel[]>();
 
   users: UserModel[] = [];
-  constructor(private firebaseStoreService: FirebaseStoreService) {}
+  constructor(
+    private firebaseStoreService: FirebaseStoreService,
+    private authService: AuthService
+  ) {}
 
   public tipoIntervento = tipoIntervento;
   public canaleComunicazione = canaleComunicazione;
@@ -66,15 +70,19 @@ export class UserDataService {
     cognome: string,
     indirizzo: string,
     numero_telefono: number,
-    specific_data?: SpecificDataModel[]
+    specific_data?: SpecificDataModel[],
+    ultimoUtenteModifica?: string,
+    utenteInserimento?: string
   ) {
+    let nomeUtenteInserimento = this.authService.userState.displayName;
     let u = new UserModel(
       this.getLastId() + 1,
       nome,
       cognome,
       indirizzo,
       numero_telefono,
-      specific_data
+      specific_data,
+      nomeUtenteInserimento
     );
     this.users.push(u);
     this.firebaseStoreService.AddUser(u);
@@ -108,6 +116,7 @@ export class UserDataService {
         if (!specific_data_i) {
           specific_data_tmp = userItem.specific_data;
         }
+        userItem.ultimoUtenteModifica = this.authService.userState.displayName;
       }
     });
     let u: UserModel = {
@@ -117,6 +126,7 @@ export class UserDataService {
       indirizzo: indirizzo,
       numero_telefono: numero_telefono_i,
       specific_data: specific_data_tmp,
+      ultimoUtenteModifica: this.authService.userState.displayName,
     };
     this.firebaseStoreService.UpdateUser(u);
     this.usersChanged.next(this.users.slice());
