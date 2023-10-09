@@ -175,6 +175,7 @@ export class UserDataService {
     let t: SpecificDataModel[] = Object.values(user_work.specific_data);
     t.push(intervento);
     user_work.specific_data = t;
+    user_work.ultimoUtenteModifica = this.authService.userState.displayName;
 
     this.firebaseStoreService.UpdateUser(user_work);
   }

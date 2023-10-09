@@ -53,6 +53,8 @@ export class UserDataComponent implements OnInit, OnDestroy, AfterViewInit {
   nome: string;
   cognome: string;
   isInfo = false;
+  utenteInserimento: string;
+  utenteUltimaModifica: string;
 
   modifyInterventoId: number;
 
@@ -219,6 +221,8 @@ export class UserDataComponent implements OnInit, OnDestroy, AfterViewInit {
         Validators.required
       ),
     });
+    this.utenteInserimento = this.userData.utenteInserimento;
+    this.utenteUltimaModifica = this.userData.ultimoUtenteModifica;
     this.showModalFunction('Modifica Intervento', true, id);
   }
 
@@ -306,6 +310,8 @@ export class UserDataComponent implements OnInit, OnDestroy, AfterViewInit {
       tipo_intervento: new FormControl('', Validators.required),
       tipo_prodotto: new FormControl('', Validators.required),
     });
+    this.utenteInserimento = undefined;
+    this.utenteUltimaModifica = undefined;
   }
   ngValue;
   /**
