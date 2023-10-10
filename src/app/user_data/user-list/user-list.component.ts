@@ -45,7 +45,6 @@ export class UserListComponent implements OnInit {
 
   ngOnInit(): void {
     let s = this.firebaseStoreService.GetUserList();
-    console.log(s);
     s.snapshotChanges().subscribe((data) => {
       this.users = [];
       data.forEach((item) => {
@@ -148,7 +147,6 @@ export class UserListComponent implements OnInit {
    * Metodo lanciato per aprire modale con dati cliente per modificarli
    */
   showInfoUser(user: any) {
-    console.log(user);
     this.userInfoForm = new FormGroup({
       nome: new FormControl(user.nome, Validators.required),
       cognome: new FormControl(user.cognome, Validators.required),
@@ -157,11 +155,6 @@ export class UserListComponent implements OnInit {
     });
     this.utenteInserimento = user.utente_inserimento;
     this.utenteUltimaModifica = user.ultimo_utente_modifica;
-    console.log(
-      this.utenteInserimento,
-      this.utenteUltimaModifica,
-      user.utenteInserimento
-    );
     this.showModalFunction('Info Cliente', true, user.id);
   }
 
@@ -190,7 +183,6 @@ export class UserListComponent implements OnInit {
    * @returns {any}
    **/
   callModalToast(summary: string, detail: string, severity?: string) {
-    console.log(severity);
     this.messageService.add({
       severity: severity === undefined ? 'success' : severity,
       summary: summary,

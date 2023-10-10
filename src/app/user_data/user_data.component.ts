@@ -98,23 +98,23 @@ export class UserDataComponent implements OnInit, OnDestroy, AfterViewInit {
         this.loading = false;
         // TODO Mappare oggetto specific_data in array perchè firebase lo crea in un object
         let specific_data = this.userData.specific_data;
-        console.log(specific_data);
-        const mapped: SpecificDataModel[] = Object.values(specific_data);
-        console.log(mapped);
+        let mapped: SpecificDataModel[];
+        if (specific_data) {
+          mapped = Object.values(specific_data);
+        } else {
+          mapped = [];
+        }
         this._specificData = mapped;
       });
     });
-    console.log('prima di specific data subscribe');
     this.storedSubSpecificData =
       this.userDataService.specificDataChanged.subscribe(
         (specificData: SpecificDataModel[]) => {
-          console.log(specificData);
           this._specificData = specificData;
         }
       );
     this.showModal = false;
     this.initForm();
-    console.log(this.authService.userState);
   }
 
   ngOnDestroy(): void {
@@ -322,7 +322,6 @@ export class UserDataComponent implements OnInit, OnDestroy, AfterViewInit {
    * @returns {any}
    **/
   callModalToast(summary: string, detail: string, severity?: string) {
-    console.log(severity);
     this.messageService.add({
       severity: severity === undefined ? 'success' : severity,
       summary: summary,
