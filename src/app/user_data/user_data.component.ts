@@ -87,6 +87,7 @@ export class UserDataComponent implements OnInit, OnDestroy, AfterViewInit {
 
   ngOnInit(): void {
     this.valEnums();
+    this.initForm();
     // recupero dati utente da database Firebase.
     this.activatedRoute.params.subscribe((params) => {
       this.id = +params['id'];
@@ -114,7 +115,6 @@ export class UserDataComponent implements OnInit, OnDestroy, AfterViewInit {
         }
       );
     this.showModal = false;
-    this.initForm();
   }
 
   ngOnDestroy(): void {

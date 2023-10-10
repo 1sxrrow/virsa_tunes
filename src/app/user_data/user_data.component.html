@@ -118,48 +118,58 @@
     <form [formGroup]="specificDataForm">
       <div class="grid md:grid-cols-2 gap-4 mb-3 items-center">
         <div class="mb-6 col-span-2">
-          <label for="tipo_intervento" class="formLabel truncate">
+          <label
+            for="tipo_intervento"
+            class="block mb-2 text-sm font-medium text-gray-900 dark:text-white truncate"
+          >
             Tipo Intervento
           </label>
-          <select
-            name="tipo_intervento"
-            id="tipo_intervento"
-            class="formInput"
-            formControlName="tipo_intervento"
-          >
-            <option [ngValue]="null" disabled>Seleziona Intervento</option>
-            <option
-              [value]="intervento"
-              *ngFor="let intervento of tipoIntervento"
+          <span class="p-input-icon-right w-full">
+            <i class="pi pi-angle-down"></i>
+            <select
+              name="tipo_intervento"
+              id="tipo_intervento"
+              class="bg-gray-50 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 hover:shadow-md appearance-none"
+              formControlName="tipo_intervento"
             >
-              {{ intervento }}
-            </option>
-          </select>
+              <option [ngValue]="null" disabled>Seleziona Intervento</option>
+              <option
+                [value]="intervento"
+                *ngFor="let intervento of tipoIntervento"
+              >
+                {{ intervento }}
+              </option>
+            </select>
+          </span>
         </div>
 
         <div class="mb-6">
-          <label for="marca_telefono" class="formLabel truncate"
+          <label
+            for="marca_telefono"
+            class="block mb-2 text-sm font-medium text-gray-900 dark:text-white truncate"
             >Marca Telefono</label
           >
           <input
             type="text"
             name="marca_telefono"
             id="marca_telefono"
-            class="formInput"
+            class="bg-gray-50 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 hover:shadow-md"
             formControlName="marca_telefono"
             required
           />
         </div>
 
         <div class="mb-6">
-          <label for="modello_telefono" class="formLabel truncate"
+          <label
+            for="modello_telefono"
+            class="block mb-2 text-sm font-medium text-gray-900 dark:text-white truncate"
             >Modello Telefono
           </label>
           <input
             type="text"
             name="modello_telefono"
             id="modello_telefono"
-            class="formInput"
+            class="bg-gray-50 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 hover:shadow-md"
             formControlName="modello_telefono"
             required
           />
@@ -175,7 +185,7 @@
             type="number"
             name="costo"
             id="costo"
-            class="formInput"
+            class="bg-gray-50 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 hover:shadow-md appearance-none"
             formControlName="costo"
             required
           />
@@ -188,21 +198,23 @@
           >
             Modalità Pagamento
           </label>
-
-          <select
-            name="modalita_pagamento"
-            id="modalita_pagamento"
-            formControlName="modalita_pagamento"
-            class="formInput"
-          >
-            <option [ngValue]="null" disabled>Seleziona Pagamento</option>
-            <option
-              [value]="elemtipoPagamento"
-              *ngFor="let elemtipoPagamento of tipoPagamento"
+          <span class="p-input-icon-right w-full">
+            <i class="pi pi-angle-down"></i>
+            <select
+              name="modalita_pagamento"
+              id="modalita_pagamento"
+              formControlName="modalita_pagamento"
+              class="bg-gray-50 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 hover:shadow-md appearance-none"
             >
-              {{ elemtipoPagamento }}
-            </option>
-          </select>
+              <option [ngValue]="null" disabled>Seleziona Pagamento</option>
+              <option
+                [value]="elemtipoPagamento"
+                *ngFor="let elemtipoPagamento of tipoPagamento"
+              >
+                {{ elemtipoPagamento }}
+              </option>
+            </select>
+          </span>
         </div>
         <div class="mb-6">
           <label
@@ -211,41 +223,48 @@
           >
             Tipo Prodotto
           </label>
-
-          <select
-            name="tipo_prodotto"
-            id="tipo_prodotto"
-            class="formInput"
-            formControlName="tipo_prodotto"
-          >
-            <option [ngValue]="null" disabled>Seleziona Condizioni</option>
-            <option
-              [value]="elemcondizioniProdotto"
-              *ngFor="let elemcondizioniProdotto of condizioniProdotto"
+          <span class="p-input-icon-right w-full">
+            <i class="pi pi-angle-down"></i>
+            <select
+              name="tipo_prodotto"
+              id="tipo_prodotto"
+              class="bg-gray-50 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 hover:shadow-md appearance-none"
+              formControlName="tipo_prodotto"
             >
-              {{ elemcondizioniProdotto }}
-            </option>
-          </select>
+              <option [ngValue]="null" disabled>Seleziona Condizioni</option>
+              <option
+                [value]="elemcondizioniProdotto"
+                *ngFor="let elemcondizioniProdotto of condizioniProdotto"
+              >
+                {{ elemcondizioniProdotto }}
+              </option>
+            </select>
+          </span>
         </div>
 
         <div class="mb-6">
-          <label for="canale_com" class="formLabel truncate"
+          <label
+            for="canale_com"
+            class="block mb-2 text-sm font-medium text-gray-900 dark:text-white truncate"
             >Canale Comunicazione</label
           >
-          <select
-            name="canale_com"
-            id="canale_com"
-            class="formInput"
-            formControlName="canale_com"
-          >
-            <option [ngValue]="null" disabled>Seleziona Canale</option>
-            <option
-              [value]="canaleComunicazione"
-              *ngFor="let canaleComunicazione of canaleComunicazioni"
+          <span class="p-input-icon-right w-full">
+            <i class="pi pi-angle-down"></i>
+            <select
+              name="canale_com"
+              id="canale_com"
+              class="bg-gray-50 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 hover:shadow-md appearance-none"
+              formControlName="canale_com"
             >
-              {{ canaleComunicazione }}
-            </option>
-          </select>
+              <option [ngValue]="null" disabled>Seleziona Canale</option>
+              <option
+                [value]="canaleComunicazione"
+                *ngFor="let canaleComunicazione of canaleComunicazioni"
+              >
+                {{ canaleComunicazione }}
+              </option>
+            </select>
+          </span>
         </div>
       </div>
       <div class="row mb-2">
