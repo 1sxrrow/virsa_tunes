@@ -16,15 +16,7 @@ export class FirebaseStoreService {
 
   AddUser(user: UserModel) {
     let id: FirebaseOperation = user.id.toString();
-    this.UsersRef.set(id, {
-      nome: user.nome,
-      cognome: user.cognome,
-      indirizzo: user.indirizzo,
-      numero_telefono: user.numero_telefono,
-      id: user.id,
-      specific_data: user.specific_data,
-      utente_inserimento: user.utenteInserimento,
-    });
+    this.UsersRef.set(id, user);
   }
   // Fetch Single User Object
   GetUser(id: string | number) {
@@ -43,15 +35,7 @@ export class FirebaseStoreService {
   // Update User Object
   UpdateUser(user: UserModel) {
     this.UserRef = this.db.object('users/' + user.id);
-    this.UserRef.update({
-      nome: user.nome,
-      cognome: user.cognome,
-      indirizzo: user.indirizzo,
-      numero_telefono: user.numero_telefono,
-      id: user.id,
-      specific_data: user.specific_data,
-      ultimo_utente_modifica: user.ultimoUtenteModifica,
-    });
+    this.UserRef.update(user);
   }
   // Delete User
   DeleteUser(id: string) {

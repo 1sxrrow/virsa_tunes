@@ -171,11 +171,11 @@ export class UserDataService {
       data_intervento,
       costo
     );
-
     let t: SpecificDataModel[] = Object.values(user_work.specific_data);
     t.push(intervento);
     user_work.specific_data = t;
     user_work.ultimoUtenteModifica = this.authService.userState.displayName;
+    user_work.utenteInserimento = this.authService.userState.displayName;
 
     this.firebaseStoreService.UpdateUser(user_work);
   }
