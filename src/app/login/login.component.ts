@@ -33,23 +33,7 @@ export class LoginComponent {
     private authService: AuthService,
     private router: Router
   ) {
-    this.afAuth.authState.subscribe((user) => {
-      if (user) {
-        this.authService.userState = user;
-        localStorage.setItem(
-          'user',
-          JSON.stringify(this.authService.userState)
-        );
-        JSON.parse(localStorage.getItem('user'));
-      } else {
-        localStorage.setItem('user', null);
-        JSON.parse(localStorage.getItem('user'));
-      }
-    });
-  }
-
-  ngAfterViewInit() {
-    console.log('afterinit');
+    this.afAuth.authState.subscribe((user) => {});
   }
 
   CheckLogin() {
@@ -57,6 +41,14 @@ export class LoginComponent {
       .signInWithEmailAndPassword(this.emailValue, this.passwordValue)
       .then((result) => {
         console.log(result);
+        this.authService.userState = result.user;
+        //set user in memory
+        localStorage.setItem(
+          'user',
+          JSON.stringify(this.authService.userState)
+        );
+        JSON.parse(localStorage.getItem('user'));
+
         this.checkUsername(result.user);
         this.router.navigate(['/users']);
       })

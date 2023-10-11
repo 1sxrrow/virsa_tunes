@@ -1,16 +1,16 @@
-import { Injectable, OnInit } from '@angular/core';
-import { UserModel } from '../shared/user_data.model';
+import { Injectable } from '@angular/core';
 import { Subject, map } from 'rxjs';
-import { SpecificDataModel } from '../shared/specific_data.model';
-import { ModelloTelefono } from '../shared/modello_telefono.model';
-import { FirebaseStoreService } from '../shared/firebase.store.service';
-import {
-  tipoIntervento,
-  canaleComunicazione,
-  tipoPagamento,
-  condizioniProdotto,
-} from '../shared/enums';
 import { AuthService } from '../login/auth.service';
+import {
+  canaleComunicazione,
+  condizioniProdotto,
+  tipoIntervento,
+  tipoPagamento,
+} from '../shared/enums';
+import { FirebaseStoreService } from '../shared/firebase.store.service';
+import { ModelloTelefono } from '../shared/modello_telefono.model';
+import { SpecificDataModel } from '../shared/specific_data.model';
+import { UserModel } from '../shared/user_data.model';
 @Injectable({ providedIn: 'root' })
 export class UserDataService {
   usersChanged = new Subject<UserModel[]>();
@@ -142,6 +142,7 @@ export class UserDataService {
     canale_com: string,
     data_intervento: Date,
     costo: number,
+    imei: string,
     user_input?: UserModel
   ) {
     let id = 0;
@@ -169,7 +170,8 @@ export class UserDataService {
       tipo_prodotto,
       canale_com,
       data_intervento,
-      costo
+      costo,
+      imei
     );
     let t: SpecificDataModel[] = Object.values(user_work.specific_data);
     t.push(intervento);
@@ -191,6 +193,7 @@ export class UserDataService {
     canale_com: string,
     data_intervento: Date,
     costo: number,
+    imei: string,
     user_input?: UserModel
   ) {
     let spec_retrieved: SpecificDataModel[] = Object.values(
@@ -206,7 +209,8 @@ export class UserDataService {
           tipo_prodotto,
           canale_com,
           data_intervento,
-          costo
+          costo,
+          imei
         );
       }
     });

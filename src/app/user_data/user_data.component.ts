@@ -5,20 +5,20 @@ import {
   OnInit,
   ViewChild,
 } from '@angular/core';
-import { UserDataService } from './user_data.service';
-import { UserModel } from '../shared/user_data.model';
-import { ActivatedRoute, Router } from '@angular/router';
-import { SpecificDataModel } from '../shared/specific_data.model';
-import { Subscription } from 'rxjs';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
+import { ActivatedRoute, Router } from '@angular/router';
 import {
   ConfirmEventType,
   ConfirmationService,
   MessageService,
 } from 'primeng/api';
 import { Dropdown } from 'primeng/dropdown';
-import { FirebaseStoreService } from '../shared/firebase.store.service';
+import { Subscription } from 'rxjs';
 import { AuthService } from '../login/auth.service';
+import { FirebaseStoreService } from '../shared/firebase.store.service';
+import { SpecificDataModel } from '../shared/specific_data.model';
+import { UserModel } from '../shared/user_data.model';
+import { UserDataService } from './user_data.service';
 
 @Component({
   selector: 'app-user-data',
@@ -220,6 +220,11 @@ export class UserDataComponent implements OnInit, OnDestroy, AfterViewInit {
         this.selectedSpecificData.tipo_prodotto,
         Validators.required
       ),
+      imei: new FormControl(this.selectedSpecificData.imei, [
+        Validators.required,
+        Validators.minLength(15),
+        Validators.maxLength(15),
+      ]),
     });
     this.utenteInserimento = this.userData.utenteInserimento;
     this.utenteUltimaModifica = this.userData.ultimoUtenteModifica;
@@ -249,6 +254,9 @@ export class UserDataComponent implements OnInit, OnDestroy, AfterViewInit {
       this.specificDataForm.value['costo'] === undefined
         ? undefined
         : this.specificDataForm.value['costo'],
+      this.specificDataForm.value['imei'] === undefined
+        ? undefined
+        : this.specificDataForm.value['imei'],
       this.userData
     );
     this.showModal = !this.showModal;
@@ -280,6 +288,9 @@ export class UserDataComponent implements OnInit, OnDestroy, AfterViewInit {
       this.specificDataForm.value['costo'] === undefined
         ? undefined
         : this.specificDataForm.value['costo'],
+      this.specificDataForm.value['imei'] === undefined
+        ? undefined
+        : this.specificDataForm.value['imei'],
       this.userData
     );
     this.showModal = !this.showModal;
@@ -309,6 +320,11 @@ export class UserDataComponent implements OnInit, OnDestroy, AfterViewInit {
       modello_telefono: new FormControl('', Validators.required),
       tipo_intervento: new FormControl('', Validators.required),
       tipo_prodotto: new FormControl('', Validators.required),
+      imei: new FormControl('', [
+        Validators.required,
+        Validators.minLength(15),
+        Validators.maxLength(15),
+      ]),
     });
     this.utenteInserimento = undefined;
     this.utenteUltimaModifica = undefined;

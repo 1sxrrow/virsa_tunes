@@ -117,19 +117,14 @@
   >
     <form [formGroup]="specificDataForm">
       <div class="grid md:grid-cols-2 gap-4 mb-3 items-center">
-        <div class="mb-6 col-span-2">
-          <label
-            for="tipo_intervento"
-            class="block mb-2 text-sm font-medium text-gray-900 dark:text-white truncate"
-          >
-            Tipo Intervento
-          </label>
+        <div class="mb-6">
+          <label for="tipo_intervento" class="label"> Tipo Intervento </label>
           <span class="p-input-icon-right w-full">
             <i class="pi pi-angle-down"></i>
             <select
               name="tipo_intervento"
               id="tipo_intervento"
-              class="bg-gray-50 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 hover:shadow-md appearance-none"
+              class="fields"
               formControlName="tipo_intervento"
             >
               <option [ngValue]="null" disabled>Seleziona Intervento</option>
@@ -144,33 +139,43 @@
         </div>
 
         <div class="mb-6">
-          <label
-            for="marca_telefono"
-            class="block mb-2 text-sm font-medium text-gray-900 dark:text-white truncate"
-            >Marca Telefono</label
-          >
+          <label for="marca_telefono" class="label">Marca Telefono</label>
           <input
             type="text"
             name="marca_telefono"
             id="marca_telefono"
-            class="bg-gray-50 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 hover:shadow-md"
+            class="fields"
             formControlName="marca_telefono"
             required
           />
         </div>
 
         <div class="mb-6">
-          <label
-            for="modello_telefono"
-            class="block mb-2 text-sm font-medium text-gray-900 dark:text-white truncate"
-            >Modello Telefono
-          </label>
+          <label for="modello_telefono" class="label">Modello Telefono </label>
           <input
             type="text"
             name="modello_telefono"
             id="modello_telefono"
-            class="bg-gray-50 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 hover:shadow-md"
+            class="fields"
             formControlName="modello_telefono"
+            required
+          />
+        </div>
+        <div class="mb-6">
+          <label for="imei" class="label">
+            IMEI
+            <i
+              class="pi pi-question-circle"
+              style="font-size: 0.75rem"
+              pTooltip="15 caratteri"
+            ></i>
+          </label>
+          <input
+            type="text"
+            name="imei"
+            id="imei"
+            class="fields"
+            formControlName="imei"
             required
           />
         </div>
@@ -185,7 +190,7 @@
             type="number"
             name="costo"
             id="costo"
-            class="bg-gray-50 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 hover:shadow-md appearance-none"
+            class="fields"
             formControlName="costo"
             required
           />
@@ -204,7 +209,7 @@
               name="modalita_pagamento"
               id="modalita_pagamento"
               formControlName="modalita_pagamento"
-              class="bg-gray-50 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 hover:shadow-md appearance-none"
+              class="fields"
             >
               <option [ngValue]="null" disabled>Seleziona Pagamento</option>
               <option
@@ -228,7 +233,7 @@
             <select
               name="tipo_prodotto"
               id="tipo_prodotto"
-              class="bg-gray-50 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 hover:shadow-md appearance-none"
+              class="fields"
               formControlName="tipo_prodotto"
             >
               <option [ngValue]="null" disabled>Seleziona Condizioni</option>
@@ -243,17 +248,13 @@
         </div>
 
         <div class="mb-6">
-          <label
-            for="canale_com"
-            class="block mb-2 text-sm font-medium text-gray-900 dark:text-white truncate"
-            >Canale Comunicazione</label
-          >
+          <label for="canale_com" class="label">Canale Comunicazione</label>
           <span class="p-input-icon-right w-full">
             <i class="pi pi-angle-down"></i>
             <select
               name="canale_com"
               id="canale_com"
-              class="bg-gray-50 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 hover:shadow-md appearance-none"
+              class="fields"
               formControlName="canale_com"
             >
               <option [ngValue]="null" disabled>Seleziona Canale</option>
@@ -267,7 +268,8 @@
           </span>
         </div>
       </div>
-      <div class="row mb-2">
+      <!-- visualizza chi ha fatto l'ultima modifica WIP 
+        <div class="row mb-2">
         <p
           [hidden]="!isInfo || !utenteInserimento"
           class="text-gray-500 text-sm italic"
@@ -281,7 +283,7 @@
         >
           Utente ultima modifica: {{ utenteUltimaModifica }}
         </p>
-      </div>
+      </div> -->
       <div class="flex flex-col items-end justify-end col-start-5 col-end-5">
         <p-button
           styleClass="p-button-raised p-button-secondary"
@@ -295,7 +297,7 @@
         <p-button
           styleClass="p-button-raised p-button-secondary"
           [hidden]="isInfo"
-          [disabled]="!specificDataForm.valid || !specificDataForm.touched"
+          [disabled]="!(specificDataForm.valid && specificDataForm.dirty)"
           (onClick)="modifyUserIntervento()"
         >
           Modifica

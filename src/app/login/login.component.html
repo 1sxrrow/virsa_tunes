@@ -3,7 +3,7 @@
     <div
       class="block border border-gray-600 p-8 rounded-lg bg-slate-900 w-8/12"
     >
-      <div class="grid place-items-center">
+      <div class="grid place-items-center" (keyup.enter)="CheckLogin()">
         <h1 class="font-extrabold text-xl mb-2 text-white place-items-start">
           Login
         </h1>
@@ -45,6 +45,7 @@
         <p-button
           class="grid place-items-end mt-2"
           label="Login"
+          ajax="false"
           styleClass="p-button-secondary"
           (click)="CheckLogin()"
         ></p-button>

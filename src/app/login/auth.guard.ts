@@ -4,11 +4,7 @@ import {
   CanActivate,
   Router,
   RouterStateSnapshot,
-  UrlTree,
 } from '@angular/router';
-import { Observable } from 'rxjs';
-import { LoginComponent } from './login.component';
-import { map, take } from 'rxjs/operators';
 import { AuthService } from './auth.service';
 
 @Injectable({ providedIn: 'root' })
@@ -19,6 +15,7 @@ export class AuthGuard implements CanActivate {
     if (this.authService.userState != undefined || null) {
       return true;
     } else {
+      localStorage.setItem('user', null);
       return this.router.createUrlTree(['/login']);
     }
   }

@@ -1,36 +1,34 @@
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 
-import { AppComponent } from './app.component';
-import { UserDataComponent } from './user_data/user_data.component';
-import { FormsModule } from '@angular/forms';
-import { ReactiveFormsModule } from '@angular/forms';
-import { HeaderComponent } from './header/header.component';
-import { UserListComponent } from './user_data/user-list/user-list.component';
-import { RouterModule, Routes } from '@angular/router';
-import { NotFoundComponent } from './not-found/not-found.component';
-import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
+import { CurrencyPipe } from '@angular/common';
+import { initializeApp, provideFirebaseApp } from '@angular/fire/app';
+import { FIREBASE_OPTIONS } from '@angular/fire/compat';
+import { getDatabase, provideDatabase } from '@angular/fire/database';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { RouterModule, Routes } from '@angular/router';
+import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { ButtonModule } from 'primeng/button';
-import { TableModule } from 'primeng/table';
 import { CardModule } from 'primeng/card';
-import { InputTextModule } from 'primeng/inputtext';
-import { UserEditComponent } from './user_data/user-edit/user-edit.component';
+import { DialogModule } from 'primeng/dialog';
 import { DropdownModule } from 'primeng/dropdown';
 import { InputNumberModule } from 'primeng/inputnumber';
+import { InputTextModule } from 'primeng/inputtext';
 import { KeyFilterModule } from 'primeng/keyfilter';
-import { DialogModule } from 'primeng/dialog';
-import { ConfirmDialogModule } from 'primeng/confirmdialog';
+import { TableModule } from 'primeng/table';
 import { ToastModule } from 'primeng/toast';
 import { TooltipModule } from 'primeng/tooltip';
-import { FIREBASE_OPTIONS } from '@angular/fire/compat';
 import { firebaseConfig } from 'src/environments/environment';
-import { provideDatabase, getDatabase } from '@angular/fire/database';
-import { initializeApp, provideFirebaseApp } from '@angular/fire/app';
-import { CircleSpinnerComponent } from './shared/circle-spinner/circle-spinner.component';
-import { CurrencyPipe } from '@angular/common';
+import { AppComponent } from './app.component';
+import { HeaderComponent } from './header/header.component';
 import { AuthGuard } from './login/auth.guard';
+import { NotFoundComponent } from './not-found/not-found.component';
+import { CircleSpinnerComponent } from './shared/circle-spinner/circle-spinner.component';
 import { PersonalConfirmDialogModule } from './shared/confirm-dialog/confirm.dialog.module';
+import { UserEditComponent } from './user_data/user-edit/user-edit.component';
+import { UserListComponent } from './user_data/user-list/user-list.component';
+import { UserDataComponent } from './user_data/user_data.component';
 
 const routes: Routes = [
   {

@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
 import { Router } from '@angular/router';
+import { AuthService } from '../login/auth.service';
 
 @Component({
   selector: 'app-header',
@@ -7,10 +8,12 @@ import { Router } from '@angular/router';
   styleUrls: ['./header.component.css'],
 })
 export class HeaderComponent {
-  constructor(private router: Router) {}
+  constructor(private router: Router, private authService: AuthService) {}
 
   goHome() {
-    console.log('sono entrato');
-    this.router.navigate(['/']);
+    if (this.authService.userState) {
+      console.log(this.authService.userState);
+      this.router.navigate(['/']);
+    }
   }
 }
