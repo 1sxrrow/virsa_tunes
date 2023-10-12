@@ -232,4 +232,13 @@ export class UserListComponent implements OnInit {
       },
     });
   }
+
+  enterCheck() {
+    if (this.isInfo && this.userInfoForm.valid && this.userInfoForm.dirty) {
+      this.editUser();
+    }
+    if (!this.isInfo && this.userInfoForm.valid) {
+      this.addNewUser();
+    }
+  }
 }

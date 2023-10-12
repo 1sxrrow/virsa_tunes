@@ -95,7 +95,7 @@
     [style]="{ width: '50vw' }"
     [modal]="true"
   >
-    <div class="grid items-center">
+    <div class="grid items-center" (keyup.enter)="enterCheck()">
       <form [formGroup]="userInfoForm">
         <div class="grid grid-cols-2 mb-2">
           <input
@@ -173,7 +173,7 @@
         label="Modifica"
         [hidden]="!isInfo"
         (onClick)="editUser()"
-        [disabled]="!userInfoForm.valid || !userInfoForm.touched"
+        [disabled]="!(userInfoForm.valid && userInfoForm.dirty)"
       ></p-button>
     </div>
   </p-dialog>
