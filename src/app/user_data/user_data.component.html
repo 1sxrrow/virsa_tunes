@@ -126,6 +126,7 @@
               id="tipo_intervento"
               class="fields"
               formControlName="tipo_intervento"
+              (change)="checkValueIntervento()"
             >
               <option [ngValue]="null" disabled>Seleziona Intervento</option>
               <option
@@ -133,6 +134,24 @@
                 *ngFor="let intervento of tipoIntervento"
               >
                 {{ intervento }}
+              </option>
+            </select>
+          </span>
+        </div>
+
+        <div class="mb-6">
+          <label for="tipo_intervento" class="label"> Garanzia </label>
+          <span class="p-input-icon-right w-full">
+            <i class="pi pi-angle-down"></i>
+            <select
+              name="garanzia"
+              id="garanzia"
+              class="fields"
+              formControlName="garanzia"
+            >
+              <option [ngValue]="null" disabled>Seleziona garanzia</option>
+              <option [value]="garanzia" *ngFor="let garanzia of mesiGaranzia">
+                {{ garanzia }}
               </option>
             </select>
           </span>

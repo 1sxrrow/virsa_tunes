@@ -51,7 +51,8 @@ export class UserModel {
             specific_data[i].canale_com,
             specific_data[i].data_intervento,
             specific_data[i].costo,
-            specific_data[i].imei
+            specific_data[i].imei,
+            specific_data[i].garanzia
           )
         );
       }

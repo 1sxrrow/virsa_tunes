@@ -10,7 +10,8 @@ export class SpecificDataModel {
     public canale_com: string,
     public data_intervento: Date,
     public costo: number,
-    public imei: string
+    public imei: string,
+    public garanzia: string
   ) {
     // this.id = id;
     // this.tipo_intervento = tipo_intervento;

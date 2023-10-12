@@ -29,6 +29,7 @@ import { UserDataService } from './user_data.service';
 export class UserDataComponent implements OnInit, OnDestroy, AfterViewInit {
   userData: UserModel;
   tipoIntervento: string[];
+  mesiGaranzia: string[];
   canaleComunicazioni: string[];
   condizioniProdotto: string[];
   tipoPagamento: string[];
@@ -44,7 +45,6 @@ export class UserDataComponent implements OnInit, OnDestroy, AfterViewInit {
   specificDataForm: FormGroup;
 
   selectedSpecificData!: SpecificDataModel;
-  selectedIntervento: string;
   storedSub: Subscription;
   storedSubSpecificData: Subscription;
 
@@ -57,6 +57,9 @@ export class UserDataComponent implements OnInit, OnDestroy, AfterViewInit {
   utenteUltimaModifica: string;
 
   modifyInterventoId: number;
+
+  showFieldsVendita = false;
+  showFieldsRiparazione = false;
 
   constructor(
     private userDataService: UserDataService,
@@ -145,6 +148,10 @@ export class UserDataComponent implements OnInit, OnDestroy, AfterViewInit {
     this.tipoPagamento = Object.keys(this.userDataService.tipoPagamento).filter(
       (key) => isNaN(+key)
     );
+
+    this.mesiGaranzia = Object.keys(this.userDataService.mesiGaranzia).filter(
+      (key) => isNaN(+key)
+    );
   }
 
   onRowSelect(event: any) {
@@ -225,6 +232,9 @@ export class UserDataComponent implements OnInit, OnDestroy, AfterViewInit {
         Validators.minLength(15),
         Validators.maxLength(15),
       ]),
+      garanzia: new FormControl(this.selectedSpecificData.garanzia, [
+        Validators.required,
+      ]),
     });
     this.utenteInserimento = this.userData.utenteInserimento;
     this.utenteUltimaModifica = this.userData.ultimoUtenteModifica;
@@ -257,6 +267,9 @@ export class UserDataComponent implements OnInit, OnDestroy, AfterViewInit {
       this.specificDataForm.value['imei'] === undefined
         ? undefined
         : this.specificDataForm.value['imei'],
+      this.specificDataForm.value['garanzia'] === undefined
+        ? undefined
+        : this.specificDataForm.value['garanzia'],
       this.userData
     );
     this.showModal = !this.showModal;
@@ -291,6 +304,9 @@ export class UserDataComponent implements OnInit, OnDestroy, AfterViewInit {
       this.specificDataForm.value['imei'] === undefined
         ? undefined
         : this.specificDataForm.value['imei'],
+      this.specificDataForm.value['garanzia'] === undefined
+        ? undefined
+        : this.specificDataForm.value['garanzia'],
       this.userData
     );
     this.showModal = !this.showModal;
@@ -325,6 +341,7 @@ export class UserDataComponent implements OnInit, OnDestroy, AfterViewInit {
         Validators.minLength(15),
         Validators.maxLength(15),
       ]),
+      garanzia: new FormControl('', Validators.required),
     });
     this.utenteInserimento = undefined;
     this.utenteUltimaModifica = undefined;
@@ -343,5 +360,17 @@ export class UserDataComponent implements OnInit, OnDestroy, AfterViewInit {
       summary: summary,
       detail: detail,
     });
+  }
+
+  checkValueIntervento() {
+    const intervento = this.specificDataForm.value['tipo_intervento'];
+    console.log(intervento);
+    if (intervento == 'Vendita') {
+      this.showFieldsVendita = true;
+      console.log(this.showFieldsVendita);
+    } else {
+      this.showFieldsRiparazione = true;
+      console.log(this.showFieldsRiparazione);
+    }
   }
 }

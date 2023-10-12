@@ -4,6 +4,7 @@ import { AuthService } from '../login/auth.service';
 import {
   canaleComunicazione,
   condizioniProdotto,
+  garanzia,
   tipoIntervento,
   tipoPagamento,
 } from '../shared/enums';
@@ -26,6 +27,7 @@ export class UserDataService {
   public canaleComunicazione = canaleComunicazione;
   public tipoPagamento = tipoPagamento;
   public condizioniProdotto = condizioniProdotto;
+  public mesiGaranzia = garanzia;
 
   setStandardUsers() {
     this.usersChanged.next(this.users.slice());
@@ -153,6 +155,7 @@ export class UserDataService {
     data_intervento: Date,
     costo: number,
     imei: string,
+    garanzia: string,
     user_input?: UserModel
   ) {
     let id = 0;
@@ -181,7 +184,8 @@ export class UserDataService {
       canale_com,
       data_intervento,
       costo,
-      imei
+      imei,
+      garanzia
     );
     let t: SpecificDataModel[] = Object.values(user_work.specific_data);
     t.push(intervento);
@@ -204,6 +208,7 @@ export class UserDataService {
     data_intervento: Date,
     costo: number,
     imei: string,
+    garanzia: string,
     user_input?: UserModel
   ) {
     let spec_retrieved: SpecificDataModel[] = Object.values(
@@ -220,7 +225,8 @@ export class UserDataService {
           canale_com,
           data_intervento,
           costo,
-          imei
+          imei,
+          garanzia
         );
       }
     });
