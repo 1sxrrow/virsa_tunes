@@ -70,6 +70,8 @@ export class UserDataService {
     cognome: string,
     indirizzo: string,
     numero_telefono: number,
+    citta: string,
+    cap: number,
     specific_data?: SpecificDataModel[],
     ultimoUtenteModifica?: string,
     utenteInserimento?: string
@@ -81,6 +83,8 @@ export class UserDataService {
       cognome,
       indirizzo,
       numero_telefono,
+      citta,
+      cap,
       specific_data,
       nomeUtenteInserimento
     );
@@ -103,6 +107,8 @@ export class UserDataService {
     cognome: string,
     numero_telefono_i: number,
     indirizzo: string,
+    citta: string,
+    cap: number,
     specific_data_i?: SpecificDataModel[]
   ) {
     let specific_data_tmp = specific_data_i;
@@ -112,6 +118,8 @@ export class UserDataService {
         userItem.nome = nome;
         userItem.indirizzo = indirizzo;
         userItem.numero_telefono = numero_telefono_i;
+        userItem.citta = citta;
+        userItem.cap = cap;
         // userItem.specific_data = specific_data;
         if (!specific_data_i) {
           specific_data_tmp = userItem.specific_data;
@@ -125,6 +133,8 @@ export class UserDataService {
       cognome: cognome,
       indirizzo: indirizzo,
       numero_telefono: numero_telefono_i,
+      citta: citta,
+      cap: cap,
       specific_data: specific_data_tmp,
       ultimoUtenteModifica: this.authService.userState.displayName,
     };

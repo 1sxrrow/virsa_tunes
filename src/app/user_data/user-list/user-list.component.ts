@@ -111,7 +111,13 @@ export class UserListComponent implements OnInit {
         : this.userInfoForm.value['indirizzo'],
       this.userInfoForm.value['numero_telefono'] === undefined
         ? undefined
-        : this.userInfoForm.value['numero_telefono']
+        : this.userInfoForm.value['numero_telefono'],
+      this.userInfoForm.value['citta'] === undefined
+        ? undefined
+        : this.userInfoForm.value['citta'],
+      this.userInfoForm.value['cap'] === undefined
+        ? undefined
+        : this.userInfoForm.value['cap']
     );
     this.showModal = !this.showModal;
     this.callModalToast('Aggiunto', 'Nuovo utente aggiunto');
@@ -128,7 +134,9 @@ export class UserListComponent implements OnInit {
       this.userInfoForm.value['nome'],
       this.userInfoForm.value['cognome'],
       this.userInfoForm.value['numero_telefono'],
-      this.userInfoForm.value['indirizzo']
+      this.userInfoForm.value['indirizzo'],
+      this.userInfoForm.value['citta'],
+      this.userInfoForm.value['cap']
     );
     this.callModalToast('Modificato', 'Dati utente modificati', 'warn');
     this.showModal = !this.showModal;
@@ -150,8 +158,16 @@ export class UserListComponent implements OnInit {
     this.userInfoForm = new FormGroup({
       nome: new FormControl(user.nome, Validators.required),
       cognome: new FormControl(user.cognome, Validators.required),
-      numero_telefono: new FormControl(user.numero_telefono),
+      numero_telefono: new FormControl(user.numero_telefono, [
+        Validators.minLength(10),
+        Validators.maxLength(10),
+      ]),
       indirizzo: new FormControl(user.indirizzo),
+      citta: new FormControl(user.citta),
+      cap: new FormControl(user.cap, [
+        Validators.minLength(5),
+        Validators.maxLength(5),
+      ]),
     });
     this.utenteInserimento = user.utente_inserimento;
     this.utenteUltimaModifica = user.ultimo_utente_modifica;
@@ -166,8 +182,16 @@ export class UserListComponent implements OnInit {
     this.userInfoForm = new FormGroup({
       nome: new FormControl('', Validators.required),
       cognome: new FormControl('', Validators.required),
-      numero_telefono: new FormControl(''),
+      numero_telefono: new FormControl('', [
+        Validators.minLength(10),
+        Validators.maxLength(10),
+      ]),
       indirizzo: new FormControl(''),
+      citta: new FormControl(''),
+      cap: new FormControl('', [
+        Validators.minLength(5),
+        Validators.maxLength(5),
+      ]),
       utente_inserimento: new FormControl(''),
       utente_ultima_modifica: new FormControl(''),
     });

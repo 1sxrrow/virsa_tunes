@@ -101,33 +101,49 @@
           <input
             pInputText
             type="text"
-            placeholder="nome"
+            placeholder="Nome"
             formControlName="nome"
           />
           <input
             pInputText
             type="text"
             class="ml-2"
-            placeholder="cognome"
+            placeholder="Cognome"
             formControlName="cognome"
           />
         </div>
         <div class="grid grid-cols-2 mb-2">
           <input
             pInputText
-            type="celluar"
-            placeholder="telefono"
+            pKeyFilter="int"
+            placeholder="Telefono"
             formControlName="numero_telefono"
           />
           <input
             pInputText
             type="text"
             class="ml-2"
-            placeholder="indirizzo"
+            placeholder="Indirizzo"
             formControlName="indirizzo"
           />
         </div>
-        <div class="row mb-2">
+        <div class="grid grid-cols-2 mb-2">
+          <input
+            pInputText
+            type="text"
+            placeholder="Città"
+            formControlName="citta"
+          />
+          <input
+            pInputText
+            pKeyFilter="int"
+            class="ml-2 appearance-none"
+            placeholder="CAP"
+            formControlName="cap"
+          />
+        </div>
+
+        <!-- <div class="row mb-2">
           <p
             [hidden]="!isInfo || !utenteInserimento"
             class="text-gray-500 text-sm italic"
@@ -141,7 +157,7 @@
           >
             Utente ultima modifica: {{ utenteUltimaModifica }}
           </p>
-        </div>
+        </div> -->
       </form>
     </div>
     <div class="grid justify-center">

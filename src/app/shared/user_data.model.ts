@@ -6,6 +6,8 @@ export class UserModel {
   public cognome: string;
   public indirizzo: string;
   public numero_telefono: number;
+  public citta: string;
+  public cap: number;
   public specific_data: SpecificDataModel[] = [];
   public utenteInserimento?: string;
   public ultimoUtenteModifica?: string;
@@ -16,6 +18,8 @@ export class UserModel {
     cognome: string,
     indirizzo: string,
     numero_telefono: number,
+    citta: string,
+    cap: number,
     specific_data?: SpecificDataModel[],
     utenteInserimento?: string,
     ultimoUtenteModifica?: string
@@ -25,6 +29,8 @@ export class UserModel {
     this.cognome = cognome;
     this.indirizzo = indirizzo;
     this.numero_telefono = numero_telefono;
+    this.citta = citta;
+    this.cap = cap;
     if (ultimoUtenteModifica || utenteInserimento) {
       if (!ultimoUtenteModifica) {
         this.ultimoUtenteModifica = utenteInserimento;
