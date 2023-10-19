@@ -98,49 +98,79 @@
     <div class="grid items-center" (keyup.enter)="enterCheck()">
       <form [formGroup]="userInfoForm">
         <div class="grid grid-cols-2 mb-2">
-          <input
-            pInputText
-            type="text"
-            placeholder="Nome"
-            formControlName="nome"
-          />
-          <input
-            pInputText
-            type="text"
-            class="ml-2"
-            placeholder="Cognome"
-            formControlName="cognome"
-          />
+          <div class="mb-1">
+            <label for="nome" class="labelInput">Nome</label>
+            <input
+              id="nome"
+              pInputText
+              type="text"
+              formControlName="nome"
+              class="w-11/12"
+              required
+            />
+          </div>
+          <div class="mb-1">
+            <label class="labelInput" for="cognome">Cognome</label>
+            <input
+              id="cognome"
+              pInputText
+              type="text"
+              class="ml-2"
+              formControlName="cognome"
+              class="w-11/12"
+              required
+            />
+          </div>
         </div>
         <div class="grid grid-cols-2 mb-2">
-          <input
-            pInputText
-            pKeyFilter="int"
-            placeholder="Telefono"
-            formControlName="numero_telefono"
-          />
-          <input
-            pInputText
-            type="text"
-            class="ml-2"
-            placeholder="Indirizzo"
-            formControlName="indirizzo"
-          />
+          <div class="mb-1">
+            <label class="labelInput" for="numero_telefono">Telefono</label>
+            <input
+              id="numero_telefono"
+              pInputText
+              pKeyFilter="int"
+              formControlName="numero_telefono"
+              class="w-11/12"
+              required
+            />
+          </div>
+          <div class="mb-1">
+            <label class="labelInput" for="indirizzo">Indirizzo</label>
+            <input
+              id="indirizzo"
+              pInputText
+              type="text"
+              class="ml-2"
+              formControlName="indirizzo"
+              class="w-11/12"
+              required
+            />
+          </div>
         </div>
         <div class="grid grid-cols-2 mb-2">
-          <input
-            pInputText
-            type="text"
-            placeholder="Città"
-            formControlName="citta"
-          />
-          <input
-            pInputText
-            pKeyFilter="int"
-            class="ml-2 appearance-none"
-            placeholder="CAP"
-            formControlName="cap"
-          />
+          <div class="mb-1">
+            <label class="labelInput" for="citta">Città</label>
+            <input
+              id="citta"
+              pInputText
+              type="text"
+              formControlName="citta"
+              class="w-11/12"
+              required
+            />
+          </div>
+          <div class="mb-1">
+            <label class="labelInput" for="cap">CAP</label>
+            <input
+              id="cap"
+              pInputText
+              pKeyFilter="int"
+              class="ml-2 appearance-none"
+              formControlName="cap"
+              class="w-11/12"
+              required
+            />
+          </div>
         </div>
 
         <!-- <div class="row mb-2">

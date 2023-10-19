@@ -161,12 +161,14 @@ export class UserListComponent implements OnInit {
       numero_telefono: new FormControl(user.numero_telefono, [
         Validators.minLength(10),
         Validators.maxLength(10),
+        Validators.required
       ]),
-      indirizzo: new FormControl(user.indirizzo),
-      citta: new FormControl(user.citta),
+      indirizzo: new FormControl(user.indirizzo, Validators.required),
+      citta: new FormControl(user.citta, Validators.required),
       cap: new FormControl(user.cap, [
         Validators.minLength(5),
         Validators.maxLength(5),
+        Validators.required
       ]),
     });
     this.utenteInserimento = user.utente_inserimento;
