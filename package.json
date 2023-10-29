@@ -22,6 +22,7 @@
     "@ng-bootstrap/ng-bootstrap": "^15.0.1",
     "@popperjs/core": "^2.11.6",
     "bootstrap": "^5.2.3",
+    "exceljs": "^4.4.0",
     "firebase": "^10.3.0",
     "firebase-tools": "^12.5.2",
     "primeicons": "^6.0.1",
