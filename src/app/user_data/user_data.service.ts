@@ -149,32 +149,27 @@ export class UserDataService {
     tipo_intervento: string,
     marca: string,
     modello: string,
-    modalita_pagamento: string,
     tipo_prodotto: string,
-    canale_com: string,
     data_intervento: Date,
     costo: number,
     imei: string,
-    garanzia: string,
+    modalita_pagamento?: string,
+    canale_com?: string,
+    garanzia?: string,
+    problema?: string,
+    costo_sconto?: string,
     user_input?: UserModel
   ) {
     let id = 0;
-    let user_work: UserModel;
     // verifica se ho modello UserInput in input uso quello altrimenti recupero da users
-    if (user_input) {
-      user_work = user_input;
-    } else {
-      let user: UserModel[] = this.users.filter(function (user) {
-        return user.id === id_user;
-      });
-      user_work = user[0];
-    }
+    let user_work: UserModel = user_input;
     if (user_work.specific_data) {
       id = this.getLastIdSpecificData(user_work.specific_data) + 1;
     } else {
       user_work.specific_data = [];
       id = 1;
     }
+
     let intervento = new SpecificDataModel(
       id,
       tipo_intervento,
@@ -185,8 +180,11 @@ export class UserDataService {
       data_intervento,
       costo,
       imei,
-      garanzia
+      costo_sconto,
+      garanzia,
+      problema
     );
+
     let t: SpecificDataModel[] = Object.values(user_work.specific_data);
     t.push(intervento);
     user_work.specific_data = t;
@@ -208,7 +206,9 @@ export class UserDataService {
     data_intervento: Date,
     costo: number,
     imei: string,
-    garanzia: string,
+    garanzia?: string,
+    problema?: string,
+    costo_sconto?: string,
     user_input?: UserModel
   ) {
     let spec_retrieved: SpecificDataModel[] = Object.values(
@@ -226,7 +226,9 @@ export class UserDataService {
           data_intervento,
           costo,
           imei,
-          garanzia
+          costo_sconto,
+          garanzia,
+          problema
         );
       }
     });

@@ -20,6 +20,14 @@ import { SpecificDataModel } from '../shared/specific_data.model';
 import { UserModel } from '../shared/user_data.model';
 import { UserDataService } from './user_data.service';
 
+require('core-js/modules/es.promise');
+require('core-js/modules/es.string.includes');
+require('core-js/modules/es.object.assign');
+require('core-js/modules/es.object.keys');
+require('core-js/modules/es.symbol');
+require('core-js/modules/es.symbol.async-iterator');
+require('regenerator-runtime/runtime');
+
 @Component({
   selector: 'app-user-data',
   templateUrl: './user_data.component.html',
@@ -43,6 +51,8 @@ export class UserDataComponent implements OnInit, OnDestroy, AfterViewInit {
   isModify = false;
   savedSpecificDataId: number;
   specificDataForm: FormGroup;
+
+  showFields = false;
 
   selectedSpecificData!: SpecificDataModel;
   storedSub: Subscription;
@@ -195,120 +205,179 @@ export class UserDataComponent implements OnInit, OnDestroy, AfterViewInit {
 
   showDataIntervento(id: number) {
     this.modifyInterventoId = id;
-    this.specificDataForm = new FormGroup({
-      canale_com: new FormControl(
-        this.selectedSpecificData.canale_com,
-        Validators.required
-      ),
-      costo: new FormControl(
-        this.selectedSpecificData.costo,
-        Validators.required
-      ),
-      data_intervento: new FormControl(
-        this.selectedSpecificData.data_intervento
-      ),
-      modalita_pagamento: new FormControl(
-        this.selectedSpecificData.modalita_pagamento,
-        Validators.required
-      ),
-      marca_telefono: new FormControl(
-        this.selectedSpecificData.modello_telefono.marca,
-        Validators.required
-      ),
-      modello_telefono: new FormControl(
-        this.selectedSpecificData.modello_telefono.modello,
-        Validators.required
-      ),
-      tipo_intervento: new FormControl(
-        this.selectedSpecificData.tipo_intervento,
-        Validators.required
-      ),
-      tipo_prodotto: new FormControl(
-        this.selectedSpecificData.tipo_prodotto,
-        Validators.required
-      ),
-      imei: new FormControl(this.selectedSpecificData.imei, [
-        Validators.required,
-        Validators.minLength(15),
-        Validators.maxLength(15),
-      ]),
-      garanzia: new FormControl(this.selectedSpecificData.garanzia, [
-        Validators.required,
-      ]),
-    });
+
+    if (this.selectedSpecificData.tipo_intervento === 'Vendita') {
+      this.showFieldsVendita = true;
+      this.showFieldsRiparazione = false;
+      this.specificDataForm = new FormGroup({
+        canale_com: new FormControl(
+          this.selectedSpecificData.canale_com,
+          Validators.required
+        ),
+        costo: new FormControl(
+          this.selectedSpecificData.costo,
+          Validators.required
+        ),
+        costo_sconto: new FormControl(
+          this.selectedSpecificData.costo_sconto,
+          Validators.required
+        ),
+        data_intervento: new FormControl(
+          this.selectedSpecificData.data_intervento
+        ),
+        modalita_pagamento: new FormControl(
+          this.selectedSpecificData.modalita_pagamento,
+          Validators.required
+        ),
+        marca_telefono: new FormControl(
+          this.selectedSpecificData.modello_telefono.marca,
+          Validators.required
+        ),
+        modello_telefono: new FormControl(
+          this.selectedSpecificData.modello_telefono.modello,
+          Validators.required
+        ),
+        tipo_intervento: new FormControl(
+          this.selectedSpecificData.tipo_intervento,
+          Validators.required
+        ),
+        tipo_prodotto: new FormControl(
+          this.selectedSpecificData.tipo_prodotto,
+          Validators.required
+        ),
+        imei: new FormControl(this.selectedSpecificData.imei, [
+          Validators.required,
+          Validators.minLength(15),
+          Validators.maxLength(15),
+        ]),
+        garanzia: new FormControl(this.selectedSpecificData.garanzia, [
+          Validators.required,
+        ]),
+      });
+    } else {
+      this.showFieldsRiparazione = true;
+      this.showFieldsVendita = false;
+      this.specificDataForm = new FormGroup({
+        canale_com: new FormControl(
+          this.selectedSpecificData.canale_com,
+          Validators.required
+        ),
+        costo: new FormControl(
+          this.selectedSpecificData.costo,
+          Validators.required
+        ),
+        data_intervento: new FormControl(
+          this.selectedSpecificData.data_intervento
+        ),
+        marca_telefono: new FormControl(
+          this.selectedSpecificData.modello_telefono.marca,
+          Validators.required
+        ),
+        modello_telefono: new FormControl(
+          this.selectedSpecificData.modello_telefono.modello,
+          Validators.required
+        ),
+        tipo_intervento: new FormControl(
+          this.selectedSpecificData.tipo_intervento,
+          Validators.required
+        ),
+        imei: new FormControl(this.selectedSpecificData.imei, [
+          Validators.required,
+          Validators.minLength(15),
+          Validators.maxLength(15),
+        ]),
+        problema: new FormControl(this.selectedSpecificData.problema, [
+          Validators.required,
+        ]),
+      });
+    }
+    this.showFields = true;
     this.utenteInserimento = this.userData.utenteInserimento;
     this.utenteUltimaModifica = this.userData.ultimoUtenteModifica;
     this.showModalFunction('Modifica Intervento', true, id);
   }
 
   addNewIntervento() {
-    this.userDataService.addNewIntervento(
-      this.userData.id,
-      this.specificDataForm.value['tipo_intervento'],
-      this.specificDataForm.value['marca_telefono'] === undefined
-        ? undefined
-        : this.specificDataForm.value['marca_telefono'],
-      this.specificDataForm.value['modello_telefono'] === undefined
-        ? undefined
-        : this.specificDataForm.value['modello_telefono'],
-      this.specificDataForm.value['modalita_pagamento'] === undefined
-        ? undefined
-        : this.specificDataForm.value['modalita_pagamento'],
-      this.specificDataForm.value['tipo_prodotto'] === undefined
-        ? undefined
-        : this.specificDataForm.value['tipo_prodotto'],
-      this.specificDataForm.value['canale_com'] === undefined
-        ? undefined
-        : this.specificDataForm.value['canale_com'],
-      new Date(),
-      this.specificDataForm.value['costo'] === undefined
-        ? undefined
-        : this.specificDataForm.value['costo'],
-      this.specificDataForm.value['imei'] === undefined
-        ? undefined
-        : this.specificDataForm.value['imei'],
-      this.specificDataForm.value['garanzia'] === undefined
-        ? undefined
-        : this.specificDataForm.value['garanzia'],
-      this.userData
-    );
+    if (this.getIntervento() === 'Vendita') {
+      this.userDataService.addNewIntervento(
+        this.userData.id,
+        this.specificDataForm.value['tipo_intervento'],
+        this.specificDataForm.value['marca_telefono'],
+        this.specificDataForm.value['modello_telefono'],
+        this.specificDataForm.value['tipo_prodotto'],
+        new Date(),
+        this.specificDataForm.value['costo'],
+        this.specificDataForm.value['imei'],
+        this.specificDataForm.value['modalita_pagamento'],
+        this.specificDataForm.value['canale_com'],
+        this.specificDataForm.value['garanzia'],
+        null,
+        this.specificDataForm.value['costo_sconto'],
+        this.userData
+      );
+    } else {
+      this.userDataService.addNewIntervento(
+        this.userData.id,
+        this.specificDataForm.value['tipo_intervento'],
+        this.specificDataForm.value['marca_telefono'],
+        this.specificDataForm.value['modello_telefono'],
+        null,
+        new Date(),
+        this.specificDataForm.value['costo'],
+        this.specificDataForm.value['imei'],
+        null,
+        null,
+        null,
+        null,
+        this.specificDataForm.value['costo_sconto'],
+        this.userData
+      );
+    }
+
     this.showModal = !this.showModal;
     this.callModalToast('Aggiunto', 'Nuovo utente aggiunto');
   }
 
   //Metodo di modifica scatenato alla pressione del pulsante di modifica nel componentø
   modifyUserIntervento() {
-    this.userDataService.modifyIntervento(
-      this.userData.id,
-      this.modifyInterventoId,
-      this.specificDataForm.value['tipo_intervento'],
-      this.specificDataForm.value['marca_telefono'] === undefined
-        ? undefined
-        : this.specificDataForm.value['marca_telefono'],
-      this.specificDataForm.value['modello_telefono'] === undefined
-        ? undefined
-        : this.specificDataForm.value['modello_telefono'],
-      this.specificDataForm.value['modalita_pagamento'] === undefined
-        ? undefined
-        : this.specificDataForm.value['modalita_pagamento'],
-      this.specificDataForm.value['tipo_prodotto'] === undefined
-        ? undefined
-        : this.specificDataForm.value['tipo_prodotto'],
-      this.specificDataForm.value['canale_com'] === undefined
-        ? undefined
-        : this.specificDataForm.value['canale_com'],
-      new Date(),
-      this.specificDataForm.value['costo'] === undefined
-        ? undefined
-        : this.specificDataForm.value['costo'],
-      this.specificDataForm.value['imei'] === undefined
-        ? undefined
-        : this.specificDataForm.value['imei'],
-      this.specificDataForm.value['garanzia'] === undefined
-        ? undefined
-        : this.specificDataForm.value['garanzia'],
-      this.userData
-    );
+    if (this.getIntervento() === 'Vendita') {
+      this.userDataService.modifyIntervento(
+        this.userData.id,
+        this.modifyInterventoId,
+        this.specificDataForm.value['tipo_intervento'],
+        this.specificDataForm.value['marca_telefono'],
+        this.specificDataForm.value['modello_telefono'],
+        this.specificDataForm.value['modalita_pagamento'],
+        this.specificDataForm.value['tipo_prodotto'],
+        this.specificDataForm.value['canale_com'],
+        new Date(),
+        this.specificDataForm.value['costo'],
+        this.specificDataForm.value['imei'],
+        this.specificDataForm.value['garanzia'],
+        null,
+        this.specificDataForm.value['costo_sconto'],
+        this.userData
+      );
+    } else {
+      this.userDataService.modifyIntervento(
+        this.userData.id,
+        this.modifyInterventoId,
+        this.specificDataForm.value['tipo_intervento'],
+        this.specificDataForm.value['marca_telefono'],
+        this.specificDataForm.value['modello_telefono'],
+        null,
+        null,
+        null,
+        new Date(),
+        this.specificDataForm.value['costo'],
+        this.specificDataForm.value['imei'],
+        null,
+        this.specificDataForm.value['problema'],
+        null,
+        this.userData
+      );
+    }
+
     this.showModal = !this.showModal;
     this.callModalToast('Modificato', 'Utente modificato', 'info');
   }
@@ -327,26 +396,16 @@ export class UserDataComponent implements OnInit, OnDestroy, AfterViewInit {
    * @returns {any}
    **/
   initForm() {
+    this.showFields = false;
+    this.showFieldsRiparazione = false;
+    this.showFieldsVendita = false;
     this.specificDataForm = new FormGroup({
-      canale_com: new FormControl('', Validators.required),
-      costo: new FormControl('', Validators.required),
-      data_intervento: new FormControl(''),
-      modalita_pagamento: new FormControl('', Validators.required),
-      marca_telefono: new FormControl('', Validators.required),
-      modello_telefono: new FormControl('', Validators.required),
       tipo_intervento: new FormControl('', Validators.required),
-      tipo_prodotto: new FormControl('', Validators.required),
-      imei: new FormControl('', [
-        Validators.required,
-        Validators.minLength(15),
-        Validators.maxLength(15),
-      ]),
-      garanzia: new FormControl('', Validators.required),
     });
     this.utenteInserimento = undefined;
     this.utenteUltimaModifica = undefined;
   }
-  ngValue;
+
   /**
    * Mostra toast dialog a destra
    * @param {string} summary -> titolo
@@ -363,14 +422,76 @@ export class UserDataComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   checkValueIntervento() {
-    const intervento = this.specificDataForm.value['tipo_intervento'];
-    console.log(intervento);
-    if (intervento == 'Vendita') {
+    if (this.getIntervento() == 'Vendita') {
+      this.showFields = true;
+      this.showFieldsRiparazione = false;
       this.showFieldsVendita = true;
       console.log(this.showFieldsVendita);
+      this.specificDataForm = new FormGroup({
+        tipo_intervento: new FormControl(
+          this.getIntervento(),
+          Validators.required
+        ),
+        canale_com: new FormControl('', Validators.required),
+        costo: new FormControl('', Validators.required),
+        costo_sconto: new FormControl('', Validators.required),
+        data_intervento: new FormControl(''),
+        modalita_pagamento: new FormControl('', Validators.required),
+        marca_telefono: new FormControl('', Validators.required),
+        modello_telefono: new FormControl('', Validators.required),
+        tipo_prodotto: new FormControl('', Validators.required),
+        imei: new FormControl('', [
+          Validators.required,
+          Validators.minLength(15),
+          Validators.maxLength(15),
+        ]),
+        garanzia: new FormControl('', Validators.required),
+      });
     } else {
+      this.showFields = true;
+      this.showFieldsVendita = false;
       this.showFieldsRiparazione = true;
       console.log(this.showFieldsRiparazione);
+      this.specificDataForm = new FormGroup({
+        tipo_intervento: new FormControl(
+          this.getIntervento(),
+          Validators.required
+        ),
+        problema: new FormControl('', Validators.required),
+        costo: new FormControl('', Validators.required),
+        data_intervento: new FormControl(''),
+        marca_telefono: new FormControl('', Validators.required),
+        modello_telefono: new FormControl('', Validators.required),
+        tipo_prodotto: new FormControl('', Validators.required),
+        imei: new FormControl('', [
+          Validators.required,
+          Validators.minLength(15),
+          Validators.maxLength(15),
+        ]),
+      });
     }
+  }
+
+  private getIntervento() {
+    return this.specificDataForm.value['tipo_intervento'];
+  }
+
+  public createExcel() {
+    const ExcelJS = require('exceljs/dist/es5');
+    const workbook = new ExcelJS.Workbook();
+    workbook.creator = 'Virsa Tunes';
+    workbook.lastModifiedBy = this.authService.userState.displayName;
+    workbook.created = new Date();
+    workbook.modified = new Date();
+    workbook.lastPrinted = new Date();
+    workbook.properties.date1904 = true;
+    workbook.calcProperties.fullCalcOnLoad = true;
+    workbook.views = [
+      {
+        x: 0, y: 0, width: 10000, height: 20000,
+        firstSheet: 0, activeTab: 1, visibility: 'visible'
+      }
+    ]
+    const sheet = workbook.addWorksheet('My Sheet');
   }
 }

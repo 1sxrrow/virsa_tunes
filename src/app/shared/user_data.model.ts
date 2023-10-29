@@ -52,7 +52,9 @@ export class UserModel {
             specific_data[i].data_intervento,
             specific_data[i].costo,
             specific_data[i].imei,
-            specific_data[i].garanzia
+            specific_data[i].costo_sconto,
+            specific_data[i].garanzia,
+            specific_data[i].problema,
           )
         );
       }

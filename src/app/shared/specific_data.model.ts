@@ -11,18 +11,8 @@ export class SpecificDataModel {
     public data_intervento: Date,
     public costo: number,
     public imei: string,
-    public garanzia: string
-  ) {
-    // this.id = id;
-    // this.tipo_intervento = tipo_intervento;
-    // this.modello_telefono = new ModelloTelefono(
-    //   modello_telefono.marca,
-    //   modello_telefono.modello
-    // );
-    // this.modalita_pagamento = modalita_pagamento;
-    // this.tipo_prodotto = tipo_prodotto;
-    // this.canale_com = canale_com;
-    // this.data_intervento = data_intervento;
-    // this.costo = costo;
-  }
+    public costo_sconto: string,
+    public garanzia: string,
+    public problema: string
+  ) {}
 }

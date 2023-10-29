@@ -117,29 +117,47 @@
   >
     <form [formGroup]="specificDataForm">
       <div class="grid md:grid-cols-2 gap-4 mb-3 items-center">
-        <div class="mb-6">
+        <div class="mb-6 col-span-2">
           <label for="tipo_intervento" class="label"> Tipo Intervento </label>
           <span class="p-input-icon-right w-full">
             <i class="pi pi-angle-down"></i>
-            <select
-              name="tipo_intervento"
-              id="tipo_intervento"
-              class="fields"
-              formControlName="tipo_intervento"
-              (change)="checkValueIntervento()"
-            >
-              <option [ngValue]="null" disabled>Seleziona Intervento</option>
-              <option
-                [value]="intervento"
-                *ngFor="let intervento of tipoIntervento"
+            <fieldset  [disabled]="!isInfo">
+              <select
+                name="tipo_intervento"
+                id="tipo_intervento"
+                class="fields"
+                formControlName="tipo_intervento"
+                (change)="checkValueIntervento()"
               >
-                {{ intervento }}
-              </option>
-            </select>
+                <option [ngValue]="null" disabled>Seleziona Intervento</option>
+                <option
+                  [value]="intervento"
+                  *ngFor="let intervento of tipoIntervento"
+                >
+                  {{ intervento }}
+                </option>
+              </select>
+            </fieldset>
           </span>
         </div>
+      </div>
+      <div
+        class="grid md:grid-cols-2 gap-4 mb-3 items-center"
+        *ngIf="showFields"
+      >
+        <div class="mb-6" *ngIf="showFieldsRiparazione">
+          <label for="problema" class="label"> Problema </label>
+          <input
+            type="text"
+            name="problema"
+            id="problema"
+            class="fields"
+            formControlName="problema"
+            required
+          />
+        </div>
 
-        <div class="mb-6">
+        <div class="mb-6" *ngIf="showFieldsVendita">
           <label for="tipo_intervento" class="label"> Garanzia </label>
           <span class="p-input-icon-right w-full">
             <i class="pi pi-angle-down"></i>
@@ -215,7 +233,24 @@
           />
         </div>
 
-        <div class="mb-6">
+        <div class="mb-6" *ngIf="showFieldsVendita">
+          <label
+            for="costo_sconto"
+            class="truncate block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+          >
+            Costo sconto(€)
+          </label>
+          <input
+            type="number"
+            name="costo_sconto"
+            id="costo_sconto"
+            class="fields"
+            formControlName="costo_sconto"
+            required
+          />
+        </div>
+
+        <div class="mb-6" *ngIf="showFieldsVendita">
           <label
             for="modalita_pagamento"
             class="truncate block mb-2 text-sm font-medium text-gray-900 dark:text-white"
@@ -240,9 +275,10 @@
             </select>
           </span>
         </div>
-        <div class="mb-6">
+
+        <div class="mb-6" *ngIf="showFieldsVendita">
           <label
-            for="modello_telefono"
+            for="tipo_prodotto"
             class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
           >
             Tipo Prodotto
@@ -266,7 +302,7 @@
           </span>
         </div>
 
-        <div class="mb-6">
+        <div class="mb-6 col-span-2" *ngIf="showFieldsVendita">
           <label for="canale_com" class="label">Canale Comunicazione</label>
           <span class="p-input-icon-right w-full">
             <i class="pi pi-angle-down"></i>
