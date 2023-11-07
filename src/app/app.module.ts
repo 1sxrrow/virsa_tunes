@@ -1,4 +1,4 @@
-import { NgModule } from '@angular/core';
+import { NgModule, LOCALE_ID } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 
 import { CommonModule, CurrencyPipe } from '@angular/common';
@@ -29,7 +29,12 @@ import { PersonalConfirmDialogModule } from './shared/confirm-dialog/confirm.dia
 import { UserEditComponent } from './user_data/user-edit/user-edit.component';
 import { UserListComponent } from './user_data/user-list/user-list.component';
 import { UserDataComponent } from './user_data/user_data.component';
+import { NgSelectModule } from '@ng-select/ng-select';
+import { HttpClientModule } from '@angular/common/http';
+import localeIt from '@angular/common/locales/it';
+import { registerLocaleData } from '@angular/common';
 
+registerLocaleData(localeIt);
 const routes: Routes = [
   {
     path: '',
@@ -81,12 +86,15 @@ const routes: Routes = [
     PersonalConfirmDialogModule,
     ToastModule,
     TooltipModule,
+    NgSelectModule,
+    HttpClientModule,
     provideFirebaseApp(() => initializeApp(firebaseConfig)),
     provideDatabase(() => getDatabase()),
   ],
   providers: [
     { provide: FIREBASE_OPTIONS, useValue: firebaseConfig },
     CurrencyPipe,
+    { provide: LOCALE_ID, useValue: 'fr-FR' },
   ],
   bootstrap: [AppComponent],
 })

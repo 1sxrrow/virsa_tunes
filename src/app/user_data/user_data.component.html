@@ -91,6 +91,14 @@
               tooltipPosition="bottom"
               (click)="confirmDeleteIntervento(specificData.id)"
             ></p-button>
+            <p-button
+              styleClass="p-button-success"
+              icon="pi pi-file-excel"
+              pTooltip="Crea Excel"
+              tooltipPosition="bottom"
+              (click)="createExcel(specificData)"
+              class="ml-2"
+            ></p-button>
           </td>
         </tr>
       </ng-template>
@@ -120,9 +128,13 @@
         <div class="mb-6 col-span-2">
           <label for="tipo_intervento" class="label"> Tipo Intervento </label>
           <span class="p-input-icon-right w-full">
-            <i class="pi pi-angle-down"></i>
-            <fieldset  [disabled]="!isInfo">
+            <i
+              class="pi pi-angle-down"
+              (click)="toggleNavdrop(navdrop_tipo_intervento)"
+            ></i>
+            <fieldset [disabled]="!isInfo">
               <select
+                #navdrop_tipo_intervento
                 name="tipo_intervento"
                 id="tipo_intervento"
                 class="fields"
@@ -141,6 +153,11 @@
           </span>
         </div>
       </div>
+      <!-- <ng-select
+        [items]="tipoIntervento"
+        [(ngModel)]="selectedItem"
+      >
+      </ng-select> -->
       <div
         class="grid md:grid-cols-2 gap-4 mb-3 items-center"
         *ngIf="showFields"

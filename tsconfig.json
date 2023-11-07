@@ -20,5 +20,8 @@
   },
   "angularCompilerOptions": {
     "enableI18nLegacyMessageIdFormat": false
-  }
+  },
+  "typeRoots": [
+  "node_modules/@types"
+],
 }

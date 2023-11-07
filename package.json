@@ -20,16 +20,22 @@
     "@angular/platform-browser-dynamic": "^16.0.0",
     "@angular/router": "^16.0.0",
     "@ng-bootstrap/ng-bootstrap": "^15.0.1",
+    "@ng-select/ng-select": "^11.2.0",
     "@popperjs/core": "^2.11.6",
+    "@types/node": "^20.8.10",
     "bootstrap": "^5.2.3",
+    "buffer": "^6.0.3",
+    "core-js": "^3.33.2",
     "exceljs": "^4.4.0",
+    "file-saver": "^2.0.5",
     "firebase": "^10.3.0",
     "firebase-tools": "^12.5.2",
     "primeicons": "^6.0.1",
     "primeng": "^16.0.2",
     "rxjs": "~7.8.0",
     "tslib": "^2.3.0",
-    "zone.js": "~0.13.0"
+    "web-animations-js": "^2.3.2",
+    "zone.js": "^0.13.3"
   },
   "devDependencies": {
     "@angular-devkit/build-angular": "^16.0.1",
