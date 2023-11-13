@@ -55,6 +55,7 @@ export class UserModel {
             specific_data[i].costo_sconto,
             specific_data[i].garanzia,
             specific_data[i].problema,
+            specific_data[i].tipo_parte,
           )
         );
       }

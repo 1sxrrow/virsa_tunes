@@ -7,6 +7,7 @@ import {
   garanzia,
   tipoIntervento,
   tipoPagamento,
+  tipoParte,
 } from '../shared/enums';
 import { FirebaseStoreService } from '../shared/firebase.store.service';
 import { ModelloTelefono } from '../shared/modello_telefono.model';
@@ -28,6 +29,7 @@ export class UserDataService {
   public tipoPagamento = tipoPagamento;
   public condizioniProdotto = condizioniProdotto;
   public mesiGaranzia = garanzia;
+  public tipoParte = tipoParte;
 
   setStandardUsers() {
     this.usersChanged.next(this.users.slice());
@@ -157,6 +159,7 @@ export class UserDataService {
     canale_com?: string,
     garanzia?: string,
     problema?: string,
+    tipo_parte?: string,
     costo_sconto?: string,
     user_input?: UserModel
   ) {
@@ -182,7 +185,8 @@ export class UserDataService {
       imei,
       costo_sconto,
       garanzia,
-      problema
+      problema,
+      tipo_parte
     );
 
     let t: SpecificDataModel[] = Object.values(user_work.specific_data);
@@ -208,6 +212,7 @@ export class UserDataService {
     imei: string,
     garanzia?: string,
     problema?: string,
+    tipo_parte?: string,
     costo_sconto?: string,
     user_input?: UserModel
   ) {
@@ -228,7 +233,8 @@ export class UserDataService {
           imei,
           costo_sconto,
           garanzia,
-          problema
+          problema,
+          tipo_parte
         );
       }
     });

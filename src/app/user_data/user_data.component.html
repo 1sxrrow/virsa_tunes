@@ -173,6 +173,23 @@
             required
           />
         </div>
+        <div class="mb-6" *ngIf="showFieldsRiparazione">
+          <label for="tipo_parte" class="label"> Tipo parte </label>
+          <span class="p-input-icon-right w-full">
+            <i class="pi pi-angle-down"></i>
+            <select
+              name="tipo_parte"
+              id="tipo_parte"
+              class="fields"
+              formControlName="tipo_parte"
+            >
+              <option [ngValue]="null" disabled>Seleziona tipo Parte</option>
+              <option [value]="parte" *ngFor="let parte of tipoParte">
+                {{ parte }}
+              </option>
+            </select>
+          </span>
+        </div>
 
         <div class="mb-6" *ngIf="showFieldsVendita">
           <label for="tipo_intervento" class="label"> Garanzia </label>
@@ -365,7 +382,7 @@
         >
           Aggiungi
         </p-button>
-        <!-- <p-button (onClick)="findInvalidControls()">check values</p-button> -->
+        <p-button *ngIf="devmode" (onClick)="findInvalidControls()">check values</p-button>
         <p-button
           styleClass="p-button-raised p-button-secondary"
           [hidden]="isInfo"

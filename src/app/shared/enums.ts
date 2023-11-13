@@ -53,3 +53,8 @@ export enum garanzia {
   'Samsung',
   'Xiaomi',
 }
+
+export enum tipoParte {
+  'Compatibile',
+  'Originale'
+}

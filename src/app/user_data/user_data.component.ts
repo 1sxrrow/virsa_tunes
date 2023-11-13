@@ -7,6 +7,7 @@ import {
   OnDestroy,
   OnInit,
   ViewChild,
+  isDevMode,
 } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -26,8 +27,7 @@ import { Workbook } from 'exceljs';
 import { HttpClient } from '@angular/common/http';
 import * as fs from 'file-saver';
 import { formatDate } from '@angular/common';
-import { isDevMode } from '@angular/core';
-
+import { arrayBufferToBufferCycle, keylistener } from '../shared/utils';
 @Component({
   selector: 'app-user-data',
   templateUrl: './user_data.component.html',
@@ -41,6 +41,7 @@ import { isDevMode } from '@angular/core';
 export class UserDataComponent implements OnInit, OnDestroy, AfterViewInit {
   userData: UserModel;
   tipoIntervento: string[];
+  tipoParte: string[];
   mesiGaranzia: string[];
   canaleComunicazioni: string[];
   condizioniProdotto: string[];
@@ -70,6 +71,7 @@ export class UserDataComponent implements OnInit, OnDestroy, AfterViewInit {
   isInfo = false;
   utenteInserimento: string;
   utenteUltimaModifica: string;
+  devmode = false;
 
   modifyInterventoId: number;
 
@@ -135,8 +137,8 @@ export class UserDataComponent implements OnInit, OnDestroy, AfterViewInit {
         }
       );
     this.showModal = false;
-
-    this.keylistener();
+    this.devmode = isDevMode();
+    keylistener(this.devmode);
   }
 
   ngOnDestroy(): void {
@@ -170,6 +172,10 @@ export class UserDataComponent implements OnInit, OnDestroy, AfterViewInit {
 
     this.mesiGaranzia = Object.keys(this.userDataService.mesiGaranzia).filter(
       (key) => isNaN(+key)
+    );
+
+    this.tipoParte = Object.keys(this.userDataService.tipoParte).filter((key) =>
+      isNaN(+key)
     );
   }
 
@@ -267,10 +273,6 @@ export class UserDataComponent implements OnInit, OnDestroy, AfterViewInit {
       this.showFieldsRiparazione = true;
       this.showFieldsVendita = false;
       this.specificDataForm = new FormGroup({
-        canale_com: new FormControl(
-          this.selectedSpecificData.canale_com,
-          Validators.required
-        ),
         costo: new FormControl(
           this.selectedSpecificData.costo,
           Validators.required
@@ -288,6 +290,10 @@ export class UserDataComponent implements OnInit, OnDestroy, AfterViewInit {
         ),
         tipo_intervento: new FormControl(
           this.selectedSpecificData.tipo_intervento,
+          Validators.required
+        ),
+        tipo_parte: new FormControl(
+          this.selectedSpecificData.tipo_parte,
           Validators.required
         ),
         imei: new FormControl(this.selectedSpecificData.imei, [
@@ -321,10 +327,12 @@ export class UserDataComponent implements OnInit, OnDestroy, AfterViewInit {
         this.specificDataForm.value['canale_com'],
         this.specificDataForm.value['garanzia'],
         null,
+        null,
         this.specificDataForm.value['costo_sconto'],
         this.userData
       );
     } else {
+      console.log(this.specificDataForm.value['tipo_parte']);
       this.userDataService.addNewIntervento(
         this.userData.id,
         this.specificDataForm.value['tipo_intervento'],
@@ -337,8 +345,9 @@ export class UserDataComponent implements OnInit, OnDestroy, AfterViewInit {
         null,
         null,
         null,
+        this.specificDataForm.value['problema'],
+        this.specificDataForm.value['tipo_parte'],
         null,
-        this.specificDataForm.value['costo_sconto'],
         this.userData
       );
     }
@@ -364,6 +373,7 @@ export class UserDataComponent implements OnInit, OnDestroy, AfterViewInit {
         this.specificDataForm.value['imei'],
         this.specificDataForm.value['garanzia'],
         null,
+        null,
         this.specificDataForm.value['costo_sconto'],
         this.userData
       );
@@ -382,6 +392,7 @@ export class UserDataComponent implements OnInit, OnDestroy, AfterViewInit {
         this.specificDataForm.value['imei'],
         null,
         this.specificDataForm.value['problema'],
+        this.specificDataForm.value['tipo_parte'],
         null,
         this.userData
       );
@@ -467,11 +478,11 @@ export class UserDataComponent implements OnInit, OnDestroy, AfterViewInit {
           Validators.required
         ),
         problema: new FormControl('', Validators.required),
+        tipo_parte: new FormControl('', Validators.required),
         costo: new FormControl('', Validators.required),
         data_intervento: new FormControl(''),
         marca_telefono: new FormControl('', Validators.required),
         modello_telefono: new FormControl('', Validators.required),
-        tipo_prodotto: new FormControl('', Validators.required),
         imei: new FormControl('', [
           Validators.required,
           Validators.minLength(15),
@@ -487,120 +498,119 @@ export class UserDataComponent implements OnInit, OnDestroy, AfterViewInit {
 
   toggleNavdrop(element) {}
 
-  private arrayBufferToBufferCycle(ab): Buffer {
-    var buffer = new Buffer(ab.byteLength);
-    var view = new Uint8Array(ab);
-    for (var i = 0; i < buffer.length; ++i) {
-      buffer[i] = view[i];
-    }
-    return buffer;
-  }
-
   public createExcel(specificData: SpecificDataModel) {
-    if (specificData.tipo_intervento === 'Vendita') {
-      this.http
-        .get('/assets/template_vendita.xlsx', { responseType: 'blob' })
-        .subscribe((res) => {
-          const reader = new FileReader();
-          reader.onload = (e) => {
-            console.log();
-            const workbook = new Workbook();
-            let y = this.arrayBufferToBufferCycle(e.target.result);
-            // carico buffer excel
-            workbook.xlsx
-              .load(y, {
-                ignoreNodes: [
-                  'dataValidations', // ignores the workbook's Data Validations
-                  'autoFilter',
-                  'drawings',
-                ],
-              })
-              .then(() => {
-                var worksheet = workbook.getWorksheet('RICEVUTA');
-                console.log(this.locale);
-                let formatDateVar = formatDate(
-                  specificData.data_intervento,
-                  'd MMMM yyyy',
-                  this.locale
-                );
-                worksheet.getRow(2).height = 66;
-                const imageSrc = '/assets/logovirsa.png';
-                fetch(imageSrc).then((res) => {
-                  console.log(res);
-                  res.arrayBuffer().then((buffer) => {
-                    console.log(buffer);
-                    const logo = workbook.addImage({
-                      buffer: buffer,
-                      extension: 'png',
-                    });
-                    console.log(logo);
-                    worksheet.addImage(logo, {
-                      tl: { col: 1.15, row: 1.05 },
-                      ext: { width: 88, height: 100 },
-                    });
-                    console.log(worksheet.getTable('table1'));
+    const path =
+      specificData.tipo_intervento === 'Vendita'
+        ? '/assets/template_vendita.xlsx'
+        : '/assets/template_riparazione.xlsx';
 
-                    worksheet.getCell('B19').value = '1'; // quantità
-                    worksheet.getCell('H5').value = formatDateVar; // data
-                    worksheet.getCell('D9').value =
-                      this.userData.nome + ' ' + this.userData.cognome; //nome cognome + gestione celle merged
-                    worksheet.getCell('D10').value = this.userData.indirizzo; // //indirizzo + gestione celle merged
-                    worksheet.getCell('D11').value =
-                      this.userData.citta + ' / ' + this.userData.cap; //citta e cap + gestione celle merged
-                    worksheet.getCell('D12').value =
-                      this.userData.numero_telefono; //telefono + gestione celle merged
-                    worksheet.getCell('B16').value =
-                      specificData.modalita_pagamento; //metodo di pagamento + gestione celle merged
-                    worksheet.getCell('F16').value = specificData.tipo_prodotto; //condizioni + gestione celle merged
-                    worksheet.getCell('E16').value = specificData.canale_com; // social / canale com
-                    worksheet.getCell('E33').value = specificData.garanzia; //garanzia + gestione celle merged
-                    worksheet.getCell('D19').value =
-                      specificData.modello_telefono.marca +
-                      ' ' +
-                      specificData.modello_telefono.modello; // modello telefono
-                    worksheet.getCell('E19').value = specificData.imei; // imei
-                    worksheet.getCell('F19').value = specificData.costo; // costo
-                    worksheet.getCell('G19').value = specificData.costo_sconto; // sconto
-                    worksheet.getCell('H30').value = specificData.costo_sconto; // sconto
-                    let discounted =
-                      specificData.costo - Number(specificData.costo_sconto);
-                    worksheet.getCell('H19').value = discounted; // totale riga
-                    worksheet.getCell('H31').value = specificData.costo; // subtotale
-                    worksheet.getCell('H33').value = discounted; // totale
-                    console.log('scrittura dati fatta');
-                    workbook.xlsx.writeBuffer().then((data) => {
-                      console.log(data);
-                      let blob = new Blob([data], {
-                        type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-                      });
-                      console.log(blob);
-                      fs.saveAs(
-                        blob,
-                        'Vendita_' +
-                          this.userData.nome +
-                          '_' +
-                          this.userData.cognome +
-                          '_' +
-                          formatDateVar +
-                          '.xlsx'
-                      );
-                    });
-                  });
-                });
-              });
-          };
-          reader.readAsArrayBuffer(res);
+    this.http.get(path, { responseType: 'blob' }).subscribe((res) => {
+      const reader = new FileReader();
+      reader.onload = async (e) => {
+        console.log();
+        const workbook = new Workbook();
+        let y = arrayBufferToBufferCycle(e.target.result);
+        // carico buffer excel
+        await workbook.xlsx.load(y, {
+          ignoreNodes: [
+            'dataValidations', // ignores the workbook's Data Validations
+            'autoFilter',
+            'drawings',
+          ],
         });
-    } else {
-    }
-  }
-
-  keylistener() {
-    if (isDevMode()) {
-      document.addEventListener('keydown', keyPressed);
-      function keyPressed(e) {
-        console.log(e.code);
-      }
-    }
+        var worksheet = workbook.getWorksheet('RICEVUTA');
+        console.log(this.locale);
+        let formatDateVar = formatDate(
+          specificData.data_intervento,
+          'd MMMM yyyy',
+          this.locale
+        );
+        if (specificData.tipo_intervento === 'Vendita') {
+          worksheet.getRow(2).height = 66;
+          const imageSrc = '/assets/logovirsa.png';
+          const img = await fetch(imageSrc);
+          const buffer = await img.arrayBuffer();
+          const logo = workbook.addImage({
+            buffer: buffer,
+            extension: 'png',
+          });
+          worksheet.addImage(logo, {
+            tl: { col: 1.15, row: 1.05 },
+            ext: { width: 88, height: 100 },
+          });
+          worksheet.getCell('B19').value = '1'; // quantità
+          worksheet.getCell('H5').value = formatDateVar; // data
+          worksheet.getCell('D9').value =
+            this.userData.nome + ' ' + this.userData.cognome; //nome cognome + gestione celle merged
+          worksheet.getCell('D10').value = this.userData.indirizzo; // //indirizzo + gestione celle merged
+          worksheet.getCell('D11').value =
+            this.userData.citta + ' / ' + this.userData.cap; //citta e cap + gestione celle merged
+          worksheet.getCell('D12').value = this.userData.numero_telefono; //telefono + gestione celle merged
+          worksheet.getCell('B16').value = specificData.modalita_pagamento; //metodo di pagamento + gestione celle merged
+          worksheet.getCell('F16').value = specificData.tipo_prodotto; //condizioni + gestione celle merged
+          worksheet.getCell('E16').value = specificData.canale_com; // social / canale com
+          worksheet.getCell('E33').value = specificData.garanzia; //garanzia + gestione celle merged
+          worksheet.getCell('D19').value =
+            specificData.modello_telefono.marca +
+            ' ' +
+            specificData.modello_telefono.modello; // modello telefono
+          worksheet.getCell('E19').value = specificData.imei; // imei
+          worksheet.getCell('F19').value = specificData.costo; // costo
+          worksheet.getCell('G19').value = specificData.costo_sconto; // sconto
+          worksheet.getCell('H30').value = specificData.costo_sconto; // sconto
+          let discounted =
+            specificData.costo - Number(specificData.costo_sconto);
+          worksheet.getCell('H19').value = discounted; // totale riga
+          worksheet.getCell('H31').value = specificData.costo; // subtotale
+          worksheet.getCell('H33').value = discounted; // totale
+          console.log('scrittura dati fatta');
+        } else {
+          worksheet.getCell('C24').value = worksheet.getCell('C4').value =
+            this.userData.nome + ' ' + this.userData.cognome;
+          worksheet.getCell('C25').value = worksheet.getCell('C5').value =
+            this.userData.indirizzo;
+          worksheet.getCell('C6').value = this.userData.cap;
+          worksheet.getCell('C26').value = worksheet.getCell('C7').value =
+            this.userData.citta;
+          worksheet.getCell('C27').value = worksheet.getCell('C8').value =
+            this.userData.numero_telefono;
+          console.log(specificData.tipo_parte);
+          worksheet.getCell('D24').value = worksheet.getCell('D8').value =
+            specificData.tipo_parte;
+          worksheet.getCell('B11').value = specificData.problema;
+          worksheet.getCell('D11').value = specificData.imei;
+          worksheet.getCell('F27').value =
+            worksheet.getCell('F20').value =
+            worksheet.getCell('F16').value =
+            worksheet.getCell('F11').value =
+              specificData.costo;
+          worksheet.getCell('F5').value =
+            specificData.modello_telefono.marca +
+            ' ' +
+            specificData.modello_telefono.modello;
+        }
+        // Creazione Excel modificato
+        workbook.xlsx.writeBuffer().then((data) => {
+          console.log(data);
+          let blob = new Blob([data], {
+            type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+          });
+          console.log(blob);
+          fs.saveAs(
+            blob,
+            (specificData.tipo_intervento === 'Vendita'
+              ? 'Vendita_'
+              : 'Riparazione_') +
+              this.userData.nome +
+              '_' +
+              this.userData.cognome +
+              '_' +
+              formatDateVar +
+              '.xlsx'
+          );
+        });
+      };
+      reader.readAsArrayBuffer(res);
+    });
   }
 }

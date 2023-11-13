@@ -13,6 +13,7 @@ export class SpecificDataModel {
     public imei: string,
     public costo_sconto: string,
     public garanzia: string,
-    public problema: string
+    public problema: string,
+    public tipo_parte: string
   ) {}
 }
