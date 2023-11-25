@@ -8,6 +8,7 @@ export class UserModel {
   public numero_telefono: number;
   public citta: string;
   public cap: number;
+  public canale_com: string;
   public specific_data: SpecificDataModel[] = [];
   public utenteInserimento?: string;
   public ultimoUtenteModifica?: string;
@@ -20,6 +21,7 @@ export class UserModel {
     numero_telefono: number,
     citta: string,
     cap: number,
+    canale_com: string,
     specific_data?: SpecificDataModel[],
     utenteInserimento?: string,
     ultimoUtenteModifica?: string
@@ -31,6 +33,7 @@ export class UserModel {
     this.numero_telefono = numero_telefono;
     this.citta = citta;
     this.cap = cap;
+    this.canale_com = canale_com;
     if (ultimoUtenteModifica || utenteInserimento) {
       if (!ultimoUtenteModifica) {
         this.ultimoUtenteModifica = utenteInserimento;
@@ -48,7 +51,6 @@ export class UserModel {
             specific_data[i].modello_telefono,
             specific_data[i].modalita_pagamento,
             specific_data[i].tipo_prodotto,
-            specific_data[i].canale_com,
             specific_data[i].data_intervento,
             specific_data[i].costo,
             specific_data[i].imei,
@@ -56,6 +58,8 @@ export class UserModel {
             specific_data[i].garanzia,
             specific_data[i].problema,
             specific_data[i].tipo_parte,
+            specific_data[i].checkedProdottiAggiuntivi,
+            specific_data[i].prodottiAggiuntivi
           )
         );
       }

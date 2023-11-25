@@ -21,6 +21,8 @@ export class LoginComponent {
   passwordMessage = false;
   passwordValue: string;
   emailValue: string;
+  emailError = false;
+  passwordError = false;
 
   @ViewChild('emailInput') emailInput: ElementRef;
   @ViewChild('passwordInput') passwordInput: ElementRef;
@@ -62,88 +64,36 @@ export class LoginComponent {
     //TODO controllare che se presente 1 errore non faccio rivedre errore (forse meglio usare un booleano)
     switch (error.message) {
       case 'Firebase: Error (auth/missing-email).':
-        console.log('entrato in case');
-        this.emailInput.nativeElement.className += ' ng-invalid ng-dirty';
-        this.renderer.appendChild(
-          this.emailHelp.nativeElement,
-          this.renderer.createText('Campo email obbligatorio')
+        this.errorPasswordManager(
+          this.emailInput,
+          this.emailHelp,
+          'Campo Email obbligatorio',
+          'email'
         );
-        this.emailMessage = !this.emailMessage;
-        setTimeout(() => {
-          this.renderer.removeClass(this.emailInput.nativeElement, 'ng-dirty');
-          this.renderer.removeClass(
-            this.emailInput.nativeElement,
-            'ng-invalid'
-          );
-          this.emailMessage = !this.emailMessage;
-        }, 5000);
         break;
       case 'Firebase: A non-empty password must be provided (auth/missing-password).':
-        console.log('entrato in case');
-        this.passwordInput.nativeElement.className += ' ng-invalid ng-dirty';
-        this.renderer.appendChild(
-          this.passwordHelp.nativeElement,
-          this.renderer.createText('Campo password obbligatorio')
+        this.errorPasswordManager(
+          this.passwordInput,
+          this.passwordHelp,
+          'Campo password obbligatorio',
+          'password'
         );
-        this.passwordMessage = !this.passwordMessage;
-        setTimeout(() => {
-          this.renderer.removeClass(
-            this.passwordInput.nativeElement,
-            'ng-dirty'
-          );
-          this.renderer.removeClass(
-            this.passwordInput.nativeElement,
-            'ng-invalid'
-          );
-          this.passwordMessage = !this.passwordMessage;
-        }, 5000);
       case 'Firebase: The password is invalid or the user does not have a password. (auth/wrong-password).':
-        console.log('entrato in case');
-        this.passwordInput.nativeElement.className += ' ng-invalid ng-dirty';
-        this.renderer.appendChild(
-          this.passwordHelp.nativeElement,
-          this.renderer.createText('Password errata')
+        this.errorPasswordManager(
+          this.passwordInput,
+          this.passwordHelp,
+          'password errata',
+          'password'
         );
-        this.passwordMessage = !this.passwordMessage;
-        setTimeout(() => {
-          this.renderer.removeClass(
-            this.passwordInput.nativeElement,
-            'ng-dirty'
-          );
-          this.renderer.removeClass(
-            this.passwordInput.nativeElement,
-            'ng-invalid'
-          );
-          this.passwordMessage = !this.passwordMessage;
-        }, 5000);
         break;
       case 'Firebase: There is no user record corresponding to this identifier. The user may have been deleted. (auth/user-not-found).':
-        console.log('entrato in case');
-        this.emailInput.nativeElement.className += ' ng-invalid ng-dirty';
-        this.passwordInput.nativeElement.className += ' ng-invalid ng-dirty';
-        this.renderer.appendChild(
-          this.passwordHelp.nativeElement,
-          this.renderer.createText('Credenziali errate')
+        this.errorPasswordManager(
+          this.emailInput,
+          this.emailHelp,
+          'Credenziali errate',
+          'email'
         );
-        this.emailMessage = !this.emailMessage;
-        this.passwordMessage = !this.passwordMessage;
-        setTimeout(() => {
-          this.renderer.removeClass(
-            this.passwordInput.nativeElement,
-            'ng-dirty'
-          );
-          this.renderer.removeClass(
-            this.passwordInput.nativeElement,
-            'ng-invalid'
-          );
-          this.renderer.removeClass(this.emailInput.nativeElement, 'ng-dirty');
-          this.renderer.removeClass(
-            this.emailInput.nativeElement,
-            'ng-invalid'
-          );
-          this.passwordMessage = !this.passwordMessage;
-          this.emailMessage = !this.emailMessage;
-        }, 5000);
+        break;
       default:
         console.log('entrato in default');
         break;
@@ -164,5 +114,34 @@ export class LoginComponent {
     } else {
       console.log('profile has displayName already set!');
     }
+  }
+
+  errorPasswordManager(
+    elementInput: ElementRef,
+    elementHelp: ElementRef,
+    message: string,
+    origin: string
+  ) {
+    elementInput.nativeElement.className += ' ng-invalid ng-dirty';
+    if (elementHelp.nativeElement.hasChildNodes()) {
+      this.renderer.removeChild(
+        elementHelp.nativeElement,
+        elementHelp.nativeElement.childNodes[0]
+      );
+    }
+    this.renderer.appendChild(
+      elementHelp.nativeElement,
+      this.renderer.createText(message)
+    );
+    console.log(this.passwordMessage);
+    this.passwordMessage = origin === 'password' ? true : false;
+    this.emailMessage = origin === 'email' ? true : false;
+    console.log(this.passwordMessage, this.emailMessage);
+    setTimeout(() => {
+      this.renderer.removeClass(elementInput.nativeElement, 'ng-dirty');
+      this.renderer.removeClass(elementInput.nativeElement, 'ng-invalid');
+      this.passwordMessage = false;
+      this.emailMessage = false;
+    }, 5000);
   }
 }

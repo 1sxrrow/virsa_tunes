@@ -30,6 +30,7 @@ import { UserEditComponent } from './user_data/user-edit/user-edit.component';
 import { UserListComponent } from './user_data/user-list/user-list.component';
 import { UserDataComponent } from './user_data/user_data.component';
 import { NgSelectModule } from '@ng-select/ng-select';
+import { CheckboxModule } from 'primeng/checkbox';
 import { HttpClientModule } from '@angular/common/http';
 import localeIt from '@angular/common/locales/it';
 import { registerLocaleData } from '@angular/common';
@@ -87,6 +88,7 @@ const routes: Routes = [
     ToastModule,
     TooltipModule,
     NgSelectModule,
+    CheckboxModule,
     HttpClientModule,
     provideFirebaseApp(() => initializeApp(firebaseConfig)),
     provideDatabase(() => getDatabase()),

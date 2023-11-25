@@ -35,12 +35,7 @@
       [(selection)]="selectedSpecificData"
       dataKey="id"
       (onRowSelect)="onRowSelect($event)"
-      [globalFilterFields]="[
-        'tipo_intervento',
-        'data_intervento',
-        'canale_com',
-        'costo'
-      ]"
+      [globalFilterFields]="['tipo_intervento', 'data_intervento', 'costo']"
     >
       <ng-template pTemplate="header">
         <tr>
@@ -52,9 +47,6 @@
           </th>
           <th pSortableColumn="data_intervento">
             Data<p-sortIcon field="data_intervento"></p-sortIcon>
-          </th>
-          <th pSortableColumn="canale_com">
-            Canale Comunicazione<p-sortIcon field="canale_com"></p-sortIcon>
           </th>
           <th pSortableColumn="costo">
             Costo <p-sortIcon field="costo"></p-sortIcon>
@@ -75,10 +67,6 @@
           <td>
             <span class="p-column-title">Data</span
             >{{ specificData.data_intervento | date : "dd/MM/yyyy" }}
-          </td>
-          <td>
-            <span class="p-column-title">Canale Comuncazione</span
-            >{{ specificData.canale_com }}
           </td>
           <td>
             <span class="p-column-title">Costo</span>{{ specificData.costo }} €
@@ -251,12 +239,7 @@
           />
         </div>
         <div class="mb-6">
-          <label
-            for="costo"
-            class="truncate block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-          >
-            Costo (€)
-          </label>
+          <label for="costo" class="label"> Costo (€) </label>
           <input
             type="number"
             name="costo"
@@ -268,12 +251,7 @@
         </div>
 
         <div class="mb-6" *ngIf="showFieldsVendita">
-          <label
-            for="costo_sconto"
-            class="truncate block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-          >
-            Costo sconto(€)
-          </label>
+          <label for="costo_sconto" class="label"> Costo sconto(€) </label>
           <input
             type="number"
             name="costo_sconto"
@@ -285,10 +263,7 @@
         </div>
 
         <div class="mb-6" *ngIf="showFieldsVendita">
-          <label
-            for="modalita_pagamento"
-            class="truncate block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-          >
+          <label for="modalita_pagamento" class="label">
             Modalità Pagamento
           </label>
           <span class="p-input-icon-right w-full">
@@ -311,12 +286,7 @@
         </div>
 
         <div class="mb-6" *ngIf="showFieldsVendita">
-          <label
-            for="tipo_prodotto"
-            class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-          >
-            Tipo Prodotto
-          </label>
+          <label for="tipo_prodotto" class="label"> Tipo Prodotto </label>
           <span class="p-input-icon-right w-full">
             <i class="pi pi-angle-down"></i>
             <select
@@ -336,25 +306,107 @@
           </span>
         </div>
 
-        <div class="mb-6 col-span-2" *ngIf="showFieldsVendita">
-          <label for="canale_com" class="label">Canale Comunicazione</label>
-          <span class="p-input-icon-right w-full">
-            <i class="pi pi-angle-down"></i>
-            <select
-              name="canale_com"
-              id="canale_com"
-              class="fields"
-              formControlName="canale_com"
-            >
-              <option [ngValue]="null" disabled>Seleziona Canale</option>
-              <option
-                [value]="canaleComunicazione"
-                *ngFor="let canaleComunicazione of canaleComunicazioni"
+        <div>
+          <p-checkbox
+            formControlName="checkedProdottiAggiuntivi"
+            [binary]="true"
+            id="prodotti_aggiuntivi"
+            class="mr-2"
+            (onChange)="checkboxValueChange()"
+          ></p-checkbox>
+          <label for="prodotti_aggiuntivi">Prodotti Aggiuntivi</label>
+        </div>
+
+        <div
+          *ngIf="checkedProdottiAggiuntivi"
+          class="col-span-2 bg-gray-500 border border-neutral-700 rounded-md"
+        >
+          <div *ngFor="let prodotto of prodottiAggiuntivi">
+            <div class="grid md:grid-cols-4 place-items-center auto-cols-min">
+              <div class="m-1">
+                <label for="quantita" class="labelShort">Quantita</label>
+                <input
+                  disabled
+                  #quantita
+                  id="quantita"
+                  type="number"
+                  class="fieldsShort mb-1"
+                  [value]="prodotto.quantita"
+                />
+              </div>
+              <div class="m-1">
+                <label for="nome" class="labelShort">Nome</label>
+                <input
+                  disabled
+                  #nome
+                  id="nome"
+                  type="text"
+                  class="fieldsShort mb-1"
+                  [value]="prodotto.nomeProdotto"
+                />
+              </div>
+              <div class="m-1">
+                <label for="costo" class="labelShort">Costo</label>
+                <input
+                  disabled
+                  #costo
+                  id="costo"
+                  type="number"
+                  class="fieldsShort mb-1"
+                  [value]="prodotto.costo"
+                />
+              </div>
+              <p-button
+                styleClass="p-button-secondary pi pi-times"
+                class="flex mt-3"
+                (onClick)="removeProdottoAggiuntivi(prodotto)"
               >
-                {{ canaleComunicazione }}
-              </option>
-            </select>
-          </span>
+              </p-button>
+            </div>
+          </div>
+          <div
+            class="grid md:grid-cols-4 items-center place-items-center auto-cols-min"
+          >
+            <div class="m-1">
+              <label for="quantita" class="labelShort">Quantita</label>
+              <input
+                #quantitaProdottoInput
+                id="quantita"
+                type="number"
+                class="fieldsShort mb-1"
+              />
+            </div>
+            <div class="m-1">
+              <label for="nome" class="labelShort">Nome</label>
+              <input
+                #nomeProdottoInput
+                id="nome"
+                type="text"
+                class="fieldsShort mb-1"
+              />
+            </div>
+            <div class="m-1">
+              <label for="costo" class="labelShort">Costo</label>
+              <input
+                #costoProdottoInput
+                id="costo"
+                type="number"
+                class="fieldsShort mb-1"
+              />
+            </div>
+            <p-button
+              styleClass="p-button-secondary pi pi-plus"
+              class="flex mt-3"
+              (onClick)="
+                addProdottoAggiuntivi(
+                  quantitaProdottoInput.value,
+                  nomeProdottoInput.value,
+                  costoProdottoInput.value
+                )
+              "
+            >
+            </p-button>
+          </div>
         </div>
       </div>
       <!-- visualizza chi ha fatto l'ultima modifica WIP 
@@ -382,7 +434,9 @@
         >
           Aggiungi
         </p-button>
-        <p-button *ngIf="devmode" (onClick)="findInvalidControls()">check values</p-button>
+        <p-button *ngIf="devmode" (onClick)="findInvalidControls()">
+          check values
+        </p-button>
         <p-button
           styleClass="p-button-raised p-button-secondary"
           [hidden]="isInfo"

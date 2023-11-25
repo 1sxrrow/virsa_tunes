@@ -28,6 +28,7 @@ import { HttpClient } from '@angular/common/http';
 import * as fs from 'file-saver';
 import { formatDate } from '@angular/common';
 import { arrayBufferToBufferCycle, keylistener } from '../shared/utils';
+import { prodottiAggiuntivi } from '../shared/prodottiAggiuntivi.model';
 @Component({
   selector: 'app-user-data',
   templateUrl: './user_data.component.html',
@@ -43,13 +44,16 @@ export class UserDataComponent implements OnInit, OnDestroy, AfterViewInit {
   tipoIntervento: string[];
   tipoParte: string[];
   mesiGaranzia: string[];
-  canaleComunicazioni: string[];
   condizioniProdotto: string[];
   tipoPagamento: string[];
   _specificData: SpecificDataModel[] = [];
 
   @ViewChild('tipoInterventoDropdown') tipoInterventoDropdown: Dropdown;
   @ViewChild('navdrop_tipo_intervento') t: ElementRef;
+
+  @ViewChild('quantitaProdottoInput') quantitaProdottoInput: ElementRef;
+  @ViewChild('nomeProdottoInput') nomeProdottoInput: ElementRef;
+  @ViewChild('costoProdottoInput') costoProdottoInput: ElementRef;
   // Per modale
   showModal = false;
   visible = false;
@@ -78,6 +82,9 @@ export class UserDataComponent implements OnInit, OnDestroy, AfterViewInit {
   showFieldsVendita = false;
   showFieldsRiparazione = false;
 
+  checkedProdottiAggiuntivi: boolean;
+  prodottiAggiuntivi: prodottiAggiuntivi[] = [];
+
   constructor(
     private userDataService: UserDataService,
     private activatedRoute: ActivatedRoute,
@@ -100,6 +107,7 @@ export class UserDataComponent implements OnInit, OnDestroy, AfterViewInit {
       }
     }
     console.log(invalid);
+    console.log(this.checkedProdottiAggiuntivi);
   }
 
   //alla chiusura del dialog viene deselezionato la riga
@@ -158,10 +166,6 @@ export class UserDataComponent implements OnInit, OnDestroy, AfterViewInit {
       this.userDataService.tipoIntervento
     ).filter((key) => isNaN(+key));
 
-    this.canaleComunicazioni = Object.keys(
-      this.userDataService.canaleComunicazione
-    ).filter((key) => isNaN(+key));
-
     this.condizioniProdotto = Object.keys(
       this.userDataService.condizioniProdotto
     ).filter((key) => isNaN(+key));
@@ -214,21 +218,23 @@ export class UserDataComponent implements OnInit, OnDestroy, AfterViewInit {
 
   newIntervento() {
     this.isInfo = true;
+    this.checkedProdottiAggiuntivi = false;
     this.initForm();
     this.showModalFunction('Aggiungi Intervento', false);
   }
 
   showDataIntervento(id: number) {
     this.modifyInterventoId = id;
-
+    this.checkedProdottiAggiuntivi =
+      this.selectedSpecificData.checkedProdottiAggiuntivi;
+    console.log(
+      this.checkedProdottiAggiuntivi,
+      this.selectedSpecificData.checkedProdottiAggiuntivi
+    );
     if (this.selectedSpecificData.tipo_intervento === 'Vendita') {
       this.showFieldsVendita = true;
       this.showFieldsRiparazione = false;
       this.specificDataForm = new FormGroup({
-        canale_com: new FormControl(
-          this.selectedSpecificData.canale_com,
-          Validators.required
-        ),
         costo: new FormControl(
           this.selectedSpecificData.costo,
           Validators.required
@@ -268,6 +274,11 @@ export class UserDataComponent implements OnInit, OnDestroy, AfterViewInit {
         garanzia: new FormControl(this.selectedSpecificData.garanzia, [
           Validators.required,
         ]),
+        checkedProdottiAggiuntivi: new FormControl(
+          this.selectedSpecificData.checkedProdottiAggiuntivi === undefined
+            ? false
+            : true
+        ),
       });
     } else {
       this.showFieldsRiparazione = true;
@@ -304,8 +315,17 @@ export class UserDataComponent implements OnInit, OnDestroy, AfterViewInit {
         problema: new FormControl(this.selectedSpecificData.problema, [
           Validators.required,
         ]),
+        checkedProdottiAggiuntivi: new FormControl(
+          this.selectedSpecificData.checkedProdottiAggiuntivi === undefined
+            ? false
+            : true
+        ),
       });
     }
+    this.prodottiAggiuntivi =
+      this.selectedSpecificData.prodottiAggiuntivi !== undefined
+        ? Object.values(this.selectedSpecificData.prodottiAggiuntivi)
+        : [];
     this.showFields = true;
     this.utenteInserimento = this.userData.utenteInserimento;
     this.utenteUltimaModifica = this.userData.ultimoUtenteModifica;
@@ -324,10 +344,11 @@ export class UserDataComponent implements OnInit, OnDestroy, AfterViewInit {
         this.specificDataForm.value['costo'],
         this.specificDataForm.value['imei'],
         this.specificDataForm.value['modalita_pagamento'],
-        this.specificDataForm.value['canale_com'],
         this.specificDataForm.value['garanzia'],
         null,
         null,
+        this.specificDataForm.value['checkedProdottiAggiuntivi'],
+        this.prodottiAggiuntivi,
         this.specificDataForm.value['costo_sconto'],
         this.userData
       );
@@ -344,9 +365,10 @@ export class UserDataComponent implements OnInit, OnDestroy, AfterViewInit {
         this.specificDataForm.value['imei'],
         null,
         null,
-        null,
         this.specificDataForm.value['problema'],
         this.specificDataForm.value['tipo_parte'],
+        this.specificDataForm.value['checkedProdottiAggiuntivi'],
+        this.prodottiAggiuntivi,
         null,
         this.userData
       );
@@ -358,6 +380,11 @@ export class UserDataComponent implements OnInit, OnDestroy, AfterViewInit {
 
   //Metodo di modifica scatenato alla pressione del pulsante di modifica nel componentø
   modifyUserIntervento() {
+    let checkedValue = this.specificDataForm.value['checkedProdottiAggiuntivi'];
+    if (checkedValue && prodottiAggiuntivi.length < 1) {
+      checkedValue = false;
+    }
+    console.log(checkedValue);
     if (this.getIntervento() === 'Vendita') {
       this.userDataService.modifyIntervento(
         this.userData.id,
@@ -367,7 +394,6 @@ export class UserDataComponent implements OnInit, OnDestroy, AfterViewInit {
         this.specificDataForm.value['modello_telefono'],
         this.specificDataForm.value['modalita_pagamento'],
         this.specificDataForm.value['tipo_prodotto'],
-        this.specificDataForm.value['canale_com'],
         new Date(),
         this.specificDataForm.value['costo'],
         this.specificDataForm.value['imei'],
@@ -375,6 +401,8 @@ export class UserDataComponent implements OnInit, OnDestroy, AfterViewInit {
         null,
         null,
         this.specificDataForm.value['costo_sconto'],
+        checkedValue,
+        this.prodottiAggiuntivi,
         this.userData
       );
     } else {
@@ -386,7 +414,6 @@ export class UserDataComponent implements OnInit, OnDestroy, AfterViewInit {
         this.specificDataForm.value['modello_telefono'],
         null,
         null,
-        null,
         new Date(),
         this.specificDataForm.value['costo'],
         this.specificDataForm.value['imei'],
@@ -394,6 +421,8 @@ export class UserDataComponent implements OnInit, OnDestroy, AfterViewInit {
         this.specificDataForm.value['problema'],
         this.specificDataForm.value['tipo_parte'],
         null,
+        checkedValue,
+        this.prodottiAggiuntivi,
         this.userData
       );
     }
@@ -452,7 +481,6 @@ export class UserDataComponent implements OnInit, OnDestroy, AfterViewInit {
           this.getIntervento(),
           Validators.required
         ),
-        canale_com: new FormControl('', Validators.required),
         costo: new FormControl('', Validators.required),
         costo_sconto: new FormControl('', Validators.required),
         data_intervento: new FormControl(''),
@@ -466,6 +494,7 @@ export class UserDataComponent implements OnInit, OnDestroy, AfterViewInit {
           Validators.maxLength(15),
         ]),
         garanzia: new FormControl('', Validators.required),
+        checkedProdottiAggiuntivi: new FormControl(''),
       });
     } else {
       this.showFields = true;
@@ -488,6 +517,7 @@ export class UserDataComponent implements OnInit, OnDestroy, AfterViewInit {
           Validators.minLength(15),
           Validators.maxLength(15),
         ]),
+        checkedProdottiAggiuntivi: new FormControl(''),
       });
     }
   }
@@ -497,6 +527,30 @@ export class UserDataComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   toggleNavdrop(element) {}
+
+  checkboxValueChange() {
+    this.checkedProdottiAggiuntivi = this.checkedProdottiAggiuntivi
+      ? false
+      : true;
+  }
+
+  addProdottoAggiuntivi(quantita: number, nome: string, costo: number) {
+    if (quantita != 0 && nome != '' && costo != 0) {
+      this.prodottiAggiuntivi.push({
+        quantita: quantita,
+        nomeProdotto: nome,
+        costo: costo,
+      });
+    }
+    this.quantitaProdottoInput.nativeElement.value = '';
+    this.nomeProdottoInput.nativeElement.value = '';
+    this.costoProdottoInput.nativeElement.value = '';
+  }
+
+  removeProdottoAggiuntivi(prodotto: prodottiAggiuntivi) {
+    let index = this.prodottiAggiuntivi.indexOf(prodotto, 1);
+    this.prodottiAggiuntivi.splice(index, 1);
+  }
 
   public createExcel(specificData: SpecificDataModel) {
     const path =
@@ -548,7 +602,7 @@ export class UserDataComponent implements OnInit, OnDestroy, AfterViewInit {
           worksheet.getCell('D12').value = this.userData.numero_telefono; //telefono + gestione celle merged
           worksheet.getCell('B16').value = specificData.modalita_pagamento; //metodo di pagamento + gestione celle merged
           worksheet.getCell('F16').value = specificData.tipo_prodotto; //condizioni + gestione celle merged
-          worksheet.getCell('E16').value = specificData.canale_com; // social / canale com
+          worksheet.getCell('E16').value = this.userData.canale_com; // social / canale com
           worksheet.getCell('E33').value = specificData.garanzia; //garanzia + gestione celle merged
           worksheet.getCell('D19').value =
             specificData.modello_telefono.marca +

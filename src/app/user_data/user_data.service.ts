@@ -13,6 +13,7 @@ import { FirebaseStoreService } from '../shared/firebase.store.service';
 import { ModelloTelefono } from '../shared/modello_telefono.model';
 import { SpecificDataModel } from '../shared/specific_data.model';
 import { UserModel } from '../shared/user_data.model';
+import { prodottiAggiuntivi } from '../shared/prodottiAggiuntivi.model';
 @Injectable({ providedIn: 'root' })
 export class UserDataService {
   usersChanged = new Subject<UserModel[]>();
@@ -76,6 +77,7 @@ export class UserDataService {
     numero_telefono: number,
     citta: string,
     cap: number,
+    canale_com: string,
     specific_data?: SpecificDataModel[],
     ultimoUtenteModifica?: string,
     utenteInserimento?: string
@@ -89,6 +91,7 @@ export class UserDataService {
       numero_telefono,
       citta,
       cap,
+      canale_com,
       specific_data,
       nomeUtenteInserimento
     );
@@ -113,6 +116,7 @@ export class UserDataService {
     indirizzo: string,
     citta: string,
     cap: number,
+    canale_com: string,
     specific_data_i?: SpecificDataModel[]
   ) {
     let specific_data_tmp = specific_data_i;
@@ -124,6 +128,7 @@ export class UserDataService {
         userItem.numero_telefono = numero_telefono_i;
         userItem.citta = citta;
         userItem.cap = cap;
+        userItem.canale_com = canale_com;
         // userItem.specific_data = specific_data;
         if (!specific_data_i) {
           specific_data_tmp = userItem.specific_data;
@@ -139,6 +144,7 @@ export class UserDataService {
       numero_telefono: numero_telefono_i,
       citta: citta,
       cap: cap,
+      canale_com: canale_com,
       specific_data: specific_data_tmp,
       ultimoUtenteModifica: this.authService.userState.displayName,
     };
@@ -156,10 +162,11 @@ export class UserDataService {
     costo: number,
     imei: string,
     modalita_pagamento?: string,
-    canale_com?: string,
     garanzia?: string,
     problema?: string,
     tipo_parte?: string,
+    checkedProdottiAggiuntivi?: boolean,
+    prodottiAggiuntivi?: prodottiAggiuntivi[],
     costo_sconto?: string,
     user_input?: UserModel
   ) {
@@ -179,14 +186,15 @@ export class UserDataService {
       new ModelloTelefono(marca, modello),
       modalita_pagamento,
       tipo_prodotto,
-      canale_com,
       data_intervento,
       costo,
       imei,
       costo_sconto,
       garanzia,
       problema,
-      tipo_parte
+      tipo_parte,
+      checkedProdottiAggiuntivi,
+      prodottiAggiuntivi
     );
 
     let t: SpecificDataModel[] = Object.values(user_work.specific_data);
@@ -206,7 +214,6 @@ export class UserDataService {
     modello: string,
     modalita_pagamento: string,
     tipo_prodotto: string,
-    canale_com: string,
     data_intervento: Date,
     costo: number,
     imei: string,
@@ -214,6 +221,8 @@ export class UserDataService {
     problema?: string,
     tipo_parte?: string,
     costo_sconto?: string,
+    checkedProdottiAggiuntivi?: boolean,
+    prodottiAggiuntivi?: prodottiAggiuntivi[],
     user_input?: UserModel
   ) {
     let spec_retrieved: SpecificDataModel[] = Object.values(
@@ -227,14 +236,15 @@ export class UserDataService {
           new ModelloTelefono(marca, modello),
           modalita_pagamento,
           tipo_prodotto,
-          canale_com,
           data_intervento,
           costo,
           imei,
           costo_sconto,
           garanzia,
           problema,
-          tipo_parte
+          tipo_parte,
+          checkedProdottiAggiuntivi,
+          prodottiAggiuntivi
         );
       }
     });

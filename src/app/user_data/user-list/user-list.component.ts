@@ -28,6 +28,8 @@ export class UserListComponent implements OnInit {
   visible = false;
   savedUserId: number;
 
+  canaleComunicazioni: string[];
+
   utenteUltimaModifica: string;
   utenteInserimento: string;
   users: UserModel[] = [];
@@ -60,6 +62,11 @@ export class UserListComponent implements OnInit {
       this.userDataService.users = this.users;
       this.loading = false;
     });
+
+    // Valorizzazione elementi x DropDown Canale_com
+    this.canaleComunicazioni = Object.keys(
+      this.userDataService.canaleComunicazione
+    ).filter((key) => isNaN(+key));
 
     this.initForm();
   }
@@ -117,7 +124,10 @@ export class UserListComponent implements OnInit {
         : this.userInfoForm.value['citta'],
       this.userInfoForm.value['cap'] === undefined
         ? undefined
-        : this.userInfoForm.value['cap']
+        : this.userInfoForm.value['cap'],
+      this.userInfoForm.value['canale_com'] === undefined
+        ? undefined
+        : this.userInfoForm.value['canale_com']
     );
     this.showModal = !this.showModal;
     this.callModalToast('Aggiunto', 'Nuovo utente aggiunto');
@@ -136,7 +146,8 @@ export class UserListComponent implements OnInit {
       this.userInfoForm.value['numero_telefono'],
       this.userInfoForm.value['indirizzo'],
       this.userInfoForm.value['citta'],
-      this.userInfoForm.value['cap']
+      this.userInfoForm.value['cap'],
+      this.userInfoForm.value['canale_com']
     );
     this.callModalToast('Modificato', 'Dati utente modificati', 'warn');
     this.showModal = !this.showModal;
@@ -161,15 +172,16 @@ export class UserListComponent implements OnInit {
       numero_telefono: new FormControl(user.numero_telefono, [
         Validators.minLength(10),
         Validators.maxLength(10),
-        Validators.required
+        Validators.required,
       ]),
       indirizzo: new FormControl(user.indirizzo, Validators.required),
       citta: new FormControl(user.citta, Validators.required),
       cap: new FormControl(user.cap, [
         Validators.minLength(5),
         Validators.maxLength(5),
-        Validators.required
+        Validators.required,
       ]),
+      canale_com: new FormControl(user.canale_com, Validators.required),
     });
     this.utenteInserimento = user.utente_inserimento;
     this.utenteUltimaModifica = user.ultimo_utente_modifica;
@@ -194,6 +206,7 @@ export class UserListComponent implements OnInit {
         Validators.minLength(5),
         Validators.maxLength(5),
       ]),
+      canale_com: new FormControl('', Validators.required),
       utente_inserimento: new FormControl(''),
       utente_ultima_modifica: new FormControl(''),
     });
