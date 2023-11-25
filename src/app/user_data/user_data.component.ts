@@ -54,6 +54,12 @@ export class UserDataComponent implements OnInit, OnDestroy, AfterViewInit {
   @ViewChild('quantitaProdottoInput') quantitaProdottoInput: ElementRef;
   @ViewChild('nomeProdottoInput') nomeProdottoInput: ElementRef;
   @ViewChild('costoProdottoInput') costoProdottoInput: ElementRef;
+
+  @ViewChild('checkedProdottiAggiuntiviElementRef')
+  checkedProdottiAggiuntiviElementRef: any;
+
+  checkedProdottiAggiuntivi: boolean;
+
   // Per modale
   showModal = false;
   visible = false;
@@ -82,7 +88,6 @@ export class UserDataComponent implements OnInit, OnDestroy, AfterViewInit {
   showFieldsVendita = false;
   showFieldsRiparazione = false;
 
-  checkedProdottiAggiuntivi: boolean;
   prodottiAggiuntivi: prodottiAggiuntivi[] = [];
 
   constructor(
@@ -107,8 +112,32 @@ export class UserDataComponent implements OnInit, OnDestroy, AfterViewInit {
       }
     }
     console.log(invalid);
-    console.log(this.checkedProdottiAggiuntivi);
+    console.log(!(this.specificDataForm.valid && this.specificDataForm.dirty));
+    console.log(!this.checkedProdottiAggiuntivi);
   }
+
+  verifyAuthModify(): boolean {
+    if (this.checkedProdottiAggiuntivi) {
+      console.log('prima');
+      return false;
+    } else if (this.specificDataForm.valid && this.specificDataForm.dirty) {
+      console.log('seconda');
+      return false;
+    } else {
+      console.log('terza');
+      return true;
+    }
+  }
+
+  // ON HOLD - da rifare il controllo della checkbox e la sua gestione.
+  // get checkedProdottiAggiuntivi() {
+  //   console.log(this.checkedProdottiAggiuntiviElementRef);
+  //   return this.isModify
+  //     ? this.selectedSpecificData.checkedProdottiAggiuntivi
+  //     : this.checkedProdottiAggiuntiviElementRef === undefined
+  //     ? false
+  //     : this.checkedProdottiAggiuntiviElementRef.value;
+  // }
 
   //alla chiusura del dialog viene deselezionato la riga
   closeDialog() {
@@ -218,7 +247,6 @@ export class UserDataComponent implements OnInit, OnDestroy, AfterViewInit {
 
   newIntervento() {
     this.isInfo = true;
-    this.checkedProdottiAggiuntivi = false;
     this.initForm();
     this.showModalFunction('Aggiungi Intervento', false);
   }
@@ -380,8 +408,9 @@ export class UserDataComponent implements OnInit, OnDestroy, AfterViewInit {
 
   //Metodo di modifica scatenato alla pressione del pulsante di modifica nel componentø
   modifyUserIntervento() {
+    debugger;
     let checkedValue = this.specificDataForm.value['checkedProdottiAggiuntivi'];
-    if (checkedValue && prodottiAggiuntivi.length < 1) {
+    if (checkedValue && this.prodottiAggiuntivi.length < 1) {
       checkedValue = false;
     }
     console.log(checkedValue);
@@ -448,6 +477,7 @@ export class UserDataComponent implements OnInit, OnDestroy, AfterViewInit {
     this.showFields = false;
     this.showFieldsRiparazione = false;
     this.showFieldsVendita = false;
+    this.prodottiAggiuntivi = [];
     this.specificDataForm = new FormGroup({
       tipo_intervento: new FormControl('', Validators.required),
     });
@@ -527,12 +557,6 @@ export class UserDataComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   toggleNavdrop(element) {}
-
-  checkboxValueChange() {
-    this.checkedProdottiAggiuntivi = this.checkedProdottiAggiuntivi
-      ? false
-      : true;
-  }
 
   addProdottoAggiuntivi(quantita: number, nome: string, costo: number) {
     if (quantita != 0 && nome != '' && costo != 0) {

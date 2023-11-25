@@ -309,10 +309,10 @@
         <div>
           <p-checkbox
             formControlName="checkedProdottiAggiuntivi"
+            [(ngModel)]="checkedProdottiAggiuntivi"
             [binary]="true"
             id="prodotti_aggiuntivi"
             class="mr-2"
-            (onChange)="checkboxValueChange()"
           ></p-checkbox>
           <label for="prodotti_aggiuntivi">Prodotti Aggiuntivi</label>
         </div>
@@ -322,7 +322,9 @@
           class="col-span-2 bg-gray-500 border border-neutral-700 rounded-md"
         >
           <div *ngFor="let prodotto of prodottiAggiuntivi">
-            <div class="grid md:grid-cols-4 place-items-center auto-cols-min">
+            <div
+              class="grid md:grid-cols-4 place-items-center auto-cols-min ml-2"
+            >
               <div class="m-1">
                 <label for="quantita" class="labelShort">Quantita</label>
                 <input
@@ -365,7 +367,7 @@
             </div>
           </div>
           <div
-            class="grid md:grid-cols-4 items-center place-items-center auto-cols-min"
+            class="grid md:grid-cols-4 place-items-center auto-cols-min ml-2"
           >
             <div class="m-1">
               <label for="quantita" class="labelShort">Quantita</label>
@@ -440,7 +442,7 @@
         <p-button
           styleClass="p-button-raised p-button-secondary"
           [hidden]="isInfo"
-          [disabled]="!(specificDataForm.valid && specificDataForm.dirty)"
+          [disabled]="verifyAuthModify()"
           (onClick)="modifyUserIntervento()"
         >
           Modifica
