@@ -309,6 +309,7 @@
         <div>
           <p-checkbox
             formControlName="checkedProdottiAggiuntivi"
+            (ngModelChange) ="myModelChanged($event)"
             [(ngModel)]="checkedProdottiAggiuntivi"
             [binary]="true"
             id="prodotti_aggiuntivi"

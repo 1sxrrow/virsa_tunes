@@ -58,7 +58,7 @@ export class UserDataComponent implements OnInit, OnDestroy, AfterViewInit {
   @ViewChild('checkedProdottiAggiuntiviElementRef')
   checkedProdottiAggiuntiviElementRef: any;
 
-  checkedProdottiAggiuntivi: boolean;
+  checkedProdottiAggiuntivi: boolean = false;
 
   // Per modale
   showModal = false;
@@ -117,16 +117,11 @@ export class UserDataComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   verifyAuthModify(): boolean {
-    if (this.checkedProdottiAggiuntivi) {
-      console.log('prima');
-      return false;
-    } else if (this.specificDataForm.valid && this.specificDataForm.dirty) {
-      console.log('seconda');
-      return false;
-    } else {
-      console.log('terza');
-      return true;
-    }
+    return this.checkedProdottiAggiuntivi
+      ? false
+      : this.specificDataForm.valid && this.specificDataForm.dirty
+      ? false
+      : true;
   }
 
   // ON HOLD - da rifare il controllo della checkbox e la sua gestione.
@@ -156,14 +151,9 @@ export class UserDataComponent implements OnInit, OnDestroy, AfterViewInit {
         this.nome = this.userData.nome;
         this.cognome = this.userData.cognome;
         this.loading = false;
-        // TODO Mappare oggetto specific_data in array perchè firebase lo crea in un object
         let specific_data = this.userData.specific_data;
         let mapped: SpecificDataModel[];
-        if (specific_data) {
-          mapped = Object.values(specific_data);
-        } else {
-          mapped = [];
-        }
+        mapped = specific_data ? Object.values(specific_data) : [];
         this._specificData = mapped;
       });
     });
@@ -188,6 +178,10 @@ export class UserDataComponent implements OnInit, OnDestroy, AfterViewInit {
         split: (_: any) => [(item: any) => item],
       };
     }
+  }
+
+  myModelChanged(event) {
+    console.log(event);
   }
 
   private valEnums() {
@@ -375,7 +369,7 @@ export class UserDataComponent implements OnInit, OnDestroy, AfterViewInit {
         this.specificDataForm.value['garanzia'],
         null,
         null,
-        this.specificDataForm.value['checkedProdottiAggiuntivi'],
+        this.checkCongruenzaProdottiAggiuntivi(),
         this.prodottiAggiuntivi,
         this.specificDataForm.value['costo_sconto'],
         this.userData
@@ -395,7 +389,7 @@ export class UserDataComponent implements OnInit, OnDestroy, AfterViewInit {
         null,
         this.specificDataForm.value['problema'],
         this.specificDataForm.value['tipo_parte'],
-        this.specificDataForm.value['checkedProdottiAggiuntivi'],
+        this.checkCongruenzaProdottiAggiuntivi(),
         this.prodottiAggiuntivi,
         null,
         this.userData
@@ -406,14 +400,16 @@ export class UserDataComponent implements OnInit, OnDestroy, AfterViewInit {
     this.callModalToast('Aggiunto', 'Nuovo utente aggiunto');
   }
 
-  //Metodo di modifica scatenato alla pressione del pulsante di modifica nel componentø
-  modifyUserIntervento() {
-    debugger;
+  checkCongruenzaProdottiAggiuntivi() {
     let checkedValue = this.specificDataForm.value['checkedProdottiAggiuntivi'];
     if (checkedValue && this.prodottiAggiuntivi.length < 1) {
       checkedValue = false;
     }
-    console.log(checkedValue);
+    return checkedValue;
+  }
+
+  //Metodo di modifica scatenato alla pressione del pulsante di modifica nel componentø
+  modifyUserIntervento() {
     if (this.getIntervento() === 'Vendita') {
       this.userDataService.modifyIntervento(
         this.userData.id,
@@ -430,7 +426,7 @@ export class UserDataComponent implements OnInit, OnDestroy, AfterViewInit {
         null,
         null,
         this.specificDataForm.value['costo_sconto'],
-        checkedValue,
+        this.checkCongruenzaProdottiAggiuntivi(),
         this.prodottiAggiuntivi,
         this.userData
       );
@@ -450,7 +446,7 @@ export class UserDataComponent implements OnInit, OnDestroy, AfterViewInit {
         this.specificDataForm.value['problema'],
         this.specificDataForm.value['tipo_parte'],
         null,
-        checkedValue,
+        this.checkCongruenzaProdottiAggiuntivi(),
         this.prodottiAggiuntivi,
         this.userData
       );
@@ -639,8 +635,52 @@ export class UserDataComponent implements OnInit, OnDestroy, AfterViewInit {
           let discounted =
             specificData.costo - Number(specificData.costo_sconto);
           worksheet.getCell('H19').value = discounted; // totale riga
-          worksheet.getCell('H31').value = specificData.costo; // subtotale
-          worksheet.getCell('H33').value = discounted; // totale
+          let costoTotaleProdottiAggiuntivi: number = 0;
+          if (
+            specificData.checkedProdottiAggiuntivi &&
+            Object.keys(specificData.prodottiAggiuntivi).length > 0
+          ) {
+            console.log('ho prodotti aggiuntivi');
+            Object.values(specificData.prodottiAggiuntivi).forEach((x, i) => {
+              if (i === 0) {
+                worksheet.getCell('B20').value = x.quantita;
+                worksheet.getCell('H20').value = worksheet.getCell(
+                  'F20'
+                ).value = Number(x.costo);
+                worksheet.getCell('D20').value = x.nomeProdotto;
+                costoTotaleProdottiAggiuntivi += Number(x.costo);
+              }
+              if (i === 1) {
+                worksheet.getCell('B21').value = x.quantita;
+                worksheet.getCell('H21').value = worksheet.getCell(
+                  'F21'
+                ).value = Number(x.costo);
+                worksheet.getCell('D21').value = x.nomeProdotto;
+                costoTotaleProdottiAggiuntivi += Number(x.costo);
+              }
+              if (i === 2) {
+                worksheet.getCell('B22').value = x.quantita;
+                worksheet.getCell('H22').value = worksheet.getCell(
+                  'F22'
+                ).value = Number(x.costo);
+                worksheet.getCell('D22').value = x.nomeProdotto;
+                costoTotaleProdottiAggiuntivi += Number(x.costo);
+              }
+              if (i === 3) {
+                worksheet.getCell('B23').value = x.quantita;
+                worksheet.getCell('H23').value = worksheet.getCell(
+                  'F23'
+                ).value = Number(x.costo);
+                worksheet.getCell('D23').value = x.nomeProdotto;
+                costoTotaleProdottiAggiuntivi += Number(x.costo);
+              }
+            });
+          }
+          worksheet.getCell('H31').value =
+            Number(specificData.costo) + Number(costoTotaleProdottiAggiuntivi); // subtotale
+          worksheet.getCell('H33').value =
+            Number(discounted) + Number(costoTotaleProdottiAggiuntivi); // totale
+
           console.log('scrittura dati fatta');
         } else {
           worksheet.getCell('C24').value = worksheet.getCell('C4').value =
@@ -657,11 +697,35 @@ export class UserDataComponent implements OnInit, OnDestroy, AfterViewInit {
             specificData.tipo_parte;
           worksheet.getCell('B11').value = specificData.problema;
           worksheet.getCell('D11').value = specificData.imei;
+          let costoTotaleProdottiAggiuntivi: number = 0;
+          if (
+            specificData.checkedProdottiAggiuntivi &&
+            specificData.prodottiAggiuntivi.length > 0
+          ) {
+            console.log('ho prodotti aggiuntivi');
+            specificData.prodottiAggiuntivi.forEach((x, i) => {
+              if (i === 0) {
+                worksheet.getCell('F12').value = x.costo;
+                worksheet.getCell('B12').value = x.nomeProdotto;
+                costoTotaleProdottiAggiuntivi += x.costo;
+              }
+              if (i === 1) {
+                worksheet.getCell('F13').value = x.costo;
+                worksheet.getCell('B13').value = x.nomeProdotto;
+                costoTotaleProdottiAggiuntivi += x.costo;
+              }
+              if (i === 2) {
+                worksheet.getCell('F14').value = x.costo;
+                worksheet.getCell('B14').value = x.nomeProdotto;
+                costoTotaleProdottiAggiuntivi += x.costo;
+              }
+            });
+          }
+          worksheet.getCell('F11').value = specificData.costo;
           worksheet.getCell('F27').value =
             worksheet.getCell('F20').value =
             worksheet.getCell('F16').value =
-            worksheet.getCell('F11').value =
-              specificData.costo;
+              specificData.costo + costoTotaleProdottiAggiuntivi;
           worksheet.getCell('F5').value =
             specificData.modello_telefono.marca +
             ' ' +
