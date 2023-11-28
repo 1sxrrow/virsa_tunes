@@ -167,6 +167,8 @@ export class UserDataService {
     tipo_parte?: string,
     checkedProdottiAggiuntivi?: boolean,
     prodottiAggiuntivi?: prodottiAggiuntivi[],
+    data_consegna_riparazione?: Date,
+    codice_sblocco?: string,
     costo_sconto?: string,
     user_input?: UserModel
   ) {
@@ -194,7 +196,9 @@ export class UserDataService {
       problema,
       tipo_parte,
       checkedProdottiAggiuntivi,
-      prodottiAggiuntivi
+      prodottiAggiuntivi,
+      data_consegna_riparazione,
+      codice_sblocco
     );
 
     let t: SpecificDataModel[] = Object.values(user_work.specific_data);
@@ -223,6 +227,8 @@ export class UserDataService {
     costo_sconto?: string,
     checkedProdottiAggiuntivi?: boolean,
     prodottiAggiuntivi?: prodottiAggiuntivi[],
+    data_consegna_riparazione?: Date,
+    codice_sblocco?: string,
     user_input?: UserModel
   ) {
     let spec_retrieved: SpecificDataModel[] = Object.values(
@@ -244,7 +250,9 @@ export class UserDataService {
           problema,
           tipo_parte,
           checkedProdottiAggiuntivi,
-          prodottiAggiuntivi
+          prodottiAggiuntivi,
+          data_consegna_riparazione,
+          codice_sblocco
         );
       }
     });

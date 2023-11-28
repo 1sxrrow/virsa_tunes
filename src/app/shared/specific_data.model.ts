@@ -16,6 +16,8 @@ export class SpecificDataModel {
     public problema: string,
     public tipo_parte: string,
     public checkedProdottiAggiuntivi: boolean,
-    public prodottiAggiuntivi: prodottiAggiuntivi[]
+    public prodottiAggiuntivi: prodottiAggiuntivi[],
+    public data_consegna_riparazione: Date,
+    public codice_sblocco: string
   ) {}
 }

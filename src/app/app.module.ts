@@ -30,10 +30,14 @@ import { UserEditComponent } from './user_data/user-edit/user-edit.component';
 import { UserListComponent } from './user_data/user-list/user-list.component';
 import { UserDataComponent } from './user_data/user_data.component';
 import { NgSelectModule } from '@ng-select/ng-select';
-import { CheckboxModule } from 'primeng/checkbox';
-import { HttpClientModule } from '@angular/common/http';
+import { HttpClient, HttpClientModule } from '@angular/common/http';
+import { CalendarModule } from 'primeng/calendar';
 import localeIt from '@angular/common/locales/it';
 import { registerLocaleData } from '@angular/common';
+import { TranslateHttpLoader } from '@ngx-translate/http-loader';
+import { TranslateLoader, TranslateModule } from '@ngx-translate/core';
+import { SelectButtonModule } from 'primeng/selectbutton';
+import { CheckboxModule } from 'primeng/checkbox';
 
 registerLocaleData(localeIt);
 const routes: Routes = [
@@ -58,6 +62,10 @@ const routes: Routes = [
   { path: 'not-found', component: NotFoundComponent },
   { path: '**', redirectTo: '/not-found' },
 ];
+
+export function HttpLoaderFactory(httpClient: HttpClient) {
+  return new TranslateHttpLoader(httpClient);
+}
 
 @NgModule({
   declarations: [
@@ -89,6 +97,15 @@ const routes: Routes = [
     TooltipModule,
     NgSelectModule,
     CheckboxModule,
+    SelectButtonModule,
+    CalendarModule,
+    TranslateModule.forRoot({
+      loader: {
+        provide: TranslateLoader,
+        useFactory: HttpLoaderFactory,
+        deps: [HttpClient],
+      },
+    }),
     HttpClientModule,
     provideFirebaseApp(() => initializeApp(firebaseConfig)),
     provideDatabase(() => getDatabase()),

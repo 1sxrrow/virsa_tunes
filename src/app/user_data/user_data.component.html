@@ -46,7 +46,7 @@
             Prodotto<p-sortIcon field="modello_telefono"></p-sortIcon>
           </th>
           <th pSortableColumn="data_intervento">
-            Data<p-sortIcon field="data_intervento"></p-sortIcon>
+            Data Inserimento<p-sortIcon field="data_intervento"></p-sortIcon>
           </th>
           <th pSortableColumn="costo">
             Costo <p-sortIcon field="costo"></p-sortIcon>
@@ -306,7 +306,38 @@
           </span>
         </div>
 
-        <div>
+        <div *ngIf="showFieldsRiparazione">
+          <label for="codice_sblocco" class="label"> Codice Sblocco </label>
+          <input
+            type="number"
+            name="codice_sblocco"
+            id="costo_sconto"
+            class="fields"
+            formControlName="codice_sblocco"
+            required
+          />
+        </div>
+
+        <div *ngIf="showFieldsRiparazione">
+          <label for="data_consegna_riparazione" class="label">
+            {{ "user_data.data_consegna_riparazione" | translate }}
+          </label>
+          <p-calendar
+            [formControl]="
+              specificDataForm.controls['data_consegna_riparazione']
+            "
+            name="data_consegna_riparazione"
+            id="data_consegna_riparazione"
+            [style]="{ width: '100%' }"
+            required
+            dateFormat="dd/mm/yy"
+          ></p-calendar>
+        </div>
+
+        <div class="col-start-1 col-end-2">
+          <label for="prodotti_aggiuntivi" class="mr-2"
+            >Prodotti Aggiuntivi</label
+          >
           <p-checkbox
             formControlName="checkedProdottiAggiuntivi"
             (ngModelChange) ="myModelChanged($event)"
@@ -315,7 +346,6 @@
             id="prodotti_aggiuntivi"
             class="mr-2"
           ></p-checkbox>
-          <label for="prodotti_aggiuntivi">Prodotti Aggiuntivi</label>
         </div>
 
         <div

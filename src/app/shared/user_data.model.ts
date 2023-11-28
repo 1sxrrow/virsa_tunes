@@ -59,7 +59,9 @@ export class UserModel {
             specific_data[i].problema,
             specific_data[i].tipo_parte,
             specific_data[i].checkedProdottiAggiuntivi,
-            specific_data[i].prodottiAggiuntivi
+            specific_data[i].prodottiAggiuntivi,
+            specific_data[i].data_consegna_riparazione,
+            specific_data[i].codice_sblocco
           )
         );
       }

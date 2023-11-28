@@ -6,6 +6,7 @@ import {
   LOCALE_ID,
   OnDestroy,
   OnInit,
+  TRANSLATIONS,
   ViewChild,
   isDevMode,
 } from '@angular/core';
@@ -15,6 +16,7 @@ import {
   ConfirmEventType,
   ConfirmationService,
   MessageService,
+  PrimeNGConfig,
 } from 'primeng/api';
 import { Dropdown } from 'primeng/dropdown';
 import { Subscription } from 'rxjs';
@@ -29,6 +31,8 @@ import * as fs from 'file-saver';
 import { formatDate } from '@angular/common';
 import { arrayBufferToBufferCycle, keylistener } from '../shared/utils';
 import { prodottiAggiuntivi } from '../shared/prodottiAggiuntivi.model';
+import { TranslateService } from '@ngx-translate/core';
+
 @Component({
   selector: 'app-user-data',
   templateUrl: './user_data.component.html',
@@ -55,9 +59,6 @@ export class UserDataComponent implements OnInit, OnDestroy, AfterViewInit {
   @ViewChild('nomeProdottoInput') nomeProdottoInput: ElementRef;
   @ViewChild('costoProdottoInput') costoProdottoInput: ElementRef;
 
-  @ViewChild('checkedProdottiAggiuntiviElementRef')
-  checkedProdottiAggiuntiviElementRef: any;
-
   checkedProdottiAggiuntivi: boolean = false;
 
   // Per modale
@@ -83,6 +84,11 @@ export class UserDataComponent implements OnInit, OnDestroy, AfterViewInit {
   utenteUltimaModifica: string;
   devmode = false;
 
+  stateOptions: any[] = [
+    { label: 'Off', value: false },
+    { label: 'On', value: true },
+  ];
+
   modifyInterventoId: number;
 
   showFieldsVendita = false;
@@ -98,7 +104,8 @@ export class UserDataComponent implements OnInit, OnDestroy, AfterViewInit {
     private firebaseStoreService: FirebaseStoreService,
     private router: Router,
     private http: HttpClient,
-    private authService: AuthService,
+
+    private translateService: TranslateService,
     @Inject(LOCALE_ID) public locale: string
   ) {}
 
@@ -112,8 +119,6 @@ export class UserDataComponent implements OnInit, OnDestroy, AfterViewInit {
       }
     }
     console.log(invalid);
-    console.log(!(this.specificDataForm.valid && this.specificDataForm.dirty));
-    console.log(!this.checkedProdottiAggiuntivi);
   }
 
   verifyAuthModify(): boolean {
@@ -124,24 +129,19 @@ export class UserDataComponent implements OnInit, OnDestroy, AfterViewInit {
       : true;
   }
 
-  // ON HOLD - da rifare il controllo della checkbox e la sua gestione.
-  // get checkedProdottiAggiuntivi() {
-  //   console.log(this.checkedProdottiAggiuntiviElementRef);
-  //   return this.isModify
-  //     ? this.selectedSpecificData.checkedProdottiAggiuntivi
-  //     : this.checkedProdottiAggiuntiviElementRef === undefined
-  //     ? false
-  //     : this.checkedProdottiAggiuntiviElementRef.value;
-  // }
-
   //alla chiusura del dialog viene deselezionato la riga
   closeDialog() {
     this.selectedSpecificData = null;
   }
 
+  changeLang(lang: string) {
+    this.translateService.use(lang);
+  }
+
   ngOnInit(): void {
     this.valEnums();
     this.initForm();
+
     // recupero dati utente da database Firebase.
     this.activatedRoute.params.subscribe((params) => {
       this.id = +params['id'];
@@ -241,14 +241,18 @@ export class UserDataComponent implements OnInit, OnDestroy, AfterViewInit {
 
   newIntervento() {
     this.isInfo = true;
+    this.checkedProdottiAggiuntivi = false;
     this.initForm();
     this.showModalFunction('Aggiungi Intervento', false);
   }
 
   showDataIntervento(id: number) {
+    this.initForm();
     this.modifyInterventoId = id;
     this.checkedProdottiAggiuntivi =
-      this.selectedSpecificData.checkedProdottiAggiuntivi;
+      this.selectedSpecificData.checkedProdottiAggiuntivi !== undefined
+        ? this.selectedSpecificData.checkedProdottiAggiuntivi
+        : false;
     console.log(
       this.checkedProdottiAggiuntivi,
       this.selectedSpecificData.checkedProdottiAggiuntivi
@@ -297,9 +301,7 @@ export class UserDataComponent implements OnInit, OnDestroy, AfterViewInit {
           Validators.required,
         ]),
         checkedProdottiAggiuntivi: new FormControl(
-          this.selectedSpecificData.checkedProdottiAggiuntivi === undefined
-            ? false
-            : true
+          this.checkedProdottiAggiuntivi
         ),
       });
     } else {
@@ -338,9 +340,16 @@ export class UserDataComponent implements OnInit, OnDestroy, AfterViewInit {
           Validators.required,
         ]),
         checkedProdottiAggiuntivi: new FormControl(
-          this.selectedSpecificData.checkedProdottiAggiuntivi === undefined
-            ? false
-            : true
+          this.checkedProdottiAggiuntivi
+        ),
+        data_consegna_riparazione: new FormControl(
+          this.selectedSpecificData.data_consegna_riparazione
+            ? new Date(this.selectedSpecificData.data_consegna_riparazione)
+            : '',
+          Validators.required
+        ),
+        codice_sblocco: new FormControl(
+          this.selectedSpecificData.codice_sblocco
         ),
       });
     }
@@ -371,11 +380,12 @@ export class UserDataComponent implements OnInit, OnDestroy, AfterViewInit {
         null,
         this.checkCongruenzaProdottiAggiuntivi(),
         this.prodottiAggiuntivi,
+        null,
+        null,
         this.specificDataForm.value['costo_sconto'],
         this.userData
       );
     } else {
-      console.log(this.specificDataForm.value['tipo_parte']);
       this.userDataService.addNewIntervento(
         this.userData.id,
         this.specificDataForm.value['tipo_intervento'],
@@ -391,6 +401,8 @@ export class UserDataComponent implements OnInit, OnDestroy, AfterViewInit {
         this.specificDataForm.value['tipo_parte'],
         this.checkCongruenzaProdottiAggiuntivi(),
         this.prodottiAggiuntivi,
+        this.specificDataForm.value['data_consegna_riparazione'],
+        this.specificDataForm.value['codice_sblocco'],
         null,
         this.userData
       );
@@ -428,6 +440,8 @@ export class UserDataComponent implements OnInit, OnDestroy, AfterViewInit {
         this.specificDataForm.value['costo_sconto'],
         this.checkCongruenzaProdottiAggiuntivi(),
         this.prodottiAggiuntivi,
+        null,
+        null,
         this.userData
       );
     } else {
@@ -448,6 +462,8 @@ export class UserDataComponent implements OnInit, OnDestroy, AfterViewInit {
         null,
         this.checkCongruenzaProdottiAggiuntivi(),
         this.prodottiAggiuntivi,
+        this.specificDataForm.value['data_consegna_riparazione'],
+        this.specificDataForm.value['codice_sblocco'],
         this.userData
       );
     }
@@ -458,6 +474,7 @@ export class UserDataComponent implements OnInit, OnDestroy, AfterViewInit {
 
   showModalFunction(modalTitle: string, isModify: boolean, id?: number) {
     this.showModal = !this.showModal;
+    console.log(this.selectedSpecificData.checkedProdottiAggiuntivi);
     this.modalTitle = modalTitle;
     this.isModify = isModify;
     if (this.isModify) {
@@ -501,7 +518,6 @@ export class UserDataComponent implements OnInit, OnDestroy, AfterViewInit {
       this.showFields = true;
       this.showFieldsRiparazione = false;
       this.showFieldsVendita = true;
-      console.log(this.showFieldsVendita);
       this.specificDataForm = new FormGroup({
         tipo_intervento: new FormControl(
           this.getIntervento(),
@@ -526,7 +542,6 @@ export class UserDataComponent implements OnInit, OnDestroy, AfterViewInit {
       this.showFields = true;
       this.showFieldsVendita = false;
       this.showFieldsRiparazione = true;
-      console.log(this.showFieldsRiparazione);
       this.specificDataForm = new FormGroup({
         tipo_intervento: new FormControl(
           this.getIntervento(),
@@ -544,6 +559,8 @@ export class UserDataComponent implements OnInit, OnDestroy, AfterViewInit {
           Validators.maxLength(15),
         ]),
         checkedProdottiAggiuntivi: new FormControl(''),
+        data_consegna_riparazione: new FormControl('', Validators.required),
+        codice_sblocco: new FormControl(''),
       });
     }
   }
@@ -581,7 +598,6 @@ export class UserDataComponent implements OnInit, OnDestroy, AfterViewInit {
     this.http.get(path, { responseType: 'blob' }).subscribe((res) => {
       const reader = new FileReader();
       reader.onload = async (e) => {
-        console.log();
         const workbook = new Workbook();
         let y = arrayBufferToBufferCycle(e.target.result);
         // carico buffer excel
@@ -593,7 +609,6 @@ export class UserDataComponent implements OnInit, OnDestroy, AfterViewInit {
           ],
         });
         var worksheet = workbook.getWorksheet('RICEVUTA');
-        console.log(this.locale);
         let formatDateVar = formatDate(
           specificData.data_intervento,
           'd MMMM yyyy',
@@ -640,7 +655,6 @@ export class UserDataComponent implements OnInit, OnDestroy, AfterViewInit {
             specificData.checkedProdottiAggiuntivi &&
             Object.keys(specificData.prodottiAggiuntivi).length > 0
           ) {
-            console.log('ho prodotti aggiuntivi');
             Object.values(specificData.prodottiAggiuntivi).forEach((x, i) => {
               if (i === 0) {
                 worksheet.getCell('B20').value = x.quantita;
@@ -680,8 +694,6 @@ export class UserDataComponent implements OnInit, OnDestroy, AfterViewInit {
             Number(specificData.costo) + Number(costoTotaleProdottiAggiuntivi); // subtotale
           worksheet.getCell('H33').value =
             Number(discounted) + Number(costoTotaleProdottiAggiuntivi); // totale
-
-          console.log('scrittura dati fatta');
         } else {
           worksheet.getCell('C24').value = worksheet.getCell('C4').value =
             this.userData.nome + ' ' + this.userData.cognome;
@@ -692,7 +704,6 @@ export class UserDataComponent implements OnInit, OnDestroy, AfterViewInit {
             this.userData.citta;
           worksheet.getCell('C27').value = worksheet.getCell('C8').value =
             this.userData.numero_telefono;
-          console.log(specificData.tipo_parte);
           worksheet.getCell('D24').value = worksheet.getCell('D8').value =
             specificData.tipo_parte;
           worksheet.getCell('B11').value = specificData.problema;
@@ -702,7 +713,6 @@ export class UserDataComponent implements OnInit, OnDestroy, AfterViewInit {
             specificData.checkedProdottiAggiuntivi &&
             specificData.prodottiAggiuntivi.length > 0
           ) {
-            console.log('ho prodotti aggiuntivi');
             specificData.prodottiAggiuntivi.forEach((x, i) => {
               if (i === 0) {
                 worksheet.getCell('F12').value = x.costo;
@@ -733,11 +743,9 @@ export class UserDataComponent implements OnInit, OnDestroy, AfterViewInit {
         }
         // Creazione Excel modificato
         workbook.xlsx.writeBuffer().then((data) => {
-          console.log(data);
           let blob = new Blob([data], {
             type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
           });
-          console.log(blob);
           fs.saveAs(
             blob,
             (specificData.tipo_intervento === 'Vendita'

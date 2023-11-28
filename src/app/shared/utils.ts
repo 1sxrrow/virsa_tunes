@@ -1,4 +1,5 @@
 import { isDevMode } from '@angular/core';
+import { LocaleSettings } from 'primeng/calendar';
 
 export function arrayBufferToBufferCycle(ab): Buffer {
   var buffer = new Buffer(ab.byteLength);
