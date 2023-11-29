@@ -180,9 +180,7 @@ export class UserDataComponent implements OnInit, OnDestroy, AfterViewInit {
     }
   }
 
-  myModelChanged(event) {
-    console.log(event);
-  }
+  myModelChanged(event) {}
 
   private valEnums() {
     this.tipoIntervento = Object.keys(
@@ -253,10 +251,6 @@ export class UserDataComponent implements OnInit, OnDestroy, AfterViewInit {
       this.selectedSpecificData.checkedProdottiAggiuntivi !== undefined
         ? this.selectedSpecificData.checkedProdottiAggiuntivi
         : false;
-    console.log(
-      this.checkedProdottiAggiuntivi,
-      this.selectedSpecificData.checkedProdottiAggiuntivi
-    );
     if (this.selectedSpecificData.tipo_intervento === 'Vendita') {
       this.showFieldsVendita = true;
       this.showFieldsRiparazione = false;
@@ -351,6 +345,7 @@ export class UserDataComponent implements OnInit, OnDestroy, AfterViewInit {
         codice_sblocco: new FormControl(
           this.selectedSpecificData.codice_sblocco
         ),
+        caparra: new FormControl(this.selectedSpecificData.caparra),
       });
     }
     this.prodottiAggiuntivi =
@@ -382,6 +377,7 @@ export class UserDataComponent implements OnInit, OnDestroy, AfterViewInit {
         this.prodottiAggiuntivi,
         null,
         null,
+        null,
         this.specificDataForm.value['costo_sconto'],
         this.userData
       );
@@ -403,6 +399,7 @@ export class UserDataComponent implements OnInit, OnDestroy, AfterViewInit {
         this.prodottiAggiuntivi,
         this.specificDataForm.value['data_consegna_riparazione'],
         this.specificDataForm.value['codice_sblocco'],
+        this.specificDataForm.value['caparra'],
         null,
         this.userData
       );
@@ -442,6 +439,7 @@ export class UserDataComponent implements OnInit, OnDestroy, AfterViewInit {
         this.prodottiAggiuntivi,
         null,
         null,
+        null,
         this.userData
       );
     } else {
@@ -464,6 +462,7 @@ export class UserDataComponent implements OnInit, OnDestroy, AfterViewInit {
         this.prodottiAggiuntivi,
         this.specificDataForm.value['data_consegna_riparazione'],
         this.specificDataForm.value['codice_sblocco'],
+        this.specificDataForm.value['caparra'],
         this.userData
       );
     }
@@ -474,7 +473,6 @@ export class UserDataComponent implements OnInit, OnDestroy, AfterViewInit {
 
   showModalFunction(modalTitle: string, isModify: boolean, id?: number) {
     this.showModal = !this.showModal;
-    console.log(this.selectedSpecificData.checkedProdottiAggiuntivi);
     this.modalTitle = modalTitle;
     this.isModify = isModify;
     if (this.isModify) {
@@ -561,6 +559,7 @@ export class UserDataComponent implements OnInit, OnDestroy, AfterViewInit {
         checkedProdottiAggiuntivi: new FormControl(''),
         data_consegna_riparazione: new FormControl('', Validators.required),
         codice_sblocco: new FormControl(''),
+        caparra: new FormControl(''),
       });
     }
   }
@@ -706,36 +705,55 @@ export class UserDataComponent implements OnInit, OnDestroy, AfterViewInit {
             this.userData.numero_telefono;
           worksheet.getCell('D24').value = worksheet.getCell('D8').value =
             specificData.tipo_parte;
+
+          let formatDateVar = specificData.data_consegna_riparazione
+            ? formatDate(
+                specificData.data_consegna_riparazione,
+                'd MMMM yyyy',
+                this.locale
+              )
+            : '';
+          worksheet.getCell('C17').value = formatDateVar;
+          worksheet.getCell('E11').value = specificData.codice_sblocco
+            ? specificData.codice_sblocco
+            : '';
+          worksheet.getCell('F18').value = worksheet.getCell('F26').value =
+            specificData.caparra ? Number(specificData.caparra) : '';
           worksheet.getCell('B11').value = specificData.problema;
           worksheet.getCell('D11').value = specificData.imei;
           let costoTotaleProdottiAggiuntivi: number = 0;
           if (
             specificData.checkedProdottiAggiuntivi &&
-            specificData.prodottiAggiuntivi.length > 0
+            Object.values(specificData.prodottiAggiuntivi).length > 0
           ) {
-            specificData.prodottiAggiuntivi.forEach((x, i) => {
+            Object.values(specificData.prodottiAggiuntivi).forEach((x, i) => {
               if (i === 0) {
-                worksheet.getCell('F12').value = x.costo;
+                worksheet.getCell('F12').value = Number(x.costo);
                 worksheet.getCell('B12').value = x.nomeProdotto;
-                costoTotaleProdottiAggiuntivi += x.costo;
+                costoTotaleProdottiAggiuntivi += Number(x.costo);
               }
               if (i === 1) {
-                worksheet.getCell('F13').value = x.costo;
+                worksheet.getCell('F13').value = Number(x.costo);
                 worksheet.getCell('B13').value = x.nomeProdotto;
-                costoTotaleProdottiAggiuntivi += x.costo;
+                costoTotaleProdottiAggiuntivi += Number(x.costo);
               }
               if (i === 2) {
-                worksheet.getCell('F14').value = x.costo;
+                worksheet.getCell('F14').value = Number(x.costo);
                 worksheet.getCell('B14').value = x.nomeProdotto;
-                costoTotaleProdottiAggiuntivi += x.costo;
+                costoTotaleProdottiAggiuntivi += Number(x.costo);
               }
             });
           }
-          worksheet.getCell('F11').value = specificData.costo;
-          worksheet.getCell('F27').value =
-            worksheet.getCell('F20').value =
-            worksheet.getCell('F16').value =
-              specificData.costo + costoTotaleProdottiAggiuntivi;
+          worksheet.getCell('F11').value = Number(specificData.costo);
+          worksheet.getCell('F27').value = worksheet.getCell('F20').value =
+            specificData.caparra
+              ? Number(specificData.costo) +
+                Number(costoTotaleProdottiAggiuntivi) -
+                Number(specificData.caparra)
+              : Number(specificData.costo) +
+                Number(costoTotaleProdottiAggiuntivi);
+          worksheet.getCell('F16').value =
+            Number(specificData.costo) + Number(costoTotaleProdottiAggiuntivi);
           worksheet.getCell('F5').value =
             specificData.modello_telefono.marca +
             ' ' +

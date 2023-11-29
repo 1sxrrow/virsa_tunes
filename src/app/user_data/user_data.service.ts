@@ -169,6 +169,7 @@ export class UserDataService {
     prodottiAggiuntivi?: prodottiAggiuntivi[],
     data_consegna_riparazione?: Date,
     codice_sblocco?: string,
+    caparra?: string,
     costo_sconto?: string,
     user_input?: UserModel
   ) {
@@ -198,7 +199,8 @@ export class UserDataService {
       checkedProdottiAggiuntivi,
       prodottiAggiuntivi,
       data_consegna_riparazione,
-      codice_sblocco
+      codice_sblocco,
+      caparra
     );
 
     let t: SpecificDataModel[] = Object.values(user_work.specific_data);
@@ -229,6 +231,7 @@ export class UserDataService {
     prodottiAggiuntivi?: prodottiAggiuntivi[],
     data_consegna_riparazione?: Date,
     codice_sblocco?: string,
+    caparra?: string,
     user_input?: UserModel
   ) {
     let spec_retrieved: SpecificDataModel[] = Object.values(
@@ -252,7 +255,8 @@ export class UserDataService {
           checkedProdottiAggiuntivi,
           prodottiAggiuntivi,
           data_consegna_riparazione,
-          codice_sblocco
+          codice_sblocco,
+          caparra
         );
       }
     });

@@ -162,7 +162,7 @@
           />
         </div>
         <div class="mb-6" *ngIf="showFieldsRiparazione">
-          <label for="tipo_parte" class="label"> Tipo parte </label>
+          <label for="tipo_parte" class="label">Tipo parte</label>
           <span class="p-input-icon-right w-full">
             <i class="pi pi-angle-down"></i>
             <select
@@ -180,7 +180,7 @@
         </div>
 
         <div class="mb-6" *ngIf="showFieldsVendita">
-          <label for="tipo_intervento" class="label"> Garanzia </label>
+          <label for="tipo_intervento" class="label">Garanzia</label>
           <span class="p-input-icon-right w-full">
             <i class="pi pi-angle-down"></i>
             <select
@@ -239,7 +239,7 @@
           />
         </div>
         <div class="mb-6">
-          <label for="costo" class="label"> Costo (€) </label>
+          <label for="costo" class="label">Costo (€)</label>
           <input
             type="number"
             name="costo"
@@ -251,7 +251,7 @@
         </div>
 
         <div class="mb-6" *ngIf="showFieldsVendita">
-          <label for="costo_sconto" class="label"> Costo sconto(€) </label>
+          <label for="costo_sconto" class="label">Costo sconto(€)</label>
           <input
             type="number"
             name="costo_sconto"
@@ -286,7 +286,7 @@
         </div>
 
         <div class="mb-6" *ngIf="showFieldsVendita">
-          <label for="tipo_prodotto" class="label"> Tipo Prodotto </label>
+          <label for="tipo_prodotto" class="label">Tipo Prodotto</label>
           <span class="p-input-icon-right w-full">
             <i class="pi pi-angle-down"></i>
             <select
@@ -307,14 +307,13 @@
         </div>
 
         <div *ngIf="showFieldsRiparazione">
-          <label for="codice_sblocco" class="label"> Codice Sblocco </label>
+          <label for="codice_sblocco" class="label">Codice Sblocco</label>
           <input
-            type="number"
+            type="text"
             name="codice_sblocco"
             id="costo_sconto"
             class="fields"
             formControlName="codice_sblocco"
-            required
           />
         </div>
 
@@ -334,13 +333,26 @@
           ></p-calendar>
         </div>
 
+        <div *ngIf="showFieldsRiparazione">
+          <label for="caparra" class="label">
+            {{ "user_data.caparra" | translate }}
+          </label>
+          <input
+            type="number"
+            name="caparra"
+            id="caparra"
+            class="fields"
+            formControlName="caparra"
+          />
+        </div>
+
         <div class="col-start-1 col-end-2">
           <label for="prodotti_aggiuntivi" class="mr-2"
             >Prodotti Aggiuntivi</label
           >
           <p-checkbox
             formControlName="checkedProdottiAggiuntivi"
-            (ngModelChange) ="myModelChanged($event)"
+            (ngModelChange)="myModelChanged($event)"
             [(ngModel)]="checkedProdottiAggiuntivi"
             [binary]="true"
             id="prodotti_aggiuntivi"
@@ -379,7 +391,7 @@
                 />
               </div>
               <div class="m-1">
-                <label for="costo" class="labelShort">Costo</label>
+                <label for="costo" class="labelShort">Costo (€)</label>
                 <input
                   disabled
                   #costo
@@ -419,7 +431,7 @@
               />
             </div>
             <div class="m-1">
-              <label for="costo" class="labelShort">Costo</label>
+              <label for="costo" class="labelShort">Costo (€)</label>
               <input
                 #costoProdottoInput
                 id="costo"

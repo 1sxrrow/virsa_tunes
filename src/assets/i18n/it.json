@@ -1,6 +1,7 @@
 {
   "user_data": {
-    "data_consegna_riparazione": "Data Consegna Rip."
+    "data_consegna_riparazione": "Data Consegna Rip.",
+    "caparra": "Caparra (€)"
   },
   "primeng": {
     "dayNames": [
