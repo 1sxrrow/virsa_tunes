@@ -1,0 +1,50 @@
+<div class="p-10">
+  <div class="grid place-items-center w-auto">
+    <div
+      class="block border border-gray-600 p-8 rounded-lg bg-slate-900 w-8/12"
+    >
+      <div class="grid place-items-center" (keyup.enter)="CheckLogin()">
+        <h1 class="font-extrabold text-xl mb-2 text-white place-items-start">
+          Login
+        </h1>
+        <span class="p-float-label">
+          <input
+            pInputText
+            id="email"
+            [(ngModel)]="emailValue"
+            class="w-96"
+            [ngClass]="this.emailError ? 'error ng-invalid ng-dirty' : ''"
+          />
+          <label htmlFor="email">E-mail</label>
+        </span>
+        <span class="p-float-label mt-4 mb-2">
+          <input
+            pInputText
+            type="password"
+            id="password"
+            [(ngModel)]="passwordValue"
+            class="w-96"
+            [ngClass]="this.passwordError ? 'error ng-invalid ng-dirty' : ''"
+          />
+          <label htmlFor="password">Password</label>
+        </span>
+        <span>
+          <small
+            [hidden]="!passwordError && !emailError"
+            class="text-red-400 mb-2"
+            ngClass="errorText"
+          >
+            {{ errorMessage }}</small
+          >
+        </span>
+        <p-button
+          class="grid place-items-end mt-2"
+          label="Login"
+          ajax="false"
+          styleClass="p-button-secondary"
+          (click)="CheckLogin()"
+        ></p-button>
+      </div>
+    </div>
+  </div>
+</div>

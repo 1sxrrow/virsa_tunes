@@ -1,7 +1,9 @@
 {
   "user_data": {
-    "data_consegna_riparazione": "Data Consegna Rip.",
-    "caparra": "Caparra (€)"
+    "data_consegna_riparazione": "Data Consegna Riparazione",
+    "caparra": "Caparra (€)",
+    "nome_fornitore_pezzo": "Nome Fornitore Pezzo",
+    "data_rest_dispositivo_cliente": "Data Restituzione Disp. Cliente"
   },
   "primeng": {
     "dayNames": [

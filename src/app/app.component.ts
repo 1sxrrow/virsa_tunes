@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { PrimeNGConfig } from 'primeng/api';
-import { TranslateCustomService } from './shared/translationService/translateCustomService.service';
+import { TranslateCustomService } from './shared/services/translation/translate-custom-service.service';
 
 @Component({
   selector: 'app-root',

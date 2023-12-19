@@ -1,0 +1,52 @@
+/* You can add global styles to this file, and also import other style files */
+@import "tailwindcss/base";
+
+@import "tailwindcss/components";
+
+@import "tailwindcss/utilities";
+
+.background {
+  position: relative;
+  width: 100%;
+  height: 100vh; /* Altezza a 100% della viewport */
+  overflow: hidden;
+}
+
+input {
+  &.error {
+    animation: shake 0.2s ease-in-out 0s 2;
+  }
+}
+
+small {
+  /* &.errorText {
+    animation: fadeInOut 5s ease-in-out 0s 1;
+  } */
+}
+
+@keyframes shake {
+  0% {
+    margin-left: 0rem;
+  }
+  25% {
+    margin-left: 0.5rem;
+  }
+  75% {
+    margin-left: -0.5rem;
+  }
+  100% {
+    margin-left: 0rem;
+  }
+}
+
+@keyframes fadeInOut {
+  0% {
+    opacity: 0;
+  }
+  20% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
+}
