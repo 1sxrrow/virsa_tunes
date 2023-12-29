@@ -1,8 +1,9 @@
 import { formatDate } from '@angular/common';
+import EscPosEncoder from 'esc-pos-encoder';
 import { Workbook } from 'exceljs';
 import * as fs from 'file-saver';
-import { SpecificDataModel } from '../models/specific-data.model';
 import { Incasso } from '../models/incasso.model';
+import { SpecificDataModel } from '../models/specific-data.model';
 
 export function arrayBufferToBufferCycle(ab): Buffer {
   var buffer = new Buffer(ab.byteLength);
@@ -231,4 +232,110 @@ export function createExcel(specificData: SpecificDataModel) {
     };
     reader.readAsArrayBuffer(res);
   });
+}
+
+export function createScontrino(
+  specificData: SpecificDataModel
+): EscPosEncoder {
+  let encoder: EscPosEncoder = new EscPosEncoder();
+  let prodottiAggiuntiviTmp: [string, string, string][] = [];
+  let totale: number = +specificData.costo;
+  if (specificData.prodottiAggiuntivi != undefined) {
+    Object.values(specificData.prodottiAggiuntivi).forEach((x) => {
+      totale += +x.costo;
+      prodottiAggiuntiviTmp.push([
+        x.nomeProdotto,
+        '',
+        x.costo.toString() + ',00 €',
+      ]);
+    });
+  }
+
+  return encoder
+    .align('center')
+    .size('normal')
+    .width(2)
+    .height(2)
+    .line('VIRSA TUNES')
+    .align('center')
+    .width(1)
+    .height(1)
+    .line('DI SHARIF FAHID')
+    .line('VIA TRENTO 49A')
+    .line('25128 BRESCIA')
+    .line('P. IVA 04222840987')
+    .line('tel: +39  3313017069')
+    .line('')
+    .align('center')
+    .size('normal')
+    .width(1)
+    .height(2)
+    .line('DOCUMENTO COMMERICALE')
+    .line('di vendita o prestazione')
+    .line('')
+    .width(1)
+    .height(1)
+    .codepage('auto')
+    .table(
+      [
+        { width: 20, marginRight: 2, align: 'left' },
+        { width: 15, marginRight: 2, align: 'left' },
+        { width: 9, align: 'right' },
+      ],
+      [
+        ['DESCRIZIONE', 'IMEI', 'Prezzo(€)'],
+        [
+          specificData.modello_telefono,
+          specificData.imei,
+          specificData.costo + ',00 €',
+        ],
+        ...prodottiAggiuntiviTmp,
+        ['', '', ''],
+        ['', '', ''],
+        ['', '', ''],
+        ['', '', ''],
+        ['='.repeat(20), '='.repeat(15), '='.repeat(9)],
+        [
+          'Totale',
+          '',
+          (encoder) =>
+            encoder
+              .bold()
+              .text(totale + ',00 €')
+              .bold(),
+        ],
+      ]
+    )
+    .newline()
+    .line(
+      specificData.modalita_pagamento
+        ? 'Modalità pagamento: ' + specificData.modalita_pagamento
+        : ''
+    )
+    .line(
+      specificData.tipo_intervento === 'Vendita'
+        ? 'Importo pagato: ' + totale + ',00 €'
+        : ''
+    )
+    .line(DateTimeNow())
+    .newline()
+    .newline()
+    .newline()
+    .newline()
+    .newline()
+    .newline()
+    .newline()
+    .cut('partial')
+    .encode();
+}
+
+export function DateTimeNow(onlyDate?: boolean): string {
+  let now = new Date();
+  let date = now.toLocaleDateString('en-GB'); // dd/mm/yyyy
+  let time = now.toLocaleTimeString('en-GB', {
+    hour: '2-digit',
+    minute: '2-digit',
+  }); // hh:mm
+
+  return onlyDate ? `${date}` : `${date} ${time}`;
 }

@@ -19,14 +19,19 @@ import {
 } from 'primeng/api';
 import { Dropdown } from 'primeng/dropdown';
 import { Subscription } from 'rxjs';
-import { FirebaseStoreService } from '../../shared/services/firebase/firebase-store.service';
 import { SpecificDataModel } from '../../shared/models/specific-data.model';
 import { UserModel } from '../../shared/models/user-data.model';
+import { FirebaseStoreService } from '../../shared/services/firebase/firebase-store.service';
 import { UserDataService } from './user-data.service';
 
 import { TranslateService } from '@ngx-translate/core';
+import { PrintService } from 'src/app/shared/services/print/recipe-print.service';
 import { prodottiAggiuntivi } from '../../shared/models/prodotti-aggiuntivi.model';
-import { createExcel, keylistener } from '../../shared/utils/common-utils';
+import {
+  createExcel,
+  createScontrino,
+  keylistener,
+} from '../../shared/utils/common-utils';
 
 @Component({
   selector: 'app-user-data',
@@ -92,6 +97,7 @@ export class UserDataComponent implements OnInit, OnDestroy, AfterViewInit {
     private confirmationService: ConfirmationService,
     private messageService: MessageService,
     private firebaseStoreService: FirebaseStoreService,
+    private printService: PrintService,
     private router: Router,
     private http: HttpClient,
 
@@ -505,5 +511,16 @@ export class UserDataComponent implements OnInit, OnDestroy, AfterViewInit {
 
   createExcelFile(specificData: SpecificDataModel) {
     createExcel(specificData);
+  }
+
+  print(specificData: SpecificDataModel) {
+    let result = createScontrino(specificData);
+    try {
+      this.printService.printRecipe(this.printService.getDevice(), result);
+      this.callModalToast('Stampato', 'Scontrino stampato', 'success');
+    } catch (error){
+      console.log(error);
+      this.callModalToast('Non Stampato', 'Errore nella stampa', 'error');
+    }
   }
 }

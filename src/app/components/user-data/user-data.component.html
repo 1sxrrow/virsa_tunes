@@ -90,10 +90,9 @@
             <p-button
               styleClass="p-button-help"
               icon="pi pi-print"
-              [disabled]="true"
               pTooltip="Stampa Scontrino"
               tooltipPosition="bottom"
-              (click)="createExcelFile(specificData)"
+              (click)="print(specificData)"
               class="ml-2"
             ></p-button>
           </td>
