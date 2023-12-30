@@ -7,11 +7,12 @@ import {
   MessageService,
 } from 'primeng/api';
 import { Table } from 'primeng/table';
-import { FirebaseStoreService } from 'src/app/shared/services/firebase/firebase-store.service';
-import { UserModel } from 'src/app/shared/models/user-data.model';
-import { UserDataService } from '../user-data.service';
-import { AuthService } from '../../login/auth.service';
 import { Incasso } from 'src/app/shared/models/incasso.model';
+import { UserModel } from 'src/app/shared/models/user-data.model';
+import { FirebaseStoreService } from 'src/app/shared/services/firebase/firebase-store.service';
+import { PrintService } from 'src/app/shared/services/print/recipe-print.service';
+import { AuthService } from '../../login/auth.service';
+import { UserDataService } from '../user-data.service';
 
 @Component({
   selector: 'app-user-list',
@@ -42,6 +43,7 @@ export class UserListComponent implements OnInit {
     private userDataService: UserDataService,
     private firebaseStoreService: FirebaseStoreService,
     private confirmationService: ConfirmationService,
+    private printService: PrintService,
     private authService: AuthService,
     private router: Router,
     private messageService: MessageService
@@ -83,6 +85,22 @@ export class UserListComponent implements OnInit {
     this.canaleComunicazioni = Object.keys(
       this.userDataService.canaleComunicazione
     ).filter((key) => isNaN(+key));
+
+    this.printService.deviceStatus$.subscribe((status) => {
+      status === 'No device selected'
+        ? this.callModalToast('Stampa', 'Stampante non selezionata', 'warn')
+        : status.includes('device selected')
+        ? setTimeout(
+            () =>
+              this.callModalToast(
+                'Stampa',
+                'Stampante impostata' + status.substring(status.indexOf(':')),
+                'info'
+              ),
+            1000
+          )
+        : null;
+    });
 
     this.initForm();
   }

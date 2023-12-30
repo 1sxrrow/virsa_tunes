@@ -1,5 +1,4 @@
-<div *ngIf="loading"><app-circle-spinner></app-circle-spinner></div>
-<div *ngIf="!loading" class="flex flex-col">
+<div class="flex flex-col">
   <p class="text-left text-4xl font-bold mb-3">
     {{ nome }} {{ cognome }}
     <i class="pi pi-arrow-right align-middle"></i>
@@ -124,10 +123,7 @@
         <div class="mb-6 col-span-2">
           <label for="tipo_intervento" class="label"> Tipo Intervento </label>
           <span class="p-input-icon-right w-full">
-            <i
-              class="pi pi-angle-down"
-              (click)="toggleNavdrop(navdrop_tipo_intervento)"
-            ></i>
+            <i class="pi pi-angle-down"></i>
             <fieldset [disabled]="!isInfo">
               <select
                 #navdrop_tipo_intervento

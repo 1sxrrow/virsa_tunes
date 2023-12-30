@@ -20,6 +20,7 @@ export class LoginComponent {
   emailValue: string;
   emailError = false;
   passwordError = false;
+  loading = false;
   errorMessage;
 
   @ViewChild('emailInput') emailInput: ElementRef;
@@ -36,6 +37,7 @@ export class LoginComponent {
   }
 
   CheckLogin() {
+    this.loading = true;
     this.afAuth
       .signInWithEmailAndPassword(this.emailValue, this.passwordValue)
       .then((result) => {
@@ -52,6 +54,7 @@ export class LoginComponent {
         this.router.navigate(['/users']);
       })
       .catch((error) => {
+        this.loading = false;
         this.checkError(error);
       });
   }

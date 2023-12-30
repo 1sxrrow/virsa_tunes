@@ -514,11 +514,18 @@ export class UserDataComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   print(specificData: SpecificDataModel) {
+    debugger;
     let result = createScontrino(specificData);
     try {
-      this.printService.printRecipe(this.printService.getDevice(), result);
-      this.callModalToast('Stampato', 'Scontrino stampato', 'success');
-    } catch (error){
+      this.printService.getDevice() === undefined
+        ? this.callModalToast(
+            'Non Stampato',
+            'Nessuna stampante rilevata',
+            'error'
+          )
+        : this.printService.printRecipe(this.printService.getDevice(), result),
+        this.callModalToast('Stampato', 'Scontrino stampato', 'success');
+    } catch (error) {
       console.log(error);
       this.callModalToast('Non Stampato', 'Errore nella stampa', 'error');
     }

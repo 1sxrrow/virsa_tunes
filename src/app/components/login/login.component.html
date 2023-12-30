@@ -1,4 +1,5 @@
-<div class="p-10">
+<app-circle-spinner *ngIf="loading"></app-circle-spinner>
+<div *ngIf="!loading" class="p-10">
   <div class="grid place-items-center w-auto">
     <div
       class="block border border-gray-600 p-8 rounded-lg bg-slate-900 w-8/12"
@@ -13,7 +14,9 @@
             id="email"
             [(ngModel)]="emailValue"
             class="w-96"
-            [ngClass]="this.emailError ? 'error ng-invalid ng-dirty' : ''"
+            [class.error]="emailError"
+            [class.ng-invalid]="emailError"
+            [class.ng-dirty]="emailError"
           />
           <label htmlFor="email">E-mail</label>
         </span>
@@ -24,7 +27,9 @@
             id="password"
             [(ngModel)]="passwordValue"
             class="w-96"
-            [ngClass]="this.passwordError ? 'error ng-invalid ng-dirty' : ''"
+            [class.error]="passwordError"
+            [class.ng-invalid]="passwordError"
+            [class.ng-dirty]="passwordError"
           />
           <label htmlFor="password">Password</label>
         </span>

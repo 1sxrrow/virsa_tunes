@@ -13,7 +13,7 @@ import { FIREBASE_OPTIONS } from '@angular/fire/compat';
 import { getDatabase, provideDatabase } from '@angular/fire/database';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import { RouterModule, Routes } from '@angular/router';
+import { RouterModule } from '@angular/router';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { NgSelectModule } from '@ng-select/ng-select';
 import { TranslateLoader, TranslateModule } from '@ngx-translate/core';
@@ -33,38 +33,14 @@ import { ToastModule } from 'primeng/toast';
 import { TooltipModule } from 'primeng/tooltip';
 import { firebaseConfig } from 'src/environments/environment';
 import { AppComponent } from './app.component';
+import { routes } from './app.routes';
 import { HeaderComponent } from './components/header/header.component';
-import { AuthGuard } from './components/login/auth.guard';
-import { NotFoundComponent } from './components/not-found/not-found.component';
+import { UserDataComponent } from './components/user-data/user-data.component';
+import { UserListComponent } from './components/user-data/user-list/user-list.component';
 import { CircleSpinnerComponent } from './shared/components/circle-spinner/circle-spinner.component';
 import { PersonalConfirmDialogModule } from './shared/components/confirm-dialog/confirm.dialog.module';
-import { UserListComponent } from './components/user-data/user-list/user-list.component';
-import { UserDataComponent } from './components/user-data/user-data.component';
 
 registerLocaleData(localeIt);
-const routes: Routes = [
-  {
-    path: '',
-    redirectTo: 'users',
-    pathMatch: 'full',
-  },
-  {
-    path: 'users',
-    children: [
-      { path: '', component: UserListComponent },
-      { path: ':id', component: UserDataComponent },
-    ],
-    canActivate: [AuthGuard],
-  },
-  {
-    path: 'login',
-    loadChildren: () =>
-      import('./components/login/login.module').then((m) => m.LoginModule),
-  },
-  { path: 'not-found', component: NotFoundComponent },
-  { path: '**', redirectTo: '/not-found' },
-];
-
 export function HttpLoaderFactory(httpClient: HttpClient) {
   return new TranslateHttpLoader(httpClient);
 }
@@ -75,7 +51,6 @@ export function HttpLoaderFactory(httpClient: HttpClient) {
     UserDataComponent,
     HeaderComponent,
     UserListComponent,
-    CircleSpinnerComponent,
   ],
   imports: [
     CommonModule,

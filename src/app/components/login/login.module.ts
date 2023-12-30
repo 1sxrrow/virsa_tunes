@@ -7,15 +7,22 @@ import { RouterModule } from '@angular/router';
 import { LoginComponent } from './login.component';
 import { ButtonModule } from 'primeng/button';
 import { InputTextModule } from 'primeng/inputtext';
+import { CircleSpinnerComponent } from 'src/app/shared/components/circle-spinner/circle-spinner.component';
 
 @NgModule({
-  declarations: [LoginComponent],
+  declarations: [LoginComponent, CircleSpinnerComponent],
   imports: [
     CommonModule,
     FormsModule,
     ButtonModule,
     InputTextModule,
-    RouterModule.forChild([{ path: '', component: LoginComponent }]),
+    RouterModule.forChild([
+      {
+        path: '',
+        component: LoginComponent,
+        data: { animation: 'LoginPage' },
+      },
+    ]),
   ],
 })
 export class LoginModule {}
