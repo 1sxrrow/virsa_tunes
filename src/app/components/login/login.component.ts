@@ -41,7 +41,6 @@ export class LoginComponent {
     this.afAuth
       .signInWithEmailAndPassword(this.emailValue, this.passwordValue)
       .then((result) => {
-        console.log(result);
         this.authService.setUserState(result.user);
         //set user in memory
         localStorage.setItem(
@@ -101,7 +100,7 @@ export class LoginComponent {
         console.log('profile updated');
       });
     } else {
-      console.log('profile has displayName already set!');
+      console.log('displayName already set!');
     }
   }
 }

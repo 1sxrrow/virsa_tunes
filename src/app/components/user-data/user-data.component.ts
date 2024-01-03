@@ -380,7 +380,6 @@ export class UserDataComponent implements OnInit, OnDestroy, AfterViewInit {
 
   //Metodo di modifica scatenato alla pressione del pulsante di modifica nel componentø
   modifyUserIntervento() {
-    console.log(this.specificDataForm.value);
     this.userDataService.modifyIntervento(
       this.modifyInterventoId,
       new SpecificDataModel(this.specificDataForm.value),
@@ -517,14 +516,16 @@ export class UserDataComponent implements OnInit, OnDestroy, AfterViewInit {
     debugger;
     let result = createScontrino(specificData);
     try {
-      this.printService.getDevice() === undefined
-        ? this.callModalToast(
-            'Non Stampato',
-            'Nessuna stampante rilevata',
-            'error'
-          )
-        : this.printService.printRecipe(this.printService.getDevice(), result),
+      if (this.printService.getDevice() === undefined) {
+        this.callModalToast(
+          'Non Stampato',
+          'Nessuna stampante rilevata',
+          'error'
+        );
+      } else {
+        this.printService.printRecipe(this.printService.getDevice(), result);
         this.callModalToast('Stampato', 'Scontrino stampato', 'success');
+      }
     } catch (error) {
       console.log(error);
       this.callModalToast('Non Stampato', 'Errore nella stampa', 'error');

@@ -87,7 +87,7 @@ export class UserListComponent implements OnInit {
     ).filter((key) => isNaN(+key));
 
     this.printService.deviceStatus$.subscribe((status) => {
-      status === 'No device selected'
+      status.includes('No device selected')
         ? this.callModalToast('Stampa', 'Stampante non selezionata', 'warn')
         : status.includes('device selected')
         ? setTimeout(

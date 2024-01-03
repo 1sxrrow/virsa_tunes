@@ -15,7 +15,6 @@ export function arrayBufferToBufferCycle(ab): Buffer {
 }
 
 export function keylistener(mode: boolean) {
-  console.log(mode);
   if (mode) {
     document.addEventListener('keydown', keyPressed);
     function keyPressed(e) {

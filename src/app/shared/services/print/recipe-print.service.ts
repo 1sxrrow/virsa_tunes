@@ -57,7 +57,6 @@ export class PrintService {
   }
 
   async printRecipe(device, result: EscPosEncoder) {
-    console.log(device);
     await device.open();
     await device.selectConfiguration(1);
     await device.claimInterface(0);
