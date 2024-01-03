@@ -320,7 +320,16 @@ export function createScontrino(
     .newline()
     .newline()
     .newline()
-    .newline()
+    .newline(
+      specificData.tipo_intervento === 'Vendita'
+        ? `- Operazione effettuata da soggetto appartenente a regime fiscale di vantaggio ai sensi dell'art.1, commi da 54 a 89, L. n. 190/2014.
+        - Dopo l’acquisto non è possibile avere il rimborso in denaro, ma solo sostituzione dell’articolo.
+        - La Garanzia sulla Batteria dura 7Giorni, passati 7 giorni bisogna pagare le spese per la sostituzione della batteria a partire da 20€
+        - I telefoni spediti hanno il diritto di 7 giorni per la sostituzione del dispositivo, se il grado del telefono non piace al cliente.
+        -Le spese di spedizione della restituzione saranno a carico dell'acquirente
+        `
+        : ''
+    )
     .newline()
     .newline()
     .newline()
