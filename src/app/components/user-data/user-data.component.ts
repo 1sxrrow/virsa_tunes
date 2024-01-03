@@ -513,7 +513,6 @@ export class UserDataComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   print(specificData: SpecificDataModel) {
-    debugger;
     let result = createScontrino(specificData);
     try {
       if (this.printService.getDevice() === undefined) {
