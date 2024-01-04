@@ -61,6 +61,7 @@ export class UserListComponent implements OnInit {
         .GetIncassi()
         .snapshotChanges()
         .subscribe((data) => {
+          this.incassi = [];
           data.map((item) => {
             this.incassi.push(item.payload.toJSON() as Incasso);
           });
@@ -148,7 +149,12 @@ export class UserListComponent implements OnInit {
       this.savedUserId,
       new UserModel(this.userInfoForm.value)
     );
-    callModalToast(this.messageService, 'Modificato', 'Dati utente modificati', 'warn');
+    callModalToast(
+      this.messageService,
+      'Modificato',
+      'Dati utente modificati',
+      'warn'
+    );
     this.showModal = !this.showModal;
   }
 
@@ -211,8 +217,7 @@ export class UserListComponent implements OnInit {
     });
     this.utenteInserimento = undefined;
     this.utenteUltimaModifica = undefined;
-  } 
-
+  }
   confirmDeleteUser(user_id: number) {
     this.confirmationService.confirm({
       message: 'Sei sicuro di voler procedere?',
