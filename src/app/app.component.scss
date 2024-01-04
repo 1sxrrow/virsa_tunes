@@ -1,0 +1,45 @@
+.sidenav-container {
+  height: 100%;
+}
+
+.sidenav .mat-toolbar {
+  background: inherit;
+}
+
+.mat-toolbar.mat-primary {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+}
+
+mat-sidenav {
+  width: 170px;
+  background-color: rgb(4, 10, 18) !important;
+  box-shadow: rgb(40, 40, 40) 0px 0px 0px 0px;
+}
+
+mat-nav-list {
+  ::ng-deep .p-button:enabled {
+    background-color: rgb(11, 33, 63);
+    color: white;
+    outline: none;
+  }
+  ::ng-deep .p-button:enabled:hover {
+    background-color: rgb(11, 33, 63);
+    color: white;
+    outline: none;
+  }
+  ::ng-deep .p-button:enabled:focus {
+    outline: none;
+  }
+
+  button{
+    color: white;
+    :hover{
+      background-color: rgb(22, 38, 59);
+      color: white;
+      outline: none;
+    }
+  }
+}
+

@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import EscPosEncoder from '@manhnd/esc-pos-encoder';
-import { BehaviorSubject } from 'rxjs';
+import { MessageService } from 'primeng/api';
+import { callModalToast } from '../../utils/common-utils';
 
 @Injectable({
   providedIn: 'root',
@@ -8,14 +9,7 @@ import { BehaviorSubject } from 'rxjs';
 export class PrintService {
   private device: any;
 
-  // Create a new BehaviorSubject to hold the device status
-  private deviceStatusSubject: BehaviorSubject<string> =
-    new BehaviorSubject<string>('');
-
-  // Create a public Observable for components to subscribe to
-  public deviceStatus$ = this.deviceStatusSubject.asObservable();
-
-  constructor() {
+  constructor(private messageService: MessageService) {
     (navigator as any).usb.getDevices().then((devices) => {
       if (devices.length > 0) {
         devices.forEach((device) => {
@@ -23,35 +17,19 @@ export class PrintService {
             `Name: ${device.productName}, Serial: ${device.serialNumber}`
           );
           this.setDevice(device);
-          this.deviceStatusSubject.next(
-            'device selected: ' + device.productName + ' ' + device.serialNumber
+          setTimeout(
+            () =>
+              callModalToast(
+                this.messageService,
+                'Stampa',
+                `Stampante impostata Name:${device.productName}`,
+                'info'
+              ),
+            1000
           );
         });
       } else {
-        (navigator as any).usb
-          .requestDevice({ filters: [] })
-          .then((device) => {
-            if (device) {
-              console.log(device);
-              this.setDevice(device);
-              this.deviceStatusSubject.next(
-                'device selected: ' +
-                  device.productName +
-                  ' ' +
-                  device.serialNumber
-              );
-            } else {
-              console.log('No device selected');
-              this.deviceStatusSubject.next('No device selected');
-            }
-          })
-          .catch((error) => {
-            console.log(error);
-            if (error.message.includes('No device selected')) {
-              console.log('No device selected');
-              this.deviceStatusSubject.next('No device selected');
-            }
-          });
+        this.chooseDevice();
       }
     });
   }
@@ -85,4 +63,54 @@ export class PrintService {
         console.log(device);
       });
   }
+
+  chooseDevice() {
+    (navigator as any).usb
+          .requestDevice({ filters: [] })
+          .then((device) => {
+            if (device) {
+              console.log(device);
+              this.setDevice(device);
+              setTimeout(
+                () =>
+                  callModalToast(
+                    this.messageService,
+                    'Stampa',
+                    `Stampante impostata Name:${device.productName}`,
+                    'info'
+                  ),
+                1000
+              );
+            } else {
+              console.log('No device selected');
+              setTimeout(
+                () =>
+                  callModalToast(
+                    this.messageService,
+                    'Stampa',
+                    'Stampante non impostata',
+                    'warn'
+                  ),
+                1000
+              );
+            }
+          })
+          .catch((error) => {
+            console.log(error);
+            if (error.message.includes('No device selected')) {
+              console.log('No device selected');
+              setTimeout(
+                () =>
+                  callModalToast(
+                    this.messageService,
+                    'Stampa',
+                    'Stampante non impostata',
+                    'warn'
+                  ),
+                1000
+              );
+            }
+          });
+  }
+
 }

@@ -1,0 +1,28 @@
+@import "tailwindcss/base";
+
+@import "tailwindcss/components";
+
+@import "tailwindcss/utilities";
+
+.rotate {
+  transition: transform 0.2s linear;
+  transform: rotate(180deg);
+}
+
+.rotate-reset {
+  transition: transform 0.2s linear;
+  transform: rotate(0deg);
+}
+
+.fadeIn {
+  animation: fadeIn 1s linear;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}

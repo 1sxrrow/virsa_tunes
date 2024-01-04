@@ -1,6 +1,14 @@
 import { Injectable } from '@angular/core';
 import { Subject, map } from 'rxjs';
-import { AuthService } from '../login/auth.service';
+import { Incasso } from 'src/app/shared/models/incasso.model';
+import {
+  calculateIncassoIntervento,
+  calculateMese,
+} from 'src/app/shared/utils/common-utils';
+import { prodottiAggiuntivi } from '../../shared/models/prodotti-aggiuntivi.model';
+import { SpecificDataModel } from '../../shared/models/specific-data.model';
+import { UserModel } from '../../shared/models/user-data.model';
+import { FirebaseStoreService } from '../../shared/services/firebase/firebase-store.service';
 import {
   canaleComunicazione,
   condizioniProdotto,
@@ -9,12 +17,7 @@ import {
   tipoPagamento,
   tipoParte,
 } from '../../shared/utils/common-enums';
-import { FirebaseStoreService } from '../../shared/services/firebase/firebase-store.service';
-import { prodottiAggiuntivi } from '../../shared/models/prodotti-aggiuntivi.model';
-import { SpecificDataModel } from '../../shared/models/specific-data.model';
-import { UserModel } from '../../shared/models/user-data.model';
-import { calculateIncassoIntervento } from 'src/app/shared/utils/common-utils';
-import { Incasso } from 'src/app/shared/models/incasso.model';
+import { AuthService } from '../login/auth.service';
 @Injectable({ providedIn: 'root' })
 export class UserDataService {
   usersChanged = new Subject<UserModel[]>();
@@ -137,7 +140,7 @@ export class UserDataService {
     specific_data.incasso = calculateIncassoIntervento(specific_data);
     this.firebaseStoreService.AddIncasso(
       specific_data.incasso,
-      specific_data.data_intervento.toLocaleString('default', { month: 'long' })
+      calculateMese(new Date(specific_data.data_intervento))
     );
     let t: SpecificDataModel[] = Object.values(user_work.specific_data);
     t.push(specific_data);
@@ -170,14 +173,7 @@ export class UserDataService {
             this.firebaseStoreService
               .GetIncassi()
               .query.orderByChild('mese')
-              .equalTo(
-                new Date(specific_data.data_intervento).toLocaleString(
-                  'default',
-                  {
-                    month: 'long',
-                  }
-                )
-              )
+              .equalTo(calculateMese(new Date(specific_data.data_intervento)))
               .once('value', (snapshot) => {
                 if (snapshot.exists()) {
                   let incassoObject = snapshot.val();
@@ -207,17 +203,18 @@ export class UserDataService {
     });
 
     // Update Incasso dato che ho cancellato un intervento
-    let mese: string = new Date(
-      spec_retrieved[spec_retrieved.indexOf(i[0])].data_intervento
-    ).toLocaleString('default', {
-      month: 'long',
-    });
+
     let incassoIntervento: number =
       spec_retrieved[spec_retrieved.indexOf(i[0])].incasso;
+
     this.firebaseStoreService
       .GetIncassi()
       .query.orderByChild('mese')
-      .equalTo(mese)
+      .equalTo(
+        calculateMese(
+          new Date(spec_retrieved[spec_retrieved.indexOf(i[0])].data_intervento)
+        )
+      )
       .once('value', (snapshot) => {
         if (snapshot.exists()) {
           let incassoObject = snapshot.val();

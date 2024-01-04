@@ -1,6 +1,7 @@
 import { LOCALE_ID, NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
-
+import { MatSidenavModule } from '@angular/material/sidenav';
+import { MatListModule } from '@angular/material/list';
 import {
   CommonModule,
   CurrencyPipe,
@@ -39,6 +40,7 @@ import { UserDataComponent } from './components/user-data/user-data.component';
 import { UserListComponent } from './components/user-data/user-list/user-list.component';
 import { CircleSpinnerComponent } from './shared/components/circle-spinner/circle-spinner.component';
 import { PersonalConfirmDialogModule } from './shared/components/confirm-dialog/confirm.dialog.module';
+import { MessageService } from 'primeng/api';
 
 registerLocaleData(localeIt);
 export function HttpLoaderFactory(httpClient: HttpClient) {
@@ -75,6 +77,8 @@ export function HttpLoaderFactory(httpClient: HttpClient) {
     CheckboxModule,
     SelectButtonModule,
     CalendarModule,
+    MatListModule,
+    MatSidenavModule,
     TranslateModule.forRoot({
       loader: {
         provide: TranslateLoader,
@@ -90,6 +94,7 @@ export function HttpLoaderFactory(httpClient: HttpClient) {
     { provide: FIREBASE_OPTIONS, useValue: firebaseConfig },
     CurrencyPipe,
     { provide: LOCALE_ID, useValue: 'fr-FR' },
+    MessageService,
   ],
   bootstrap: [AppComponent],
 })

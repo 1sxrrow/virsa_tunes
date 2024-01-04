@@ -2,6 +2,7 @@ import { formatDate } from '@angular/common';
 import EscPosEncoder from 'esc-pos-encoder';
 import { Workbook } from 'exceljs';
 import * as fs from 'file-saver';
+import { MessageService } from 'primeng/api';
 import { Incasso } from '../models/incasso.model';
 import { SpecificDataModel } from '../models/specific-data.model';
 
@@ -249,279 +250,258 @@ export function createScontrino(
       ]);
     });
   }
-  if (specificData.tipo_intervento === 'Riparazione') {
-    return encoder
-      .align('center')
-      .size('normal')
-      .width(2)
-      .height(2)
-      .line('VIRSA TUNES')
-      .align('center')
-      .width(1)
-      .height(1)
-      .line('DI SHARIF FAHID')
-      .line('VIA TRENTO 49A')
-      .line('25128 BRESCIA')
-      .line('P. IVA 04222840987')
-      .line('tel: +39  3313017069')
-      .line('')
-      .align('center')
-      .size('normal')
-      .width(1)
-      .height(2)
-      .line('DOCUMENTO COMMERICALE')
-      .line('di vendita o prestazione')
-      .line('')
-      .width(1)
-      .height(1)
-      .codepage('auto')
-      .table(
-        [
-          { width: 20, marginRight: 2, align: 'left' },
-          { width: 15, marginRight: 2, align: 'left' },
-          { width: 9, align: 'right' },
-        ],
-        [
-          ['DESCRIZIONE', 'IMEI', 'Prezzo(€)'],
+  switch (specificData.tipo_intervento) {
+    case 'Riparazione':
+      return encoder
+        .align('center')
+        .size('normal')
+        .width(2)
+        .height(2)
+        .line('VIRSA TUNES')
+        .align('center')
+        .width(1)
+        .height(1)
+        .line('DI SHARIF FAHID')
+        .line('VIA TRENTO 49A')
+        .line('25128 BRESCIA')
+        .line('P. IVA 04222840987')
+        .line('tel: +39  3313017069')
+        .line('')
+        .align('center')
+        .size('normal')
+        .width(1)
+        .height(2)
+        .line('DOCUMENTO COMMERICALE')
+        .line('di vendita o prestazione')
+        .line('')
+        .width(1)
+        .height(1)
+        .codepage('auto')
+        .table(
           [
-            specificData.modello_telefono,
-            specificData.imei,
-            specificData.costo + ',00 €',
+            { width: 20, marginRight: 2, align: 'left' },
+            { width: 15, marginRight: 2, align: 'left' },
+            { width: 9, align: 'right' },
           ],
-          ...prodottiAggiuntiviTmp,
-          ['', '', ''],
-          ['', '', ''],
-          ['', '', ''],
-          ['', '', ''],
-          ['='.repeat(20), '='.repeat(15), '='.repeat(9)],
           [
-            'Totale',
-            '',
-            (encoder) =>
-              encoder
-                .bold()
-                .text(totale + ',00 €')
-                .bold(),
-          ],
-        ]
-      )
-      .newline()
-      .line(
-        specificData.modalita_pagamento
-          ? 'Modalità pagamento: ' + specificData.modalita_pagamento
-          : ''
-      )
-      .line(DateTimeNow())
-      .newline()
-      .newline()
-      .newline()
-      .newline()
-      .newline()
-      .newline()
-      .newline()
-      .newline()
-      .newline()
-      .newline()
-      .cut('partial')
-      .align('center')
-      .size('normal')
-      .width(2)
-      .height(2)
-      .line('VIRSA TUNES')
-      .align('center')
-      .width(1)
-      .height(1)
-      .line('DI SHARIF FAHID')
-      .line('VIA TRENTO 49A')
-      .line('25128 BRESCIA')
-      .line('P. IVA 04222840987')
-      .line('tel: +39  3313017069')
-      .line('')
-      .align('center')
-      .size('normal')
-      .width(1)
-      .height(2)
-      .line('DOCUMENTO COMMERICALE')
-      .line('di vendita o prestazione')
-      .line('')
-      .width(1)
-      .height(1)
-      .codepage('auto')
-      .table(
-        [
-          { width: 20, marginRight: 2, align: 'left' },
-          { width: 15, marginRight: 2, align: 'left' },
-          { width: 9, align: 'right' },
-        ],
-        [
-          ['DESCRIZIONE', 'IMEI', 'Prezzo(€)'],
+            ['DESCRIZIONE', 'IMEI', 'Prezzo(€)'],
+            [
+              specificData.modello_telefono,
+              specificData.imei,
+              specificData.costo + ',00 €',
+            ],
+            ['Problema', 'Codice Sblocco', ''],
+            [specificData.problema, specificData.codice_sblocco, ''],
+            ['', '', ''],
+            ['', '', ''],
+            ['', '', ''],
+            ['', '', ''],
+            ['='.repeat(20), '='.repeat(15), '='.repeat(9)],
+            [
+              'Totale',
+              '',
+              (encoder) =>
+                encoder
+                  .bold()
+                  .text(totale + ',00 €')
+                  .bold(),
+            ],
+          ]
+        )
+        .newline()
+        .line(
+          specificData.modalita_pagamento
+            ? 'Modalità pagamento: ' + specificData.modalita_pagamento
+            : ''
+        )
+        .line(DateTimeNow())
+        .newline()
+        .newline()
+        .newline()
+        .newline()
+        .newline()
+        .newline()
+        .newline()
+        .newline()
+        .newline()
+        .newline()
+        .cut('partial')
+        .align('center')
+        .size('normal')
+        .width(2)
+        .height(2)
+        .line('VIRSA TUNES')
+        .align('center')
+        .width(1)
+        .height(1)
+        .line('DI SHARIF FAHID')
+        .line('VIA TRENTO 49A')
+        .line('25128 BRESCIA')
+        .line('P. IVA 04222840987')
+        .line('tel: +39  3313017069')
+        .line('')
+        .align('center')
+        .size('normal')
+        .width(1)
+        .height(2)
+        .line('DOCUMENTO COMMERICALE')
+        .line('di vendita o prestazione')
+        .line('')
+        .width(1)
+        .height(1)
+        .codepage('auto')
+        .table(
           [
-            specificData.modello_telefono,
-            specificData.imei,
-            specificData.costo + ',00 €',
+            { width: 20, marginRight: 2, align: 'left' },
+            { width: 15, marginRight: 2, align: 'left' },
+            { width: 9, align: 'right' },
           ],
-          ...prodottiAggiuntiviTmp,
-          ['', '', ''],
-          ['', '', ''],
-          ['', '', ''],
-          ['', '', ''],
-          ['='.repeat(20), '='.repeat(15), '='.repeat(9)],
           [
-            'Totale',
-            '',
-            (encoder) =>
-              encoder
-                .bold()
-                .text(totale + ',00 €')
-                .bold(),
-          ],
-        ]
-      )
-      .newline()
-      .line(
-        specificData.modalita_pagamento
-          ? 'Modalità pagamento: ' + specificData.modalita_pagamento
-          : ''
-      )
-      .line(DateTimeNow())
-      .newline()
-      .newline()
-      .newline()
-      .newline()
-      .newline()
-      .newline()
-      .newline()
-      .newline()
-      .newline()
-      .newline()
-      .cut('partial')
-      .align('left')
-      .size('small')
-      .line(
-        "Il centro di assistenza non e' responsabile per eventuali accessori lasciati con i dispositivi o non necessari e non espressamente dichiarati al momento dell'accettazione -Il cliente e' tenuto a realizzare copie di sicurezza dei dati presenti nelle memorie dei dispositivi lasciati in riparazione, prima che gli stessi vengano consegnati al centro di assistenza. Resta tuttavia inteso che le Case Madri e il centro di assistenza autorizzato non sono responsabili, in alcun modo ed in alcun caso, per qualsivoglia danno derivante dalla perdita, danneggiamento, o deterioramento dei dati presenti nelle memorie dei dispositivi durante la riparazione degli stessi.-Nel caso di spedizioni varranno le limitazioni di risarcimento danni previste dalle disposizioni di legge in vigore.      -I preventivi di riparazione non impegnano in forma definitiva il centro di assistenza , potendosi verificare durante la lavorazione del prodotto imprevisti che ne variano in piu' o meno l'entità e la fattibilità. In considerazione di ciò il cliente da' la propria autorizzazione ad eseguire tutte le riparazioni che dovessero risultare necessarie. Le spese di preventivo, se la lavorazione non va' a buon fine, non vengono addebitate.-Sono consapevole che,se per qualsiasi motivo il mio terminale non potrà essere riparato, non potrò imputare nessuna responsabilità al nostro centro di assistenza.-nel caso di un lavoro specifico per ES. Sostituzione di un chip e/o un componente il centro di assistenza non fa ulteriori diagnosi o le verifiche di funzionamento del dispositivo.-I tempi di lavorazione sono Puramente indicativi e possono subire variazioni in base alla richiesta, l'intensità del lavoro, attesa del ordine e arrivo dei componenti e/o imprevisti.-Una volta accettato la Proposta del Preventivo i ricambi verranno ordinati immediatamente e in caso di restituzione il costo dei ricambi sara addebitato al cliente, i tali ovviamente verranno Resi e/o spediti assieme al dispositivo o se i ricambi non sono stati ricevuti dalla nostra sede, verranno spediti o consegnati separatamente.-I ricambi utilizzati per gli interventi in garanzia sono di proprieta' delle case costruttrici per verifiche o statistiche; per gli interventi fuori garanzia, se non espressamente richiesto.-Consenso alle riprese video: Acconsento il centro di riparazione a eseguire delle riprese video delle riparazioni che effettua, quindi lo autorizzo preventivamente ad effettuare tali le riprese video sulle riparazioni e a pubblicarle sul canale Virsa Tunes sulla piattaforma YouTube.-I dispositivi vengono smaltiti negli appositi contenitori per la raccolta differenziata in quanto facenti parte dei rifiuti tossici nocivi.-Giacenza dispositvi: i dispositvi , riparati o non riparati, resteranno in giacenza gratuita per un periodo di 5 (cinque) giorni dalla data di fine lavoro (DT_Fine); oltre tale termine il prodotto verra' messo in magazzino per la giacenza a pagamento a carico del cliente proprietario, la giacenza avra' una durata di 15 giorni con un costo giornaliero di 1,00€ trascorso questo termine il cliente, con l'accettazione della presente, autorizza il centro di assistenza all'alienazione del prodotto per far fronte al recupero dei costi o allo smaltimento a norma delle Leggi in vigore oltre il termine sopra indicato. (art 2756 e 2797 c.c. )-Autorizzo il trattamento dei dati personali contenuti nel modulo in base art. 13 del D. Lgs. 196/2003.-Una volta spedito il dispositivo non saremo responsabili della spedizione, (che si tratti di una spedizone assicurata o non assicurata) ma la compagnia che gestisce le spedizioni (es : corriere Sda o Dhl o poste italiane ecc..) la nostra responsabilità termina nel momento in cui consegnamo il pacco(contenente il dispositivo) al corriere/portalettere/postino-Il pagamento DEVE essere effettuato Entro e non oltre i 5 Giorni dal momento della conferma di riparazione.-Si accetta di proseguire con un preventivo pari o minore di 150Euro.-la Garanzia sulle riparazioni Hardwere è di 30 (trenta) Giorni Lavorativi dal mumento della consegna del prodotto(Nel caso delle spedizioni la garanzia sarà valida dal momento della consegna del corriere) "
-      )
-      .align('right')
-      .size('small')
-      .line(
-        "Firma : ___________________________"
-      )
-      .newline()
-      .newline()
-      .newline()
-      .newline()
-      .newline()
-      .newline()
-      .newline()
-      .newline()
-      .cut('partial')
-      .encode();
-  } else {
-    return encoder
-      .align('center')
-      .size('normal')
-      .width(2)
-      .height(2)
-      .line('VIRSA TUNES')
-      .align('center')
-      .width(1)
-      .height(1)
-      .line('DI SHARIF FAHID')
-      .line('VIA TRENTO 49A')
-      .line('25128 BRESCIA')
-      .line('P. IVA 04222840987')
-      .line('tel: +39  3313017069')
-      .line('')
-      .align('center')
-      .size('normal')
-      .width(1)
-      .height(2)
-      .line('DOCUMENTO COMMERICALE')
-      .line('di vendita o prestazione')
-      .line('')
-      .width(1)
-      .height(1)
-      .codepage('auto')
-      .table(
-        [
-          { width: 20, marginRight: 2, align: 'left' },
-          { width: 15, marginRight: 2, align: 'left' },
-          { width: 9, align: 'right' },
-        ],
-        [
-          ['DESCRIZIONE', 'IMEI', 'Prezzo(€)'],
+            ['DESCRIZIONE', 'IMEI', 'Prezzo(€)'],
+            [
+              specificData.modello_telefono,
+              specificData.imei,
+              specificData.costo + ',00 €',
+            ],
+            ...prodottiAggiuntiviTmp,
+            ['Tipo Prodotto', 'Garanzia', ''],
+            [specificData.tipo_prodotto, specificData.garanzia, ''],
+            ['', '', ''],
+            ['', '', ''],
+            ['', '', ''],
+            ['', '', ''],
+            ['='.repeat(20), '='.repeat(15), '='.repeat(9)],
+            [
+              'Totale',
+              '',
+              (encoder) =>
+                encoder
+                  .bold()
+                  .text(totale + ',00 €')
+                  .bold(),
+            ],
+          ]
+        )
+        .newline()
+        .line(specificData.caparra ? 'Caparra : ' + specificData.caparra : '')
+        .line(DateTimeNow())
+        .newline()
+        .newline()
+        .newline()
+        .newline()
+        .newline()
+        .newline()
+        .newline()
+        .newline()
+        .newline()
+        .newline()
+        .cut('partial')
+        .align('left')
+        .size('small')
+        .line(
+          "Il centro di assistenza non e' responsabile per eventuali accessori lasciati con i dispositivi o non necessari e non espressamente dichiarati al momento dell'accettazione -Il cliente e' tenuto a realizzare copie di sicurezza dei dati presenti nelle memorie dei dispositivi lasciati in riparazione, prima che gli stessi vengano consegnati al centro di assistenza. Resta tuttavia inteso che le Case Madri e il centro di assistenza autorizzato non sono responsabili, in alcun modo ed in alcun caso, per qualsivoglia danno derivante dalla perdita, danneggiamento, o deterioramento dei dati presenti nelle memorie dei dispositivi durante la riparazione degli stessi.-Nel caso di spedizioni varranno le limitazioni di risarcimento danni previste dalle disposizioni di legge in vigore.      -I preventivi di riparazione non impegnano in forma definitiva il centro di assistenza , potendosi verificare durante la lavorazione del prodotto imprevisti che ne variano in piu' o meno l'entità e la fattibilità. In considerazione di ciò il cliente da' la propria autorizzazione ad eseguire tutte le riparazioni che dovessero risultare necessarie. Le spese di preventivo, se la lavorazione non va' a buon fine, non vengono addebitate.-Sono consapevole che,se per qualsiasi motivo il mio terminale non potrà essere riparato, non potrò imputare nessuna responsabilità al nostro centro di assistenza.-nel caso di un lavoro specifico per ES. Sostituzione di un chip e/o un componente il centro di assistenza non fa ulteriori diagnosi o le verifiche di funzionamento del dispositivo.-I tempi di lavorazione sono Puramente indicativi e possono subire variazioni in base alla richiesta, l'intensità del lavoro, attesa del ordine e arrivo dei componenti e/o imprevisti.-Una volta accettato la Proposta del Preventivo i ricambi verranno ordinati immediatamente e in caso di restituzione il costo dei ricambi sara addebitato al cliente, i tali ovviamente verranno Resi e/o spediti assieme al dispositivo o se i ricambi non sono stati ricevuti dalla nostra sede, verranno spediti o consegnati separatamente.-I ricambi utilizzati per gli interventi in garanzia sono di proprieta' delle case costruttrici per verifiche o statistiche; per gli interventi fuori garanzia, se non espressamente richiesto.-Consenso alle riprese video: Acconsento il centro di riparazione a eseguire delle riprese video delle riparazioni che effettua, quindi lo autorizzo preventivamente ad effettuare tali le riprese video sulle riparazioni e a pubblicarle sul canale Virsa Tunes sulla piattaforma YouTube.-I dispositivi vengono smaltiti negli appositi contenitori per la raccolta differenziata in quanto facenti parte dei rifiuti tossici nocivi.-Giacenza dispositvi: i dispositvi , riparati o non riparati, resteranno in giacenza gratuita per un periodo di 5 (cinque) giorni dalla data di fine lavoro (DT_Fine); oltre tale termine il prodotto verra' messo in magazzino per la giacenza a pagamento a carico del cliente proprietario, la giacenza avra' una durata di 15 giorni con un costo giornaliero di 1,00€ trascorso questo termine il cliente, con l'accettazione della presente, autorizza il centro di assistenza all'alienazione del prodotto per far fronte al recupero dei costi o allo smaltimento a norma delle Leggi in vigore oltre il termine sopra indicato. (art 2756 e 2797 c.c. )-Autorizzo il trattamento dei dati personali contenuti nel modulo in base art. 13 del D. Lgs. 196/2003.-Una volta spedito il dispositivo non saremo responsabili della spedizione, (che si tratti di una spedizone assicurata o non assicurata) ma la compagnia che gestisce le spedizioni (es : corriere Sda o Dhl o poste italiane ecc..) la nostra responsabilità termina nel momento in cui consegnamo il pacco(contenente il dispositivo) al corriere/portalettere/postino-Il pagamento DEVE essere effettuato Entro e non oltre i 5 Giorni dal momento della conferma di riparazione.-Si accetta di proseguire con un preventivo pari o minore di 150Euro.-la Garanzia sulle riparazioni Hardwere è di 30 (trenta) Giorni Lavorativi dal mumento della consegna del prodotto(Nel caso delle spedizioni la garanzia sarà valida dal momento della consegna del corriere) "
+        )
+        .align('right')
+        .size('small')
+        .line('Firma : ___________________________')
+        .newline()
+        .newline()
+        .newline()
+        .newline()
+        .newline()
+        .newline()
+        .newline()
+        .newline()
+        .cut('partial')
+        .encode();
+    case 'Vendita':
+      return encoder
+        .align('center')
+        .size('normal')
+        .width(2)
+        .height(2)
+        .line('VIRSA TUNES')
+        .align('center')
+        .width(1)
+        .height(1)
+        .line('DI SHARIF FAHID')
+        .line('VIA TRENTO 49A')
+        .line('25128 BRESCIA')
+        .line('P. IVA 04222840987')
+        .line('tel: +39  3313017069')
+        .line('')
+        .align('center')
+        .size('normal')
+        .width(1)
+        .height(2)
+        .line('DOCUMENTO COMMERICALE')
+        .line('di vendita o prestazione')
+        .line('')
+        .width(1)
+        .height(1)
+        .codepage('auto')
+        .table(
           [
-            specificData.modello_telefono,
-            specificData.imei,
-            specificData.costo + ',00 €',
+            { width: 20, marginRight: 2, align: 'left' },
+            { width: 15, marginRight: 2, align: 'left' },
+            { width: 9, align: 'right' },
           ],
-          ...prodottiAggiuntiviTmp,
-          ['', '', ''],
-          ['', '', ''],
-          ['', '', ''],
-          ['', '', ''],
-          ['='.repeat(20), '='.repeat(15), '='.repeat(9)],
           [
-            'Totale',
-            '',
-            (encoder) =>
-              encoder
-                .bold()
-                .text(totale + ',00 €')
-                .bold(),
-          ],
-        ]
-      )
-      .newline()
-      .line(
-        specificData.modalita_pagamento
-          ? 'Modalità pagamento: ' + specificData.modalita_pagamento
-          : ''
-      )
-      .line(
-        specificData.tipo_intervento === 'Vendita'
-          ? 'Importo pagato: ' + totale + ',00 €'
-          : ''
-      )
-      .line(DateTimeNow())
-      .newline()
-      .newline()
-      .newline()
-      .align('left')
-      .size('small')
-      .line(
-        specificData.tipo_intervento === 'Vendita'
-          ? "- Operazione effettuata da soggetto appartenente a regime fiscale di vantaggio ai sensi dell'art.1, commi da 54 a 89, L. n. 190/2014."
-          : ''
-      )
-      .line(
-        specificData.tipo_intervento === 'Vendita'
-          ? "- Dopo l'acquisto non è possibile avere il rimborso in denaro, ma solo sostituzione dell'articolo."
-          : ''
-      )
-      .line(
-        specificData.tipo_intervento === 'Vendita'
-          ? '- La Garanzia sulla Batteria dura 7Giorni, passati 7 giorni bisogna pagare le spese per la sostituzione della batteria a partire da 20€'
-          : ''
-      )
-      .line(
-        specificData.tipo_intervento === 'Vendita'
-          ? '- I telefoni spediti hanno il diritto di 7 giorni per la sostituzione del dispositivo, se il grado del telefono non piace al cliente.'
-          : ''
-      )
-      .line(
-        specificData.tipo_intervento === 'Vendita'
-          ? "- Le spese di spedizione della restituzione saranno a carico dell' acquirente"
-          : ''
-      )
-      .newline()
-      .newline()
-      .newline()
-      .newline()
-      .newline()
-      .newline()
-      .newline()
-      .cut('partial')
-      .encode();
+            ['DESCRIZIONE', 'IMEI', 'Prezzo(€)'],
+            [
+              specificData.modello_telefono,
+              specificData.imei,
+              specificData.costo + ',00 €',
+            ],
+            ...prodottiAggiuntiviTmp,
+            ['', '', ''],
+            ['', '', ''],
+            ['', '', ''],
+            ['', '', ''],
+            ['='.repeat(20), '='.repeat(15), '='.repeat(9)],
+            [
+              'Totale',
+              '',
+              (encoder) =>
+                encoder
+                  .bold()
+                  .text(totale + ',00 €')
+                  .bold(),
+            ],
+          ]
+        )
+        .newline()
+        .line(
+          specificData.modalita_pagamento
+            ? 'Modalità pagamento: ' + specificData.modalita_pagamento
+            : ''
+        )
+        .line('Importo pagato: ' + totale + ',00 €')
+        .line(DateTimeNow())
+        .newline()
+        .newline()
+        .newline()
+        .align('left')
+        .size('small')
+        .line(
+          "- Operazione effettuata da soggetto appartenente a regime fiscale di vantaggio ai sensi dell'art.1, commi da 54 a 89, L. n. 190/2014. - Dopo l'acquisto non è possibile avere il rimborso in denaro, ma solo sostituzione dell'articolo. - La Garanzia sulla Batteria dura 7Giorni, passati 7 giorni bisogna pagare le spese per la sostituzione della batteria a partire da 20€ - I telefoni spediti hanno il diritto di 7 giorni per la sostituzione del dispositivo, se il grado del telefono non piace al cliente. - Le spese di spedizione della restituzione saranno a carico dell' acquirente"
+        )
+        .newline()
+        .newline()
+        .newline()
+        .newline()
+        .newline()
+        .newline()
+        .newline()
+        .cut('partial')
+        .encode();
+    default:
+      console.log(
+        'tipo intervento non riconosciuto ',
+        specificData.tipo_intervento,
+        '. Impossibile procedere con creazione scontrino'
+      );
+      break;
   }
 }
 
@@ -534,4 +514,30 @@ export function DateTimeNow(onlyDate?: boolean): string {
   }); // hh:mm
 
   return onlyDate ? `${date}` : `${date} ${time}`;
+}
+
+export function calculateMese(date: Date): string {
+  return `${date.toLocaleString('it-IT', {
+    month: 'long',
+  })}-${date.getFullYear()}`;
+}
+
+/**
+ * Mostra toast dialog a destra
+ * @param {string} summary -> titolo
+ * @param {string} detail -> descrizion
+ * @param {string} serverity? -> success , info , warn , error
+ * @returns {any}
+ **/
+export function callModalToast(
+  messageService: MessageService,
+  summary: string,
+  detail: string,
+  severity?: string
+) {
+  messageService.add({
+    severity: severity === undefined ? 'success' : severity,
+    summary: summary,
+    detail: detail,
+  });
 }

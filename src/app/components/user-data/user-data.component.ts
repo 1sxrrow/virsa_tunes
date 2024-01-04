@@ -39,7 +39,6 @@ import {
   styleUrls: ['./user-data.component.scss'],
   providers: [
     ConfirmationService,
-    MessageService,
     { provide: LOCALE_ID, useValue: 'it' },
   ],
 })
@@ -513,7 +512,7 @@ export class UserDataComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   print(specificData: SpecificDataModel) {
-    let result = createScontrino(specificData);
+        let result = createScontrino(specificData);
     try {
       if (this.printService.getDevice() === undefined) {
         this.callModalToast(

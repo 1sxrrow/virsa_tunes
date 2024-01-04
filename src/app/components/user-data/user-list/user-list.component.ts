@@ -11,6 +11,7 @@ import { Incasso } from 'src/app/shared/models/incasso.model';
 import { UserModel } from 'src/app/shared/models/user-data.model';
 import { FirebaseStoreService } from 'src/app/shared/services/firebase/firebase-store.service';
 import { PrintService } from 'src/app/shared/services/print/recipe-print.service';
+import { callModalToast } from 'src/app/shared/utils/common-utils';
 import { AuthService } from '../../login/auth.service';
 import { UserDataService } from '../user-data.service';
 
@@ -18,7 +19,7 @@ import { UserDataService } from '../user-data.service';
   selector: 'app-user-list',
   templateUrl: './user-list.component.html',
   styleUrls: ['./user-list.component.scss'],
-  providers: [ConfirmationService, MessageService],
+  providers: [ConfirmationService],
 })
 export class UserListComponent implements OnInit {
   selectedUser!: UserModel;
@@ -86,22 +87,6 @@ export class UserListComponent implements OnInit {
       this.userDataService.canaleComunicazione
     ).filter((key) => isNaN(+key));
 
-    this.printService.deviceStatus$.subscribe((status) => {
-      status.includes('No device selected')
-        ? this.callModalToast('Stampa', 'Stampante non selezionata', 'warn')
-        : status.includes('device selected')
-        ? setTimeout(
-            () =>
-              this.callModalToast(
-                'Stampa',
-                'Stampante impostata' + status.substring(status.indexOf(':')),
-                'info'
-              ),
-            1000
-          )
-        : null;
-    });
-
     this.initForm();
   }
 
@@ -150,7 +135,7 @@ export class UserListComponent implements OnInit {
   addNewUser() {
     this.userDataService.addUser(new UserModel(this.userInfoForm.value));
     this.showModal = !this.showModal;
-    this.callModalToast('Aggiunto', 'Nuovo utente aggiunto');
+    callModalToast(this.messageService, 'Aggiunto', 'Nuovo utente aggiunto');
   }
 
   /**
@@ -163,7 +148,7 @@ export class UserListComponent implements OnInit {
       this.savedUserId,
       new UserModel(this.userInfoForm.value)
     );
-    this.callModalToast('Modificato', 'Dati utente modificati', 'warn');
+    callModalToast(this.messageService, 'Modificato', 'Dati utente modificati', 'warn');
     this.showModal = !this.showModal;
   }
 
@@ -226,22 +211,7 @@ export class UserListComponent implements OnInit {
     });
     this.utenteInserimento = undefined;
     this.utenteUltimaModifica = undefined;
-  }
-
-  /**
-   * Mostra toast dialog a destra
-   * @param {string} summary -> titolo
-   * @param {string} detail -> descrizion
-   * @param {string} serverity? -> success , info , warn , error
-   * @returns {any}
-   **/
-  callModalToast(summary: string, detail: string, severity?: string) {
-    this.messageService.add({
-      severity: severity === undefined ? 'success' : severity,
-      summary: summary,
-      detail: detail,
-    });
-  }
+  } 
 
   confirmDeleteUser(user_id: number) {
     this.confirmationService.confirm({
@@ -250,10 +220,16 @@ export class UserListComponent implements OnInit {
       icon: 'pi pi-exclamation-triangle',
       accept: () => {
         this.deleteUser(user_id);
-        this.callModalToast('Eliminato', 'Utente rimosso', 'info');
+        callModalToast(
+          this.messageService,
+          'Eliminato',
+          'Utente rimosso',
+          'info'
+        );
       },
       reject: (type: ConfirmEventType) => {
-        this.callModalToast(
+        callModalToast(
+          this.messageService,
           'Interrotto',
           'Rimozione utente interrotta',
           'warn'
