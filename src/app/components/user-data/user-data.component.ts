@@ -37,12 +37,10 @@ import {
   selector: 'app-user-data',
   templateUrl: './user-data.component.html',
   styleUrls: ['./user-data.component.scss'],
-  providers: [
-    ConfirmationService,
-    { provide: LOCALE_ID, useValue: 'it' },
-  ],
+  providers: [ConfirmationService, { provide: LOCALE_ID, useValue: 'it' }],
 })
 export class UserDataComponent implements OnInit, OnDestroy, AfterViewInit {
+  totale: number = 0;
   userData: UserModel;
   tipoIntervento: string[];
   tipoParte: string[];
@@ -512,7 +510,7 @@ export class UserDataComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   print(specificData: SpecificDataModel) {
-        let result = createScontrino(specificData);
+    let result = createScontrino(specificData);
     try {
       if (this.printService.getDevice() === undefined) {
         this.callModalToast(
@@ -528,5 +526,20 @@ export class UserDataComponent implements OnInit, OnDestroy, AfterViewInit {
       console.log(error);
       this.callModalToast('Non Stampato', 'Errore nella stampa', 'error');
     }
+  }
+
+  getSommaCosto(specificData: SpecificDataModel): number {
+    let totalCost: number = specificData.costo || 0;
+    if (specificData.prodottiAggiuntivi) {
+      Object.values(specificData.prodottiAggiuntivi).forEach(
+        (prodottoAggiuntivo: prodottiAggiuntivi) => {
+          totalCost += +prodottoAggiuntivo.costo;
+        }
+      );
+    }
+    if (specificData.costo_sconto) {
+      totalCost -= +specificData.costo_sconto;
+    }
+    return totalCost;
   }
 }

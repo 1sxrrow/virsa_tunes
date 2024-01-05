@@ -30,6 +30,7 @@ export const routes: Routes = [
     path: 'login',
     loadChildren: () =>
       import('./components/login/login.module').then((m) => m.LoginModule),
+    data: { animation: 'LoginPage' },
   },
   { path: 'not-found', component: NotFoundComponent },
   { path: '**', redirectTo: '/not-found' },

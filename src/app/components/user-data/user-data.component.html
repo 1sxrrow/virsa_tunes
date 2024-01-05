@@ -35,6 +35,7 @@
       dataKey="id"
       (onRowSelect)="onRowSelect($event)"
       [globalFilterFields]="['tipo_intervento', 'data_intervento', 'costo']"
+      [styleClass]="'p-datatable-sm'"
     >
       <ng-template pTemplate="header">
         <tr>
@@ -68,7 +69,9 @@
             >{{ specificData.data_intervento | date : "dd/MM/yyyy" }}
           </td>
           <td>
-            <span class="p-column-title">Costo</span>{{ specificData.costo }} €
+            <span class="p-column-title">Totale</span>
+            {{ getSommaCosto(specificData) }}
+            €
           </td>
           <td>
             <p-button
@@ -109,386 +112,394 @@
   <app-confirm-dialog></app-confirm-dialog>
 
   <!-- Inizio modale per inserimento nuovo/modifica intervento -->
-  <p-dialog
-    #dialog
-    [modal]="true"
-    [(visible)]="showModal"
-    (onHide)="closeDialog()"
-    [header]="modalTitle"
-    aria-hidden="true"
-    [style]="{ width: '50vw' }"
-  >
-    <form [formGroup]="specificDataForm">
-      <div class="grid md:grid-cols-2 gap-4 mb-3 items-center">
-        <div class="mb-6 col-span-2">
-          <label for="tipo_intervento" class="label"> Tipo Intervento </label>
-          <span class="p-input-icon-right w-full">
-            <i class="pi pi-angle-down"></i>
-            <fieldset [disabled]="!isInfo">
-              <select
-                #navdrop_tipo_intervento
-                name="tipo_intervento"
-                id="tipo_intervento"
-                class="fields"
-                formControlName="tipo_intervento"
-                (change)="checkValueIntervento()"
-              >
-                <option [ngValue]="null" disabled>Seleziona Intervento</option>
-                <option
-                  [value]="intervento"
-                  *ngFor="let intervento of tipoIntervento"
+  <div>
+    <p-dialog
+      #dialog
+      [modal]="true"
+      [(visible)]="showModal"
+      (onHide)="closeDialog()"
+      [header]="modalTitle"
+      aria-hidden="true"
+      [style]="{ width: '50vw' }"
+    >
+      <form [formGroup]="specificDataForm">
+        <div class="grid md:grid-cols-2 gap-4 mb-3 items-center">
+          <div class="mb-6 col-span-2">
+            <label for="tipo_intervento" class="label"> Tipo Intervento </label>
+            <span class="p-input-icon-right w-full">
+              <i class="pi pi-angle-down"></i>
+              <fieldset [disabled]="!isInfo">
+                <select
+                  #navdrop_tipo_intervento
+                  name="tipo_intervento"
+                  id="tipo_intervento"
+                  class="fields"
+                  formControlName="tipo_intervento"
+                  (change)="checkValueIntervento()"
                 >
-                  {{ intervento }}
-                </option>
-              </select>
-            </fieldset>
-          </span>
+                  <option [ngValue]="null" disabled>
+                    Seleziona Intervento
+                  </option>
+                  <option
+                    [value]="intervento"
+                    *ngFor="let intervento of tipoIntervento"
+                  >
+                    {{ intervento }}
+                  </option>
+                </select>
+              </fieldset>
+            </span>
+          </div>
         </div>
-      </div>
-      <!-- <ng-select
+        <!-- <ng-select
         [items]="tipoIntervento"
         [(ngModel)]="selectedItem"
       >
       </ng-select> -->
-      <div
-        class="grid md:grid-cols-2 gap-4 mb-3 items-center"
-        *ngIf="showFields"
-      >
-        <div class="mb-6" *ngIf="showFieldsRiparazione">
-          <label for="problema" class="label"> Problema </label>
-          <input
-            type="text"
-            name="problema"
-            id="problema"
-            class="fields"
-            formControlName="problema"
-            required
-          />
-        </div>
-        <div class="mb-6" *ngIf="showFieldsRiparazione">
-          <label for="tipo_parte" class="label">Tipo parte</label>
-          <span class="p-input-icon-right w-full">
-            <i class="pi pi-angle-down"></i>
-            <select
-              name="tipo_parte"
-              id="tipo_parte"
-              class="fields"
-              formControlName="tipo_parte"
-            >
-              <option [ngValue]="null" disabled>Seleziona tipo Parte</option>
-              <option [value]="parte" *ngFor="let parte of tipoParte">
-                {{ parte }}
-              </option>
-            </select>
-          </span>
-        </div>
-
-        <div class="mb-6" *ngIf="showFieldsVendita">
-          <label for="tipo_intervento" class="label">Garanzia</label>
-          <span class="p-input-icon-right w-full">
-            <i class="pi pi-angle-down"></i>
-            <select
-              name="garanzia"
-              id="garanzia"
-              class="fields"
-              formControlName="garanzia"
-            >
-              <option [ngValue]="null" disabled>Seleziona garanzia</option>
-              <option [value]="garanzia" *ngFor="let garanzia of mesiGaranzia">
-                {{ garanzia }}
-              </option>
-            </select>
-          </span>
-        </div>
-
-        <div class="mb-6">
-          <label for="marca_telefono" class="label">Marca Telefono</label>
-          <input
-            type="text"
-            name="marca_telefono"
-            id="marca_telefono"
-            class="fields"
-            formControlName="marca_telefono"
-            required
-          />
-        </div>
-
-        <div class="mb-6">
-          <label for="modello_telefono" class="label">Modello Telefono </label>
-          <input
-            type="text"
-            name="modello_telefono"
-            id="modello_telefono"
-            class="fields"
-            formControlName="modello_telefono"
-            required
-          />
-        </div>
-        <div class="mb-6">
-          <label for="imei" class="label">
-            IMEI
-            <i
-              class="pi pi-question-circle"
-              style="font-size: 0.75rem"
-              pTooltip="15 caratteri"
-            ></i>
-          </label>
-          <input
-            type="text"
-            name="imei"
-            id="imei"
-            class="fields"
-            formControlName="imei"
-            required
-          />
-        </div>
-        <div class="mb-6">
-          <label for="costo" class="label">Costo (€)</label>
-          <input
-            type="number"
-            name="costo"
-            id="costo"
-            class="fields"
-            formControlName="costo"
-            required
-          />
-        </div>
-
-        <div class="mb-6" *ngIf="showFieldsVendita">
-          <label for="costo_sconto" class="label">Costo sconto(€)</label>
-          <input
-            type="number"
-            name="costo_sconto"
-            id="costo_sconto"
-            class="fields"
-            formControlName="costo_sconto"
-            required
-          />
-        </div>
-
-        <div class="mb-6" *ngIf="showFieldsVendita">
-          <label for="modalita_pagamento" class="label">
-            Modalità Pagamento
-          </label>
-          <span class="p-input-icon-right w-full">
-            <i class="pi pi-angle-down"></i>
-            <select
-              name="modalita_pagamento"
-              id="modalita_pagamento"
-              formControlName="modalita_pagamento"
-              class="fields"
-            >
-              <option [ngValue]="null" disabled>Seleziona Pagamento</option>
-              <option
-                [value]="elemtipoPagamento"
-                *ngFor="let elemtipoPagamento of tipoPagamento"
-              >
-                {{ elemtipoPagamento }}
-              </option>
-            </select>
-          </span>
-        </div>
-
-        <div class="mb-6" *ngIf="showFieldsVendita">
-          <label for="tipo_prodotto" class="label">Tipo Prodotto</label>
-          <span class="p-input-icon-right w-full">
-            <i class="pi pi-angle-down"></i>
-            <select
-              name="tipo_prodotto"
-              id="tipo_prodotto"
-              class="fields"
-              formControlName="tipo_prodotto"
-            >
-              <option [ngValue]="null" disabled>Seleziona Condizioni</option>
-              <option
-                [value]="elemcondizioniProdotto"
-                *ngFor="let elemcondizioniProdotto of condizioniProdotto"
-              >
-                {{ elemcondizioniProdotto }}
-              </option>
-            </select>
-          </span>
-        </div>
-
-        <div *ngIf="showFieldsRiparazione">
-          <label for="codice_sblocco" class="label">Codice Sblocco</label>
-          <input
-            type="text"
-            name="codice_sblocco"
-            id="costo_sconto"
-            class="fields"
-            formControlName="codice_sblocco"
-          />
-        </div>
-
-        <div *ngIf="showFieldsRiparazione">
-          <label for="nome_fornitore_pezzo" class="label">{{
-            "user_data.nome_fornitore_pezzo" | translate
-          }}</label>
-          <input
-            type="text"
-            name="nome_fornitore_pezzo"
-            id="nome_fornitore_pezzo"
-            class="fields"
-            formControlName="nome_fornitore_pezzo"
-          />
-        </div>
-
-        <div *ngIf="showFieldsRiparazione">
-          <label for="data_consegna_riparazione" class="label">
-            {{ "user_data.data_consegna_riparazione" | translate }}
-          </label>
-          <p-calendar
-            [formControl]="
-              specificDataForm.controls['data_consegna_riparazione']
-            "
-            name="data_consegna_riparazione"
-            id="data_consegna_riparazione"
-            [style]="{ width: '100%' }"
-            [showButtonBar]="true"
-            required
-            dateFormat="dd/mm/yy"
-          ></p-calendar>
-        </div>
-
-        <div *ngIf="showFieldsRiparazione">
-          <label for="data_rest_dispositivo_cliente" class="label">
-            {{ "user_data.data_rest_dispositivo_cliente" | translate }}
-          </label>
-          <p-calendar
-            [formControl]="
-              specificDataForm.controls['data_rest_dispositivo_cliente']
-            "
-            name="data_rest_dispositivo_cliente"
-            id="data_rest_dispositivo_cliente"
-            [style]="{ width: '100%' }"
-            [showButtonBar]="true"
-            dateFormat="dd/mm/yy"
-          ></p-calendar>
-        </div>
-
-        <div *ngIf="showFieldsRiparazione">
-          <label for="caparra" class="label">
-            {{ "user_data.caparra" | translate }}
-          </label>
-          <input
-            type="number"
-            name="caparra"
-            id="caparra"
-            class="fields"
-            formControlName="caparra"
-          />
-        </div>
-
-        <div class="col-start-1 col-end-2">
-          <label for="prodotti_aggiuntivi" class="mr-2"
-            >Prodotti Aggiuntivi</label
-          >
-          <p-checkbox
-            formControlName="checkedProdottiAggiuntivi"
-            (ngModelChange)="myModelChanged($event)"
-            [(ngModel)]="checkedProdottiAggiuntivi"
-            [binary]="true"
-            id="prodotti_aggiuntivi"
-            class="mr-2"
-          ></p-checkbox>
-        </div>
-
         <div
-          *ngIf="checkedProdottiAggiuntivi"
-          class="col-span-2 bg-gray-500 border border-neutral-700 rounded-md"
+          class="grid md:grid-cols-2 gap-4 mb-3 items-center"
+          *ngIf="showFields"
         >
-          <div *ngFor="let prodotto of prodottiAggiuntivi">
+          <div class="mb-6" *ngIf="showFieldsRiparazione">
+            <label for="problema" class="label"> Problema </label>
+            <input
+              type="text"
+              name="problema"
+              id="problema"
+              class="fields"
+              formControlName="problema"
+              required
+            />
+          </div>
+          <div class="mb-6" *ngIf="showFieldsRiparazione">
+            <label for="tipo_parte" class="label">Tipo parte</label>
+            <span class="p-input-icon-right w-full">
+              <i class="pi pi-angle-down"></i>
+              <select
+                name="tipo_parte"
+                id="tipo_parte"
+                class="fields"
+                formControlName="tipo_parte"
+              >
+                <option [ngValue]="null" disabled>Seleziona tipo Parte</option>
+                <option [value]="parte" *ngFor="let parte of tipoParte">
+                  {{ parte }}
+                </option>
+              </select>
+            </span>
+          </div>
+
+          <div class="mb-6" *ngIf="showFieldsVendita">
+            <label for="tipo_intervento" class="label">Garanzia</label>
+            <span class="p-input-icon-right w-full">
+              <i class="pi pi-angle-down"></i>
+              <select
+                name="garanzia"
+                id="garanzia"
+                class="fields"
+                formControlName="garanzia"
+              >
+                <option [ngValue]="null" disabled>Seleziona garanzia</option>
+                <option
+                  [value]="garanzia"
+                  *ngFor="let garanzia of mesiGaranzia"
+                >
+                  {{ garanzia }}
+                </option>
+              </select>
+            </span>
+          </div>
+
+          <div class="mb-6">
+            <label for="marca_telefono" class="label">Marca Telefono</label>
+            <input
+              type="text"
+              name="marca_telefono"
+              id="marca_telefono"
+              class="fields"
+              formControlName="marca_telefono"
+              required
+            />
+          </div>
+
+          <div class="mb-6">
+            <label for="modello_telefono" class="label"
+              >Modello Telefono
+            </label>
+            <input
+              type="text"
+              name="modello_telefono"
+              id="modello_telefono"
+              class="fields"
+              formControlName="modello_telefono"
+              required
+            />
+          </div>
+          <div class="mb-6">
+            <label for="imei" class="label">
+              IMEI
+              <i
+                class="pi pi-question-circle"
+                style="font-size: 0.75rem"
+                pTooltip="15 caratteri"
+              ></i>
+            </label>
+            <input
+              type="text"
+              name="imei"
+              id="imei"
+              class="fields"
+              formControlName="imei"
+              required
+            />
+          </div>
+          <div class="mb-6">
+            <label for="costo" class="label">Costo (€)</label>
+            <input
+              type="number"
+              name="costo"
+              id="costo"
+              class="fields"
+              formControlName="costo"
+              required
+            />
+          </div>
+
+          <div class="mb-6" *ngIf="showFieldsVendita">
+            <label for="costo_sconto" class="label">Costo sconto(€)</label>
+            <input
+              type="number"
+              name="costo_sconto"
+              id="costo_sconto"
+              class="fields"
+              formControlName="costo_sconto"
+              required
+            />
+          </div>
+
+          <div class="mb-6" *ngIf="showFieldsVendita">
+            <label for="modalita_pagamento" class="label">
+              Modalità Pagamento
+            </label>
+            <span class="p-input-icon-right w-full">
+              <i class="pi pi-angle-down"></i>
+              <select
+                name="modalita_pagamento"
+                id="modalita_pagamento"
+                formControlName="modalita_pagamento"
+                class="fields"
+              >
+                <option [ngValue]="null" disabled>Seleziona Pagamento</option>
+                <option
+                  [value]="elemtipoPagamento"
+                  *ngFor="let elemtipoPagamento of tipoPagamento"
+                >
+                  {{ elemtipoPagamento }}
+                </option>
+              </select>
+            </span>
+          </div>
+
+          <div class="mb-6" *ngIf="showFieldsVendita">
+            <label for="tipo_prodotto" class="label">Tipo Prodotto</label>
+            <span class="p-input-icon-right w-full">
+              <i class="pi pi-angle-down"></i>
+              <select
+                name="tipo_prodotto"
+                id="tipo_prodotto"
+                class="fields"
+                formControlName="tipo_prodotto"
+              >
+                <option [ngValue]="null" disabled>Seleziona Condizioni</option>
+                <option
+                  [value]="elemcondizioniProdotto"
+                  *ngFor="let elemcondizioniProdotto of condizioniProdotto"
+                >
+                  {{ elemcondizioniProdotto }}
+                </option>
+              </select>
+            </span>
+          </div>
+
+          <div *ngIf="showFieldsRiparazione">
+            <label for="codice_sblocco" class="label">Codice Sblocco</label>
+            <input
+              type="text"
+              name="codice_sblocco"
+              id="costo_sconto"
+              class="fields"
+              formControlName="codice_sblocco"
+            />
+          </div>
+
+          <div *ngIf="showFieldsRiparazione">
+            <label for="nome_fornitore_pezzo" class="label">{{
+              "user_data.nome_fornitore_pezzo" | translate
+            }}</label>
+            <input
+              type="text"
+              name="nome_fornitore_pezzo"
+              id="nome_fornitore_pezzo"
+              class="fields"
+              formControlName="nome_fornitore_pezzo"
+            />
+          </div>
+
+          <div *ngIf="showFieldsRiparazione">
+            <label for="data_consegna_riparazione" class="label">
+              {{ "user_data.data_consegna_riparazione" | translate }}
+            </label>
+            <p-calendar
+              [formControl]="
+                specificDataForm.controls['data_consegna_riparazione']
+              "
+              name="data_consegna_riparazione"
+              id="data_consegna_riparazione"
+              [style]="{ width: '100%' }"
+              [showButtonBar]="true"
+              required
+              dateFormat="dd/mm/yy"
+            ></p-calendar>
+          </div>
+
+          <div *ngIf="showFieldsRiparazione">
+            <label for="data_rest_dispositivo_cliente" class="label">
+              {{ "user_data.data_rest_dispositivo_cliente" | translate }}
+            </label>
+            <p-calendar
+              [formControl]="
+                specificDataForm.controls['data_rest_dispositivo_cliente']
+              "
+              name="data_rest_dispositivo_cliente"
+              id="data_rest_dispositivo_cliente"
+              [style]="{ width: '100%' }"
+              [showButtonBar]="true"
+              dateFormat="dd/mm/yy"
+            ></p-calendar>
+          </div>
+
+          <div *ngIf="showFieldsRiparazione">
+            <label for="caparra" class="label">
+              {{ "user_data.caparra" | translate }}
+            </label>
+            <input
+              type="number"
+              name="caparra"
+              id="caparra"
+              class="fields"
+              formControlName="caparra"
+            />
+          </div>
+
+          <div class="col-start-1 col-end-2">
+            <label for="prodotti_aggiuntivi" class="mr-2"
+              >Prodotti Aggiuntivi</label
+            >
+            <p-checkbox
+              formControlName="checkedProdottiAggiuntivi"
+              (ngModelChange)="myModelChanged($event)"
+              [(ngModel)]="checkedProdottiAggiuntivi"
+              [binary]="true"
+              id="prodotti_aggiuntivi"
+              class="mr-2"
+            ></p-checkbox>
+          </div>
+
+          <div
+            *ngIf="checkedProdottiAggiuntivi"
+            class="col-span-2 bg-gray-500 border border-neutral-700 rounded-md"
+          >
+            <div *ngFor="let prodotto of prodottiAggiuntivi">
+              <div
+                class="grid md:grid-cols-4 place-items-center auto-cols-min ml-2"
+              >
+                <div class="m-1">
+                  <label for="quantita" class="labelShort">Quantita</label>
+                  <input
+                    disabled
+                    #quantita
+                    id="quantita"
+                    type="number"
+                    class="fieldsShort mb-1"
+                    [value]="prodotto.quantita"
+                  />
+                </div>
+                <div class="m-1">
+                  <label for="nome" class="labelShort">Nome</label>
+                  <input
+                    disabled
+                    #nome
+                    id="nome"
+                    type="text"
+                    class="fieldsShort mb-1"
+                    [value]="prodotto.nomeProdotto"
+                  />
+                </div>
+                <div class="m-1">
+                  <label for="costo" class="labelShort">Costo (€)</label>
+                  <input
+                    disabled
+                    #costo
+                    id="costo"
+                    type="number"
+                    class="fieldsShort mb-1"
+                    [value]="prodotto.costo"
+                  />
+                </div>
+                <p-button
+                  styleClass="p-button-secondary pi pi-times"
+                  class="flex mt-3"
+                  (onClick)="removeProdottoAggiuntivi(prodotto)"
+                >
+                </p-button>
+              </div>
+            </div>
             <div
               class="grid md:grid-cols-4 place-items-center auto-cols-min ml-2"
             >
               <div class="m-1">
                 <label for="quantita" class="labelShort">Quantita</label>
                 <input
-                  disabled
-                  #quantita
+                  #quantitaProdottoInput
                   id="quantita"
                   type="number"
                   class="fieldsShort mb-1"
-                  [value]="prodotto.quantita"
                 />
               </div>
               <div class="m-1">
                 <label for="nome" class="labelShort">Nome</label>
                 <input
-                  disabled
-                  #nome
+                  #nomeProdottoInput
                   id="nome"
                   type="text"
                   class="fieldsShort mb-1"
-                  [value]="prodotto.nomeProdotto"
                 />
               </div>
               <div class="m-1">
                 <label for="costo" class="labelShort">Costo (€)</label>
                 <input
-                  disabled
-                  #costo
+                  #costoProdottoInput
                   id="costo"
                   type="number"
                   class="fieldsShort mb-1"
-                  [value]="prodotto.costo"
                 />
               </div>
               <p-button
-                styleClass="p-button-secondary pi pi-times"
+                styleClass="p-button-secondary pi pi-plus"
                 class="flex mt-3"
-                (onClick)="removeProdottoAggiuntivi(prodotto)"
+                (onClick)="
+                  addProdottoAggiuntivi(
+                    quantitaProdottoInput.value,
+                    nomeProdottoInput.value,
+                    costoProdottoInput.value
+                  )
+                "
               >
               </p-button>
             </div>
           </div>
-          <div
-            class="grid md:grid-cols-4 place-items-center auto-cols-min ml-2"
-          >
-            <div class="m-1">
-              <label for="quantita" class="labelShort">Quantita</label>
-              <input
-                #quantitaProdottoInput
-                id="quantita"
-                type="number"
-                class="fieldsShort mb-1"
-              />
-            </div>
-            <div class="m-1">
-              <label for="nome" class="labelShort">Nome</label>
-              <input
-                #nomeProdottoInput
-                id="nome"
-                type="text"
-                class="fieldsShort mb-1"
-              />
-            </div>
-            <div class="m-1">
-              <label for="costo" class="labelShort">Costo (€)</label>
-              <input
-                #costoProdottoInput
-                id="costo"
-                type="number"
-                class="fieldsShort mb-1"
-              />
-            </div>
-            <p-button
-              styleClass="p-button-secondary pi pi-plus"
-              class="flex mt-3"
-              (onClick)="
-                addProdottoAggiuntivi(
-                  quantitaProdottoInput.value,
-                  nomeProdottoInput.value,
-                  costoProdottoInput.value
-                )
-              "
-            >
-            </p-button>
-          </div>
         </div>
-      </div>
-      <!-- visualizza chi ha fatto l'ultima modifica WIP 
+        <!-- visualizza chi ha fatto l'ultima modifica WIP 
         <div class="row mb-2">
         <p
           [hidden]="!isInfo || !utenteInserimento"
@@ -504,30 +515,31 @@
           Utente ultima modifica: {{ utenteUltimaModifica }}
         </p>
       </div> -->
-      <div class="flex flex-col items-end justify-end col-start-5 col-end-5">
-        <p-button
-          styleClass="p-button-raised p-button-secondary"
-          [hidden]="!isInfo"
-          [disabled]="!specificDataForm.valid"
-          (onClick)="addNewIntervento()"
-        >
-          Aggiungi
-        </p-button>
-        <p-button *ngIf="devmode" (onClick)="findInvalidControls()">
-          check values
-        </p-button>
-        <p-button
-          styleClass="p-button-raised p-button-secondary"
-          [hidden]="isInfo"
-          [disabled]="verifyAuthModify()"
-          (onClick)="modifyUserIntervento()"
-        >
-          Modifica
-        </p-button>
-      </div>
-    </form>
-  </p-dialog>
-  <p-toast></p-toast>
+        <div class="flex flex-col items-end justify-end col-start-5 col-end-5">
+          <p-button
+            styleClass="p-button-raised p-button-secondary"
+            [hidden]="!isInfo"
+            [disabled]="!specificDataForm.valid"
+            (onClick)="addNewIntervento()"
+          >
+            Aggiungi
+          </p-button>
+          <p-button *ngIf="devmode" (onClick)="findInvalidControls()">
+            check values
+          </p-button>
+          <p-button
+            styleClass="p-button-raised p-button-secondary"
+            [hidden]="isInfo"
+            [disabled]="verifyAuthModify()"
+            (onClick)="modifyUserIntervento()"
+          >
+            Modifica
+          </p-button>
+        </div>
+      </form>
+    </p-dialog>
+  </div>
+  <p-toast [baseZIndex]="3"></p-toast>
 </div>
 
 <!-- prettier-ignore -->

@@ -290,8 +290,13 @@ export function createScontrino(
               specificData.imei,
               specificData.costo + ',00 €',
             ],
-            ['Problema', 'Codice Sblocco', ''],
-            [specificData.problema, specificData.codice_sblocco, ''],
+            ['', '', ''],
+            ['Problema', 'Codice Sblocco', 'Tipo Ricambio'],
+            [
+              specificData.problema,
+              specificData.codice_sblocco,
+              specificData.tipo_parte,
+            ],
             ['', '', ''],
             ['', '', ''],
             ['', '', ''],
@@ -309,11 +314,7 @@ export function createScontrino(
           ]
         )
         .newline()
-        .line(
-          specificData.modalita_pagamento
-            ? 'Modalità pagamento: ' + specificData.modalita_pagamento
-            : ''
-        )
+        .line(specificData.caparra ? 'Caparra : ' + specificData.caparra : ' €')
         .line(DateTimeNow())
         .newline()
         .newline()
@@ -364,8 +365,13 @@ export function createScontrino(
               specificData.costo + ',00 €',
             ],
             ...prodottiAggiuntiviTmp,
-            ['Tipo Prodotto', 'Garanzia', ''],
-            [specificData.tipo_prodotto, specificData.garanzia, ''],
+            ['', '', ''],
+            ['Problema', 'Codice Sblocco', 'Tipo Ricambio'],
+            [
+              specificData.problema,
+              specificData.codice_sblocco,
+              specificData.tipo_parte,
+            ],
             ['', '', ''],
             ['', '', ''],
             ['', '', ''],
@@ -383,7 +389,7 @@ export function createScontrino(
           ]
         )
         .newline()
-        .line(specificData.caparra ? 'Caparra : ' + specificData.caparra : '')
+        .line(specificData.caparra ? 'Caparra : ' + specificData.caparra : ' €')
         .line(DateTimeNow())
         .newline()
         .newline()
@@ -454,6 +460,9 @@ export function createScontrino(
               specificData.costo + ',00 €',
             ],
             ...prodottiAggiuntiviTmp,
+            ['', '', ''],
+            ['Tipo Prodotto', 'Garanzia', ''],
+            [specificData.tipo_prodotto, specificData.garanzia, ''],
             ['', '', ''],
             ['', '', ''],
             ['', '', ''],

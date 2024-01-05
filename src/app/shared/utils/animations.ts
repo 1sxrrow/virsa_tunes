@@ -3,6 +3,7 @@ import {
   animateChild,
   group,
   query,
+  state,
   style,
   transition,
   trigger,
@@ -58,4 +59,10 @@ export const slideInAnimation = trigger('routeAnimations', [
       query('@*', animateChild(), { optional: true }),
     ]),
   ]),
+]);
+
+export const fadeInAnimation = trigger('slideToLeft', [
+  state('start', style({ transform: 'translateX(0)' })),
+  state('end', style({ transform: 'translateX(100%)' })),
+  transition('end => start', animate('500ms')),
 ]);

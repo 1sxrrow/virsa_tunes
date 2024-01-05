@@ -66,51 +66,50 @@ export class PrintService {
 
   chooseDevice() {
     (navigator as any).usb
-          .requestDevice({ filters: [] })
-          .then((device) => {
-            if (device) {
-              console.log(device);
-              this.setDevice(device);
-              setTimeout(
-                () =>
-                  callModalToast(
-                    this.messageService,
-                    'Stampa',
-                    `Stampante impostata Name:${device.productName}`,
-                    'info'
-                  ),
-                1000
-              );
-            } else {
-              console.log('No device selected');
-              setTimeout(
-                () =>
-                  callModalToast(
-                    this.messageService,
-                    'Stampa',
-                    'Stampante non impostata',
-                    'warn'
-                  ),
-                1000
-              );
-            }
-          })
-          .catch((error) => {
-            console.log(error);
-            if (error.message.includes('No device selected')) {
-              console.log('No device selected');
-              setTimeout(
-                () =>
-                  callModalToast(
-                    this.messageService,
-                    'Stampa',
-                    'Stampante non impostata',
-                    'warn'
-                  ),
-                1000
-              );
-            }
-          });
+      .requestDevice({ filters: [] })
+      .then((device) => {
+        if (device) {
+          console.log(device);
+          this.setDevice(device);
+          setTimeout(
+            () =>
+              callModalToast(
+                this.messageService,
+                'Stampa',
+                `Stampante impostata Name:${device.productName}`,
+                'info'
+              ),
+            1000
+          );
+        } else {
+          console.log('No device selected');
+          setTimeout(
+            () =>
+              callModalToast(
+                this.messageService,
+                'Stampa',
+                'Stampante non impostata',
+                'warn'
+              ),
+            1000
+          );
+        }
+      })
+      .catch((error) => {
+        console.log(error);
+        if (error.message.includes('No device selected')) {
+          console.log('No device selected');
+          setTimeout(
+            () =>
+              callModalToast(
+                this.messageService,
+                'Stampa',
+                'Stampante non impostata',
+                'warn'
+              ),
+            1000
+          );
+        }
+      });
   }
-
 }

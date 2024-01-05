@@ -1,7 +1,7 @@
 <app-header (isSidenavOpen)="onSidenavToggle($event)"></app-header>
-<mat-sidenav-container class="sidenav-container">
-  <mat-sidenav #sidenav [(opened)]="isSidenavOpen" mode="side" opened autosize>
-    <mat-nav-list class="mr-2 ml-2 flex items-stretch align-center">
+<mat-sidenav-container>
+  <mat-sidenav #sidenav [(opened)]="isSidenavOpen" mode="side" opened>
+    <mat-nav-list class="mr-2 ml-2 flex align-center">
       <button
         (click)="setPrinterDevice()"
         pTooltip="Scegli Stampante"
@@ -15,10 +15,12 @@
 
   <mat-sidenav-content>
     <!-- Main content goes here -->
-    <div class="flex-auto mx-auto p-10 ml-48 mr-48">
-      <router-outlet
-        [@routeAnimations]="getRouteAnimationData()"
-      ></router-outlet>
+    <!-- <div
+      class="flex-auto mx-auto pt-3 pl-10 pr-10 pb-1"
+      [@slideToLeft]="animate ? 'start' : 'end'"
+    > -->
+    <div class="flex-auto mx-auto pt-10 pl-10 pr-10 pb-1 mainContent">
+      <router-outlet></router-outlet>
     </div>
   </mat-sidenav-content>
 </mat-sidenav-container>

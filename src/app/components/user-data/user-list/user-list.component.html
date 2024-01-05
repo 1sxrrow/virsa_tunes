@@ -1,4 +1,4 @@
-<div *ngIf="!loading" class="flex flex-col">
+<div *ngIf="!loading" class="flex flex-col max-h-screen">
   <h1 class="text-4xl font-bold mb-3">Database</h1>
   <p-card>
     <p-table
@@ -15,6 +15,7 @@
       dataKey="id"
       (onRowSelect)="onRowSelect($event)"
       [globalFilterFields]="['nome', 'cognome', 'canale_com']"
+      [styleClass]="'p-datatable-sm'"
     >
       <ng-template pTemplate="caption">
         <div class="flex">
@@ -264,13 +265,13 @@
       <ng-template pTemplate="body" let-incasso>
         <tr>
           <td>{{ incasso.mese }}</td>
-          <td>{{ incasso.incassoTotale }}</td>
-          <td>{{ incasso.spese }}</td>
-          <td>{{ incasso.netto }}</td>
+          <td>{{ incasso.incassoTotale }} €</td>
+          <td>{{ incasso.spese }} €</td>
+          <td>{{ incasso.netto }} €</td>
         </tr>
       </ng-template>
     </p-table>
   </p-dialog>
-  <p-toast></p-toast>
+  <p-toast [baseZIndex]="3"></p-toast>
   <app-confirm-dialog></app-confirm-dialog>
 </div>

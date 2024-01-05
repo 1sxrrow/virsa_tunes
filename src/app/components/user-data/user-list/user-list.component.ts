@@ -87,7 +87,9 @@ export class UserListComponent implements OnInit {
     this.canaleComunicazioni = Object.keys(
       this.userDataService.canaleComunicazione
     ).filter((key) => isNaN(+key));
-
+    if (!this.printService.getDevice()) {
+      this.printService.chooseDevice();
+    }
     this.initForm();
   }
 

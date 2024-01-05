@@ -16,6 +16,7 @@ export enum canaleComunicazione {
   'Sito',
   'Nessuno',
   'Sub',
+  'WEFIX',
 }
 
 export enum condizioniProdotto {
