@@ -291,11 +291,15 @@ export function createScontrino(
               specificData.costo + ',00 €',
             ],
             ['', '', ''],
-            ['Problema', 'Codice Sblocco', 'Tipo Ricambio'],
+            ['Problema', 'Codice Sblocco', 'Tipo Ric.'],
             [
               specificData.problema,
               specificData.codice_sblocco,
-              specificData.tipo_parte,
+              specificData.tipo_parte === 'Compatibile'
+                ? 'Compat.'
+                : specificData.tipo_parte === 'Originale'
+                ? 'Originale'
+                : '',
             ],
             ['', '', ''],
             ['', '', ''],
@@ -366,11 +370,15 @@ export function createScontrino(
             ],
             ...prodottiAggiuntiviTmp,
             ['', '', ''],
-            ['Problema', 'Codice Sblocco', 'Tipo Ricambio'],
+            ['Problema', 'Codice Sblocco', 'Tipo Ric.'],
             [
               specificData.problema,
               specificData.codice_sblocco,
-              specificData.tipo_parte,
+              specificData.tipo_parte === 'Compatibile'
+                ? 'Compat.'
+                : specificData.tipo_parte === 'Originale'
+                ? 'Originale'
+                : '',
             ],
             ['', '', ''],
             ['', '', ''],

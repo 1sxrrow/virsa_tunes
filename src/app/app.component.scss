@@ -20,6 +20,12 @@ app-root {
   z-index: -1;
 }
 
+.buttonContainer {
+  height: auto;
+  margin: 0 auto;
+  padding: 10px;
+  position: relative;
+}
 .mat-drawer-content {
   z-index: -1;
 }
