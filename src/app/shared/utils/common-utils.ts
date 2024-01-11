@@ -250,6 +250,7 @@ export function createScontrino(
       ]);
     });
   }
+  specificData.caparra ? (totale -= +specificData.caparra) : null;
   switch (specificData.tipo_intervento) {
     case 'Riparazione':
       return encoder
