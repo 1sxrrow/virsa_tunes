@@ -29,15 +29,18 @@ import { PrintService } from 'src/app/shared/services/print/recipe-print.service
 import { prodottiAggiuntivi } from '../../shared/models/prodotti-aggiuntivi.model';
 import {
   createExcel,
+  createMultiScontrino,
   createScontrino,
   keylistener,
 } from '../../shared/utils/common-utils';
+import { fadeInOutAnimation } from 'src/app/shared/utils/animations';
 
 @Component({
   selector: 'app-user-data',
   templateUrl: './user-data.component.html',
   styleUrls: ['./user-data.component.scss'],
   providers: [ConfirmationService, { provide: LOCALE_ID, useValue: 'it' }],
+  animations: [fadeInOutAnimation],
 })
 export class UserDataComponent implements OnInit, OnDestroy, AfterViewInit {
   totale: number = 0;
@@ -60,6 +63,7 @@ export class UserDataComponent implements OnInit, OnDestroy, AfterViewInit {
 
   // Per modale
   showModal = false;
+  showPrintModal = false;
   visible = false;
   modalTitle: string;
   isModify = false;
@@ -69,8 +73,10 @@ export class UserDataComponent implements OnInit, OnDestroy, AfterViewInit {
   showFields = false;
 
   selectedSpecificData!: SpecificDataModel;
+  selectedSpecificDataScontrino: SpecificDataModel[] = [];
   storedSub: Subscription;
   storedSubSpecificData: Subscription;
+  multipleSelection = false;
 
   id: number;
   loading = true;
@@ -80,7 +86,6 @@ export class UserDataComponent implements OnInit, OnDestroy, AfterViewInit {
   utenteInserimento: string;
   utenteUltimaModifica: string;
   devmode = false;
-
   modifyInterventoId: number;
 
   showFieldsVendita = false;
@@ -240,6 +245,9 @@ export class UserDataComponent implements OnInit, OnDestroy, AfterViewInit {
   showDataIntervento(id: number) {
     this.initForm();
     this.modifyInterventoId = id;
+    // if (Array.isArray(this.selectedSpecificData)) {
+    //   this.selectedSpecificData = this.selectedSpecificData[0];
+    // }
     this.checkedProdottiAggiuntivi =
       this.selectedSpecificData.checkedProdottiAggiuntivi !== undefined
         ? this.selectedSpecificData.checkedProdottiAggiuntivi
@@ -510,7 +518,7 @@ export class UserDataComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   print(specificData: SpecificDataModel) {
-    let result = createScontrino(specificData);
+    let result = createScontrino(specificData, this.userData);
     try {
       if (this.printService.getDevice() === undefined) {
         this.callModalToast(
@@ -541,5 +549,34 @@ export class UserDataComponent implements OnInit, OnDestroy, AfterViewInit {
       totalCost -= +specificData.costo_sconto;
     }
     return totalCost;
+  }
+
+  selezioneScontrinoMultiplo() {
+    this.multipleSelection = !this.multipleSelection;
+    if (this.multipleSelection === false) {
+      this.selectedSpecificData = undefined;
+    }
+  }
+
+  checkEnableStampaMultiScontrino() {
+    return Array.isArray(this.selectedSpecificData)
+      ? this.selectedSpecificData.length >= 1
+        ? false
+        : true
+      : true;
+  }
+
+  openModalScontrino() {
+    this.showPrintModal = true;
+    this.selectedSpecificDataScontrino = [];
+    Array.isArray(this.selectedSpecificData)
+      ? this.selectedSpecificData.forEach((item) => {
+          this.selectedSpecificDataScontrino.push(item);
+        })
+      : null;
+  }
+
+  multiPrint(selectedSpecificData: SpecificDataModel[]) {
+    createMultiScontrino(selectedSpecificData, this.userData);
   }
 }

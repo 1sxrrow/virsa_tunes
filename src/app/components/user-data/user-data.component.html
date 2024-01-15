@@ -4,16 +4,34 @@
     <i class="pi pi-arrow-right align-middle"></i>
     <span class="ml-2 font-normal text-3xl">Lista Interventi</span>
   </p>
-  <div class="grid md:grid-cols-5 gap-4 mb-3">
+  <div class="grid md:grid-cols-5 gap-3 mb-3">
     <p-button
       label="Lista Clienti"
       icon="pi pi-user"
-      styleClass="p-button-raised p-button-info"
+      styleClass="p-button-raised p-button-info w-full"
       (click)="goBack()"
     ></p-button>
     <p-button
+      label="Stampa Multi-S"
+      [disabled]="checkEnableStampaMultiScontrino()"
+      styleClass="p-button-raised p-button-danger w-full"
+      class="p-input-icon-right col-start-4 col-end-4"
+      icon="pi pi-print"
+      (click)="openModalScontrino()"
+      *ngIf="multipleSelection"
+      [@fadeInOut]
+    ></p-button>
+    <p-button
+      [label]="multipleSelection ? 'Disattiva Multi-S' : ' Attiva Multi-S'"
+      styleClass="p-button-raised p-button-secondary w-full"
+      class="p-input-icon-right col-start-5 col-end-5"
+      icon="pi pi-book"
+      [disabled]="true"
+    ></p-button>
+    <!-- (click)="selezioneScontrinoMultiplo()" -->
+    <p-button
       label="Nuovo Intervento"
-      styleClass="p-button-raised p-button-info"
+      styleClass="p-button-raised p-button-info w-full"
       class="p-input-icon-right col-start-6 col-end-6"
       icon="pi pi-plus"
       (click)="newIntervento()"
@@ -26,19 +44,23 @@
       responsiveLayout="stack"
       [loading]="loading"
       [paginator]="true"
-      [rows]="10"
+      [rows]="5"
       [rowHover]="false"
       [showCurrentPageReport]="true"
-      [rowsPerPageOptions]="[10, 25, 50]"
-      selectionMode="single"
+      [rowsPerPageOptions]="[5, 10, 25, 50]"
+      [selectionMode]="multipleSelection ? 'multiple' : 'single'"
       [(selection)]="selectedSpecificData"
+      [metaKeySelection]="false"
       dataKey="id"
-      (onRowSelect)="onRowSelect($event)"
+      (onRowSelect)="multipleSelection ? null : onRowSelect($event)"
       [globalFilterFields]="['tipo_intervento', 'data_intervento', 'costo']"
       [styleClass]="'p-datatable-sm'"
     >
       <ng-template pTemplate="header">
         <tr>
+          <th style="width: 4rem" *ngIf="multipleSelection">
+            <p-tableHeaderCheckbox></p-tableHeaderCheckbox>
+          </th>
           <th pSortableColumn="tipo_intervento">
             Tipo Intervento<p-sortIcon field="tipo_intervento"></p-sortIcon>
           </th>
@@ -56,6 +78,9 @@
       </ng-template>
       <ng-template pTemplate="body" let-specificData>
         <tr [pSelectableRowDblClick]="specificData">
+          <td *ngIf="multipleSelection">
+            <p-tableCheckbox [value]="specificData"></p-tableCheckbox>
+          </td>
           <td>
             <span class="p-column-title">Tipo Intervento</span
             >{{ specificData.tipo_intervento }}
@@ -110,6 +135,39 @@
 
   <!-- Dialog di conferma per rimozione elemento -->
   <app-confirm-dialog></app-confirm-dialog>
+
+  <!-- Dialog per stampa scontrino multipla -->
+  <p-dialog
+    #dialog
+    [modal]="true"
+    [(visible)]="showPrintModal"
+    (onHide)="closeDialog()"
+    [header]="'Stampa Scontrino Multipla'"
+    aria-hidden="true"
+    [style]="{ width: '50vw' }"
+  >
+    <p-table [value]="selectedSpecificDataScontrino">
+      <ng-template pTemplate="header">
+        <tr>
+          <th>Prodotto</th>
+          <th>Costo</th>
+        </tr>
+      </ng-template>
+      <ng-template pTemplate="body" let-selectedSpecificDataItem>
+        <tr>
+          <td>{{ selectedSpecificDataItem.modello_telefono }}</td>
+          <td>{{ getSommaCosto(selectedSpecificDataItem) }}</td>
+        </tr>
+      </ng-template>
+    </p-table>
+    <p-button
+      label="Stampa"
+      styleClass="p-button-info"
+      icon="pi pi-print"
+      (click)="multiPrint(selectedSpecificDataScontrino)"
+      class="grid place-content-center mt-2 mr-2"
+    ></p-button>
+  </p-dialog>
 
   <!-- Inizio modale per inserimento nuovo/modifica intervento -->
   <div>

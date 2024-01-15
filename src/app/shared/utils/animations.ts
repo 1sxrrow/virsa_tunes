@@ -66,3 +66,8 @@ export const fadeInAnimation = trigger('slideToLeft', [
   state('end', style({ transform: 'translateX(100%)' })),
   transition('end => start', animate('500ms')),
 ]);
+
+export const fadeInOutAnimation = trigger('fadeInOut', [
+  state('void', style({ opacity: 0 })),
+  transition(':enter, :leave', [animate(200)]),
+]);

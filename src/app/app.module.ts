@@ -41,6 +41,7 @@ import { UserListComponent } from './components/user-data/user-list/user-list.co
 import { CircleSpinnerComponent } from './shared/components/circle-spinner/circle-spinner.component';
 import { PersonalConfirmDialogModule } from './shared/components/confirm-dialog/confirm.dialog.module';
 import { MessageService } from 'primeng/api';
+import { FooterComponent } from './components/footer/footer.component';
 
 registerLocaleData(localeIt);
 export function HttpLoaderFactory(httpClient: HttpClient) {
@@ -52,6 +53,7 @@ export function HttpLoaderFactory(httpClient: HttpClient) {
     AppComponent,
     UserDataComponent,
     HeaderComponent,
+    FooterComponent,
     UserListComponent,
   ],
   imports: [

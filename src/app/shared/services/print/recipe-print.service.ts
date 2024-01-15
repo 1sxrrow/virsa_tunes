@@ -10,28 +10,30 @@ export class PrintService {
   private device: any;
 
   constructor(private messageService: MessageService) {
-    (navigator as any).usb.getDevices().then((devices) => {
-      if (devices.length > 0) {
-        devices.forEach((device) => {
-          console.log(
-            `Name: ${device.productName}, Serial: ${device.serialNumber}`
-          );
-          this.setDevice(device);
-          setTimeout(
-            () =>
-              callModalToast(
-                this.messageService,
-                'Stampa',
-                `Stampante impostata Name:${device.productName}`,
-                'info'
-              ),
-            1000
-          );
-        });
-      } else {
-        this.chooseDevice();
-      }
-    });
+    if (!this.device) {
+      (navigator as any).usb.getDevices().then((devices) => {
+        if (devices.length > 0) {
+          devices.forEach((device) => {
+            console.log(
+              `Name: ${device.productName}, Serial: ${device.serialNumber}`
+            );
+            this.setDevice(device);
+            setTimeout(
+              () =>
+                callModalToast(
+                  this.messageService,
+                  'Stampa',
+                  `Stampante impostata Name:${device.productName}`,
+                  'info'
+                ),
+              1000
+            );
+          });
+        } else {
+          this.chooseDevice();
+        }
+      });
+    }
   }
 
   async printRecipe(device, result: EscPosEncoder) {
