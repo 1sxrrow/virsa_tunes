@@ -569,7 +569,7 @@ export class UserDataComponent implements OnInit, OnDestroy, AfterViewInit {
   openModalScontrino() {
     this.showPrintModal = true;
     this.selectedSpecificDataScontrino = [];
-    Array.isArray(this.selectedSpecificData)
+    return Array.isArray(this.selectedSpecificData)
       ? this.selectedSpecificData.forEach((item) => {
           this.selectedSpecificDataScontrino.push(item);
         })

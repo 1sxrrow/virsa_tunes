@@ -17,7 +17,7 @@
       styleClass="p-button-raised p-button-danger w-full"
       class="p-input-icon-right col-start-4 col-end-4"
       icon="pi pi-print"
-      (click)="openModalScontrino()"
+      (click)="!checkEnableStampaMultiScontrino() ? openModalScontrino() : null"
       *ngIf="multipleSelection"
       [@fadeInOut]
     ></p-button>
@@ -26,7 +26,6 @@
       styleClass="p-button-raised p-button-secondary w-full"
       class="p-input-icon-right col-start-5 col-end-5"
       icon="pi pi-book"
-      [disabled]="true"
       (click)="selezioneScontrinoMultiplo()"
     ></p-button>
     <p-button
