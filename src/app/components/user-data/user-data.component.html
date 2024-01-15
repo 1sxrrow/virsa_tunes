@@ -27,8 +27,8 @@
       class="p-input-icon-right col-start-5 col-end-5"
       icon="pi pi-book"
       [disabled]="true"
+      (click)="selezioneScontrinoMultiplo()"
     ></p-button>
-    <!-- (click)="selezioneScontrinoMultiplo()" -->
     <p-button
       label="Nuovo Intervento"
       styleClass="p-button-raised p-button-info w-full"
@@ -95,7 +95,7 @@
           </td>
           <td>
             <span class="p-column-title">Totale</span>
-            {{ getSommaCosto(specificData) }}
+            {{ getTotalOfProduct(specificData) }}
             €
           </td>
           <td>
@@ -156,7 +156,7 @@
       <ng-template pTemplate="body" let-selectedSpecificDataItem>
         <tr>
           <td>{{ selectedSpecificDataItem.modello_telefono }}</td>
-          <td>{{ getSommaCosto(selectedSpecificDataItem) }}</td>
+          <td>{{ getTotalOfProduct(selectedSpecificDataItem) }}</td>
         </tr>
       </ng-template>
     </p-table>

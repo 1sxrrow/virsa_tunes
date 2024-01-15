@@ -31,9 +31,11 @@ import {
   createExcel,
   createMultiScontrino,
   createScontrino,
+  getTotalOfProduct,
   keylistener,
 } from '../../shared/utils/common-utils';
 import { fadeInOutAnimation } from 'src/app/shared/utils/animations';
+import EscPosEncoder from '@manhnd/esc-pos-encoder';
 
 @Component({
   selector: 'app-user-data',
@@ -519,6 +521,15 @@ export class UserDataComponent implements OnInit, OnDestroy, AfterViewInit {
 
   print(specificData: SpecificDataModel) {
     let result = createScontrino(specificData, this.userData);
+    this.printScontrino(result);
+  }
+
+  multiPrint(selectedSpecificData: SpecificDataModel[]) {
+    let result = createMultiScontrino(selectedSpecificData, this.userData);
+    this.printScontrino(result);
+  }
+
+  private printScontrino(result: EscPosEncoder) {
     try {
       if (this.printService.getDevice() === undefined) {
         this.callModalToast(
@@ -536,19 +547,8 @@ export class UserDataComponent implements OnInit, OnDestroy, AfterViewInit {
     }
   }
 
-  getSommaCosto(specificData: SpecificDataModel): number {
-    let totalCost: number = specificData.costo || 0;
-    if (specificData.prodottiAggiuntivi) {
-      Object.values(specificData.prodottiAggiuntivi).forEach(
-        (prodottoAggiuntivo: prodottiAggiuntivi) => {
-          totalCost += +prodottoAggiuntivo.costo;
-        }
-      );
-    }
-    if (specificData.costo_sconto) {
-      totalCost -= +specificData.costo_sconto;
-    }
-    return totalCost;
+  getTotalOfProduct(specificData: SpecificDataModel): number {
+    return getTotalOfProduct(specificData);
   }
 
   selezioneScontrinoMultiplo() {
@@ -574,9 +574,5 @@ export class UserDataComponent implements OnInit, OnDestroy, AfterViewInit {
           this.selectedSpecificDataScontrino.push(item);
         })
       : null;
-  }
-
-  multiPrint(selectedSpecificData: SpecificDataModel[]) {
-    createMultiScontrino(selectedSpecificData, this.userData);
   }
 }
