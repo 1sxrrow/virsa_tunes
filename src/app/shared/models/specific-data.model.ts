@@ -22,6 +22,8 @@ export class SpecificDataModel {
   public data_rest_dispositivo_cliente: Date;
   public nome_fornitore_pezzo: string;
   public incasso: number;
+  public checkedPermuta: boolean;
+  public costoPermuta: number;
 
   public constructor(init?: Partial<SpecificDataModel>) {
     Object.assign(this, init);

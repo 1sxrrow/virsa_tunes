@@ -24,8 +24,10 @@ import { UserModel } from '../../shared/models/user-data.model';
 import { FirebaseStoreService } from '../../shared/services/firebase/firebase-store.service';
 import { UserDataService } from './user-data.service';
 
+import EscPosEncoder from '@manhnd/esc-pos-encoder';
 import { TranslateService } from '@ngx-translate/core';
 import { PrintService } from 'src/app/shared/services/print/recipe-print.service';
+import { fadeInOutAnimation } from 'src/app/shared/utils/animations';
 import { prodottiAggiuntivi } from '../../shared/models/prodotti-aggiuntivi.model';
 import {
   createExcel,
@@ -34,8 +36,6 @@ import {
   getTotalOfProduct,
   keylistener,
 } from '../../shared/utils/common-utils';
-import { fadeInOutAnimation } from 'src/app/shared/utils/animations';
-import EscPosEncoder from '@manhnd/esc-pos-encoder';
 
 @Component({
   selector: 'app-user-data',
@@ -62,6 +62,7 @@ export class UserDataComponent implements OnInit, OnDestroy, AfterViewInit {
   @ViewChild('costoProdottoInput') costoProdottoInput: ElementRef;
 
   checkedProdottiAggiuntivi: boolean = false;
+  checkedPermuta: boolean = false;
 
   // Per modale
   showModal = false;
@@ -122,11 +123,15 @@ export class UserDataComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   verifyAuthModify(): boolean {
-    return this.checkedProdottiAggiuntivi
+    let e = this.checkedProdottiAggiuntivi
       ? false
       : this.specificDataForm.valid && this.specificDataForm.dirty
       ? false
       : true;
+    if (this.checkedPermuta) {
+      e = false;
+    }
+    return e;
   }
 
   //alla chiusura del dialog viene deselezionato la riga
@@ -254,6 +259,11 @@ export class UserDataComponent implements OnInit, OnDestroy, AfterViewInit {
       this.selectedSpecificData.checkedProdottiAggiuntivi !== undefined
         ? this.selectedSpecificData.checkedProdottiAggiuntivi
         : false;
+    this.checkedPermuta =
+      this.selectedSpecificData.checkedPermuta !== undefined
+        ? this.selectedSpecificData.checkedPermuta
+        : false;
+
     if (this.selectedSpecificData.tipo_intervento === 'Vendita') {
       this.showFieldsVendita = true;
       this.showFieldsRiparazione = false;
@@ -300,6 +310,8 @@ export class UserDataComponent implements OnInit, OnDestroy, AfterViewInit {
         checkedProdottiAggiuntivi: new FormControl(
           this.checkedProdottiAggiuntivi
         ),
+        checkedPermuta: new FormControl(this.checkedPermuta),
+        costoPermuta: new FormControl(this.selectedSpecificData.costoPermuta),
       });
     } else {
       this.showFieldsRiparazione = true;
@@ -462,6 +474,8 @@ export class UserDataComponent implements OnInit, OnDestroy, AfterViewInit {
         ]),
         garanzia: new FormControl('', Validators.required),
         checkedProdottiAggiuntivi: new FormControl(''),
+        checkedPermuta: new FormControl(''),
+        costoPermuta: new FormControl(''),
       });
     } else {
       this.showFields = true;

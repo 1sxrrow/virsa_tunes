@@ -310,6 +310,30 @@
               required
             />
           </div>
+
+          <div class="mb-6" *ngIf="showFieldsVendita">
+            <label for="permuta" class="mr-2">Permuta</label>
+            <p-checkbox
+              formControlName="checkedPermuta"
+              (ngModelChange)="myModelChanged($event)"
+              [(ngModel)]="checkedPermuta"
+              [binary]="true"
+              id="permuta"
+              class="mr-2"
+            ></p-checkbox>
+          </div>
+          <div class="mb-6" *ngIf="showFieldsVendita && checkedPermuta">
+            <label for="costoPermuta" class="label">Costo Permuta (€)</label>
+            <input
+              type="number"
+              name="costoPermuta"
+              id="costo"
+              class="fields"
+              formControlName="costoPermuta"
+              required
+            />
+          </div>
+
           <div class="mb-6">
             <label for="costo" class="label">Costo (€)</label>
             <input

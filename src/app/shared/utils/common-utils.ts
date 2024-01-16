@@ -7,6 +7,7 @@ import { Incasso } from '../models/incasso.model';
 import { SpecificDataModel } from '../models/specific-data.model';
 import { UserModel } from '../models/user-data.model';
 import { prodottiAggiuntivi } from '../models/prodotti-aggiuntivi.model';
+import { spec } from 'node:test/reporters';
 
 export function arrayBufferToBufferCycle(ab): Buffer {
   var buffer = new Buffer(ab.byteLength);
@@ -243,6 +244,7 @@ export function createScontrino(
   let encoder: EscPosEncoder = new EscPosEncoder();
   let prodottiAggiuntiviTmp: [string, string, string][] = [];
   let totale: number = +specificData.costo;
+  let permuta: [string, string, string][] = [];
   if (specificData.prodottiAggiuntivi != undefined) {
     Object.values(specificData.prodottiAggiuntivi).forEach((x) => {
       totale += +x.costo;
@@ -258,8 +260,13 @@ export function createScontrino(
     totale -= +specificData.costo_sconto;
   }
 
-  console.log(totale);
-
+  if (specificData.checkedPermuta) {
+    totale -= +specificData.costoPermuta;
+    permuta.push(
+      ['Permuta', '', 'Prezzo (€)'],
+      ['Si', '', specificData.costoPermuta + ',00 €']
+    );
+  }
   specificData.caparra ? (totale -= +specificData.caparra) : null;
   switch (specificData.tipo_intervento) {
     case 'Riparazione':
@@ -333,7 +340,10 @@ export function createScontrino(
           ]
         )
         .newline()
-        .line(specificData.caparra ? 'Caparra : ' + specificData.caparra : ' €')
+        .codepage('auto')
+        .line(
+          specificData.caparra ? 'Caparra : ' + specificData.caparra : ',00 €'
+        )
         .line(DateTimeNow())
         .newline()
         .newline()
@@ -415,7 +425,10 @@ export function createScontrino(
           ]
         )
         .newline()
-        .line(specificData.caparra ? 'Caparra : ' + specificData.caparra : ' €')
+        .codepage('auto')
+        .line(
+          specificData.caparra ? 'Caparra : ' + specificData.caparra : ',00 €'
+        )
         .line(DateTimeNow())
         .newline()
         .newline()
@@ -493,6 +506,7 @@ export function createScontrino(
             ['Tipo Prodotto', 'Garanzia', ''],
             [specificData.tipo_prodotto, specificData.garanzia, ''],
             ['', '', ''],
+            ...permuta,
             ['', '', ''],
             ['', '', ''],
             ['', '', ''],
@@ -556,6 +570,7 @@ export function createMultiScontrino(
   let interventi: [string, string, string][] = [];
   let garanzia: [string, string, string][] = [];
   let problema: [string, string, string][] = [];
+  let permuta: [string, string, string][] = [];
   let modalita_pagamento = '';
   let counter = 0;
   let caparra = 0;
@@ -626,6 +641,17 @@ export function createMultiScontrino(
         ]
       );
     }
+
+    if (
+      specificData.tipo_intervento === 'Vendita' &&
+      specificData.checkedPermuta
+    ) {
+      totale -= +specificData.costoPermuta;
+      permuta.push(
+        ['Permuta', '', 'Prezzo (€)'],
+        ['Si', '', specificData.costoPermuta + ',00 €']
+      );
+    }
   });
 
   // Creazione scontrino se solo vendita
@@ -672,6 +698,7 @@ export function createMultiScontrino(
           ['Tipo Prodotto', 'Garanzia', ''],
           ...garanzia,
           ['', '', ''],
+          ...permuta,
           ['', '', ''],
           ['', '', ''],
           ['', '', ''],
@@ -756,6 +783,7 @@ export function createMultiScontrino(
           ['', '', ''],
           ...problema,
           ['', '', ''],
+          ...permuta,
           ['', '', ''],
           ['', '', ''],
           ['', '', ''],
@@ -772,7 +800,8 @@ export function createMultiScontrino(
         ]
       )
       .newline()
-      .line(caparra ? 'Caparra : ' + caparra : ' €')
+      .codepage('auto')
+      .line(caparra ? 'Caparra : ' + caparra : ',00 €')
       .line(DateTimeNow())
       .newline()
       .newline()
@@ -840,7 +869,8 @@ export function createMultiScontrino(
         ]
       )
       .newline()
-      .line(caparra ? 'Caparra : ' + caparra : ' €')
+      .codepage('auto')
+      .line(caparra ? 'Caparra : ' + caparra : ',00 €')
       .line(DateTimeNow())
       .newline()
       .newline()
@@ -931,7 +961,8 @@ export function createMultiScontrino(
         ]
       )
       .newline()
-      .line(caparra ? 'Caparra : ' + caparra : ' €')
+      .codepage('auto')
+      .line(caparra ? 'Caparra : ' + caparra : ',00 €')
       .line(
         modalita_pagamento !== ''
           ? 'Modalità pagamento: ' + modalita_pagamento
@@ -1001,7 +1032,8 @@ export function createMultiScontrino(
         ]
       )
       .newline()
-      .line(caparra ? 'Caparra : ' + caparra : ' €')
+      .codepage('auto')
+      .line(caparra ? 'Caparra : ' + caparra : ',00 €')
       .line(
         modalita_pagamento !== ''
           ? 'Modalità pagamento: ' + modalita_pagamento
