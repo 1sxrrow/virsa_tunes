@@ -245,6 +245,7 @@ export function createScontrino(
   let prodottiAggiuntiviTmp: [string, string, string][] = [];
   let totale: number = +specificData.costo;
   let permuta: [string, string, string][] = [];
+  let sconto: [string, string, string][] = [];
   if (specificData.prodottiAggiuntivi != undefined) {
     Object.values(specificData.prodottiAggiuntivi).forEach((x) => {
       totale += +x.costo;
@@ -263,11 +264,20 @@ export function createScontrino(
   if (specificData.checkedPermuta) {
     totale -= +specificData.costoPermuta;
     permuta.push(
-      ['Permuta', '', 'Prezzo (€)'],
+      ['Permuta', '', 'Prezzo(€)'],
       ['Si', '', specificData.costoPermuta + ',00 €']
     );
   }
+
+  if (specificData.costo_sconto) {
+    sconto.push([
+      '',
+      encoder.align('right').text('Sconto:'),
+      specificData.costo_sconto + ',00 €',
+    ]);
+  }
   specificData.caparra ? (totale -= +specificData.caparra) : null;
+
   switch (specificData.tipo_intervento) {
     case 'Riparazione':
       return encoder
@@ -511,6 +521,7 @@ export function createScontrino(
             ['', '', ''],
             ['', '', ''],
             ['='.repeat(20), '='.repeat(15), '='.repeat(9)],
+            ...sconto,
             [
               'Totale',
               '',
@@ -571,9 +582,11 @@ export function createMultiScontrino(
   let garanzia: [string, string, string][] = [];
   let problema: [string, string, string][] = [];
   let permuta: [string, string, string][] = [];
+  let sconto: [string, string, string][] = [];
   let modalita_pagamento = '';
   let counter = 0;
   let caparra = 0;
+  let scontoValue = 0;
   allItems.forEach((specificData) => {
     // Recupero dati intervento da mostrare nella tabella scontrino
     interventi.push([
@@ -586,6 +599,7 @@ export function createMultiScontrino(
 
     // Se presente sconto lo tolgo dal totale
     if (specificData.costo_sconto > 0 && specificData.costo_sconto) {
+      scontoValue += +specificData.costo_sconto;
       totale -= +specificData.costo_sconto;
     }
 
@@ -654,6 +668,14 @@ export function createMultiScontrino(
     }
   });
 
+  if (scontoValue > 0) {
+    sconto.push([
+      '',
+      encoder.align('right').text('Sconto:'),
+      scontoValue + ',00 €',
+    ]);
+  }
+
   // Creazione scontrino se solo vendita
   if (isVendita && !isRiparazione) {
     return encoder
@@ -703,6 +725,7 @@ export function createMultiScontrino(
           ['', '', ''],
           ['', '', ''],
           ['='.repeat(20), '='.repeat(15), '='.repeat(9)],
+          ...sconto,
           [
             'Totale',
             '',
