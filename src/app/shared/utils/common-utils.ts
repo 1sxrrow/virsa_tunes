@@ -270,11 +270,7 @@ export function createScontrino(
   }
 
   if (specificData.costo_sconto) {
-    sconto.push([
-      '',
-      encoder.align('right').text('Sconto:'),
-      specificData.costo_sconto + ',00 €',
-    ]);
+    sconto.push(['', '       Sconto:', specificData.costo_sconto + ',00 €']);
   }
   specificData.caparra ? (totale -= +specificData.caparra) : null;
 
@@ -669,11 +665,7 @@ export function createMultiScontrino(
   });
 
   if (scontoValue > 0) {
-    sconto.push([
-      '',
-      encoder.align('right').text('Sconto:'),
-      scontoValue + ',00 €',
-    ]);
+    sconto.push(['', '       Sconto:', scontoValue + ',00 €']);
   }
 
   // Creazione scontrino se solo vendita
