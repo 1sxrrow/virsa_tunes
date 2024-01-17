@@ -270,7 +270,7 @@ export function createScontrino(
   }
 
   if (specificData.costo_sconto) {
-    sconto.push(['', '       Sconto:', specificData.costo_sconto + ',00 €']);
+    sconto.push(['Sconto:', '', specificData.costo_sconto + ',00 €']);
   }
   specificData.caparra ? (totale -= +specificData.caparra) : null;
 
@@ -519,7 +519,7 @@ export function createScontrino(
             ['='.repeat(20), '='.repeat(15), '='.repeat(9)],
             ...sconto,
             [
-              'Totale',
+              'Totale:',
               '',
               (encoder) =>
                 encoder
@@ -665,7 +665,7 @@ export function createMultiScontrino(
   });
 
   if (scontoValue > 0) {
-    sconto.push(['', '       Sconto:', scontoValue + ',00 €']);
+    sconto.push(['Sconto:', '', scontoValue + ',00 €']);
   }
 
   // Creazione scontrino se solo vendita
@@ -719,7 +719,7 @@ export function createMultiScontrino(
           ['='.repeat(20), '='.repeat(15), '='.repeat(9)],
           ...sconto,
           [
-            'Totale',
+            'Totale:',
             '',
             (encoder) =>
               encoder
@@ -964,8 +964,9 @@ export function createMultiScontrino(
           ['', '', ''],
           ['', '', ''],
           ['='.repeat(20), '='.repeat(15), '='.repeat(9)],
+          ...sconto,
           [
-            'Totale',
+            'Totale:',
             '',
             (encoder) =>
               encoder
