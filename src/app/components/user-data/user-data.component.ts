@@ -300,9 +300,9 @@ export class UserDataComponent implements OnInit, OnDestroy, AfterViewInit {
           Validators.required
         ),
         imei: new FormControl(this.selectedSpecificData.imei, [
-          Validators.required,
-          Validators.minLength(15),
-          Validators.maxLength(15),
+          // Validators.required,
+          // Validators.minLength(15),
+          // Validators.maxLength(15),
         ]),
         garanzia: new FormControl(this.selectedSpecificData.garanzia, [
           Validators.required,
