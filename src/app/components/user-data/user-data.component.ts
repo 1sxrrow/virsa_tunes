@@ -341,9 +341,9 @@ export class UserDataComponent implements OnInit, OnDestroy, AfterViewInit {
           Validators.required
         ),
         imei: new FormControl(this.selectedSpecificData.imei, [
-          Validators.required,
-          Validators.minLength(15),
-          Validators.maxLength(15),
+          // Validators.required,
+          // Validators.minLength(15),
+          // Validators.maxLength(15),
         ]),
         problema: new FormControl(this.selectedSpecificData.problema, [
           Validators.required,
@@ -468,9 +468,9 @@ export class UserDataComponent implements OnInit, OnDestroy, AfterViewInit {
         modello_telefono: new FormControl('', Validators.required),
         tipo_prodotto: new FormControl('', Validators.required),
         imei: new FormControl('', [
-          Validators.required,
-          Validators.minLength(15),
-          Validators.maxLength(15),
+          // Validators.required,
+          // Validators.minLength(15),
+          // Validators.maxLength(15),
         ]),
         garanzia: new FormControl('', Validators.required),
         checkedProdottiAggiuntivi: new FormControl(''),
@@ -493,9 +493,9 @@ export class UserDataComponent implements OnInit, OnDestroy, AfterViewInit {
         marca_telefono: new FormControl('', Validators.required),
         modello_telefono: new FormControl('', Validators.required),
         imei: new FormControl('', [
-          Validators.required,
-          Validators.minLength(15),
-          Validators.maxLength(15),
+          // Validators.required,
+          // Validators.minLength(15),
+          // Validators.maxLength(15),
         ]),
         checkedProdottiAggiuntivi: new FormControl(''),
         data_consegna_riparazione: new FormControl('', Validators.required),
