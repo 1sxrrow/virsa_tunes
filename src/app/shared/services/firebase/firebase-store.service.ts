@@ -8,19 +8,45 @@ import { FirebaseOperation } from '@angular/fire/compat/database/interfaces';
 import { UserModel } from '../../models/user-data.model';
 import { Incasso } from '../../models/incasso.model';
 import { createIncasso } from '../../utils/common-utils';
+import { InventarioItemModel } from '../../models/inventarioItem.model';
 
 @Injectable({ providedIn: 'root' })
 export class FirebaseStoreService {
   UsersRef: AngularFireList<any>;
   IncassiRef: AngularFireList<any>;
+  StatsUsersRef: AngularFireList<any>;
+  StatsCanaleComRef: AngularFireList<any>;
+
   UserRef: AngularFireObject<any>;
   IncassoRef: AngularFireObject<any>;
+  InventarioListRef: AngularFireList<any>;
+  InventarioRef: AngularFireObject<any>;
 
-  constructor(private db: AngularFireDatabase) {}
+  constructor(private db: AngularFireDatabase) {
+    this.IncassiRef = this.db.list('incassi');
+    this.InventarioListRef = this.db.list('inventario');
+    this.UsersRef = this.db.list('users');
+    this.StatsUsersRef = this.db.list('stats/users'); // Fix: Change the type to AngularFireList<any>
+    this.StatsUsersRef = this.db.list('stats/canale_com'); // Fix: Change the type to AngularFireList<any>
+  }
 
   GetIncassi() {
-    this.IncassiRef = this.db.list('incassi');
     return this.IncassiRef;
+  }
+
+  getInventario() {
+    return this.InventarioListRef;
+  }
+
+  getUsersStatsResults() {
+    return this.StatsUsersRef;
+  }
+  getCanaleComStatsResults() {
+    return this.StatsCanaleComRef;
+  }
+
+  GetUserList() {
+    return this.UsersRef;
   }
 
   AddIncasso(incasso_i: number, mese: string) {
@@ -44,35 +70,66 @@ export class FirebaseStoreService {
   }
 
   UpdateIncasso(incasso: Incasso) {
-    this.IncassoRef = this.db.object('incassi/' + incasso.mese);
+    this.IncassoRef = this.db.object(`incassi/${incasso.mese}`);
     this.IncassoRef.update(incasso);
   }
 
+  // User CRUD
   AddUser(user: UserModel) {
     let id: FirebaseOperation = user.id.toString();
     this.UsersRef.set(id, user);
   }
-  // Fetch Single User Object
+
   GetUser(id: string | number) {
-    if (typeof id === 'number') {
-      id = id.toString();
-    }
-    this.UserRef = this.db.object('users/' + id);
+    typeof id === 'number' ? id.toString() : id;
+    this.UserRef = this.db.object(`users/${id}`);
     return this.UserRef;
   }
-  // Fetch Users List
-  GetUserList() {
-    this.UsersRef = this.db.list('users');
-    return this.UsersRef;
-  }
-  // Update User Object
+
   UpdateUser(user: UserModel) {
-    this.UserRef = this.db.object('users/' + user.id);
+    this.UserRef = this.db.object(`users/${user.id}`);
     this.UserRef.update(user);
   }
-  // Delete User
+
   DeleteUser(id: string) {
-    this.UserRef = this.db.object('users/' + id);
+    this.UserRef = this.db.object(`users/${id}`);
     this.UserRef.remove();
+  }
+
+  // Inventario CRUD
+  getArticoloInventario(key: string) {
+    this.InventarioRef = this.db.object(`inventario/${key}`);
+    return this.InventarioRef.valueChanges();
+  }
+
+  deleteArticoloInventario(key: string) {
+    this.InventarioRef = this.db.object(`inventario/${key}`);
+    this.InventarioRef.remove();
+  }
+
+  addArticoloInventario(item: InventarioItemModel) {
+    const generatedId = this.db.createPushId(); // Generate a unique ID
+    this.InventarioRef = this.db.object(`inventario/${generatedId}`);
+    this.InventarioRef.set(item);
+  }
+
+  editArticoloInventario(item: InventarioItemModel, key: string) {
+    this.InventarioRef = this.db.object(`inventario/${key}`);
+    this.InventarioRef.update(item);
+    console.log('Item updated successfully!');
+  }
+
+  imeiArticolo(imei: string) {
+    return this.InventarioListRef.query
+      .orderByChild('imei')
+      .equalTo(imei)
+      .once('value')
+      .then((snapshot) => {
+        if (snapshot.exists()) {
+          return snapshot.val();
+        } else {
+          return null;
+        }
+      });
   }
 }

@@ -1,5 +1,11 @@
-<div *ngIf="!loading" class="flex flex-col max-h-screen">
-  <h1 class="text-4xl font-bold mb-3">Database</h1>
+<div *ngIf="!loading" class="flex flex-col max-h-screen mb-2">
+  <div class="card flex justify-content-center mb-3">
+    <p-breadcrumb
+      class="max-w-full"
+      [model]="items"
+      [home]="home"
+    ></p-breadcrumb>
+  </div>
   <p-card>
     <p-table
       #dt1
@@ -17,38 +23,49 @@
       [globalFilterFields]="['nome', 'cognome', 'canale_com']"
       [styleClass]="'p-datatable-sm'"
     >
-      <ng-template pTemplate="caption">
-        <div class="flex">
-          <div>
+      <ng-template pTemplate="caption" class="p-0">
+        <p-toolbar>
+          <div class="p-toolbar-group-start">
             <p-button
-              label="Aggiungi Cliente"
               icon="pi pi-user-plus"
+              pTooltip="Aggiungi Utente"
+              tooltipPosition="top"
               (click)="addUser()"
-              styleClass="p-button-secondary"
+              styleClass="p-button-success"
             ></p-button>
+          </div>
+          <div class="p-toolbar-group-center">
+            <span class="p-input-icon-left">
+              <i class="pi pi-search"></i>
+              <input
+                type="text"
+                pInputText
+                (input)="dt1.filterGlobal($event.target.value, 'contains')"
+                placeholder="Ricerca Cliente"
+                class="fields fieldsSearch"
+              />
+            </span>
+          </div>
+          <div class="p-toolbar-group-end">
             <p-button
               *ngIf="this.authService.getIsAdmin()"
-              label="Incassi"
+              pTooltip="Incassi"
+              tooltipPosition="top"
               icon="pi pi-chart-line"
               (click)="modaleIncassi()"
               class="ml-2"
               styleClass="p-button-secondary"
             ></p-button>
+            <p-button
+              *ngIf="this.authService.getIsAdmin()"
+              pTooltip="Statistiche Utenti"
+              icon="pi pi-chart-bar"
+              class="ml-2"
+              (click)="op.toggle($event)"
+              styleClass="p-button-info"
+            ></p-button>
           </div>
-          <span class="p-input-icon-left ml-auto">
-            <i class="pi pi-search"></i>
-            <input
-              type="text"
-              pInputText
-              (input)="dt1.filterGlobal($event.target.value, 'contains')"
-              placeholder="Search keyword"
-            />
-          </span>
-
-          <!-- <span class="p-input-icon-right">
-            <i class="pi pi-times" (click)="clear(dt1)"></i>
-          </span> -->
-        </div>
+        </p-toolbar>
       </ng-template>
       <ng-template pTemplate="header">
         <tr>
@@ -59,39 +76,41 @@
             Cognome<p-sortIcon field="cognome"></p-sortIcon>
           </th>
           <th style="width: 20%">Interventi</th>
-          <th pSortableColumn="canale_com" style="width: 20%">
-            Canale Com.<p-sortIcon field="canale_com"></p-sortIcon>
-          </th>
           <th style="width: 20%">Azioni</th>
         </tr>
       </ng-template>
       <ng-template pTemplate="body" let-user *ngIf="!showModal">
         <tr [pSelectableRowDblClick]="user">
-          <td><span class="p-column-title">Nome</span>{{ user.nome }}</td>
-          <td><span class="p-column-title">Cognome</span>{{ user.cognome }}</td>
           <td>
-            <span class="p-column-title">Interventi</span
-            >{{ getInterventi(user.id) }}
+            <span class="p-column-title">Nome</span>
+            {{ user.nome | uppercaseFirstLetter }}
+          </td>
+          <td class="flex-auto items-center">
+            <span class="p-column-title">Cognome</span>
+            {{ user.cognome | uppercaseFirstLetter }}
           </td>
           <td>
-            <span class="p-column-title">Canale Com.</span>{{ user.canale_com }}
+            <span class="p-column-title">Interventi</span>
+            {{ getInterventi(user.id) }}
           </td>
           <td>
             <p-button
-              styleClass="p-button-info"
               pTooltip="Info"
               tooltipPosition="bottom"
+              type="button"
               icon="pi pi-info-circle"
               class="mr-2"
               (click)="showInfoUser(user)"
-            ></p-button>
+              styleClass="p-button-info"
+            />
             <p-button
-              styleClass="p-button-danger"
               pTooltip="Cancella Utente"
               tooltipPosition="bottom"
+              type="button"
               icon="pi pi-times-circle"
               (click)="confirmDeleteUser(user.id)"
-            ></p-button>
+              styleClass="p-button-danger"
+            />
           </td>
         </tr>
       </ng-template>
@@ -112,14 +131,14 @@
     <div class="grid items-center" (keyup.enter)="enterCheck()">
       <form [formGroup]="userInfoForm">
         <div class="grid grid-cols-2 mb-2">
-          <div class="mb-1">
+          <div class="mb-1 mr-2">
             <label for="nome" class="labelInput">Nome</label>
             <input
               id="nome"
               pInputText
               type="text"
               formControlName="nome"
-              class="w-11/12"
+              class="w-11/12 fields"
               required
             />
           </div>
@@ -131,20 +150,20 @@
               type="text"
               class="ml-2"
               formControlName="cognome"
-              class="w-11/12"
+              class="w-11/12 fields"
               required
             />
           </div>
         </div>
         <div class="grid grid-cols-2 mb-2">
-          <div class="mb-1">
+          <div class="mb-1 mr-2">
             <label class="labelInput" for="numero_telefono">Telefono</label>
             <input
               id="numero_telefono"
               pInputText
               pKeyFilter="int"
               formControlName="numero_telefono"
-              class="w-11/12"
+              class="w-11/12 fields"
               required
             />
           </div>
@@ -156,20 +175,20 @@
               type="text"
               class="ml-2"
               formControlName="indirizzo"
-              class="w-11/12"
+              class="w-11/12 fields"
               required
             />
           </div>
         </div>
         <div class="grid grid-cols-2 mb-2">
-          <div class="mb-1">
+          <div class="mb-1 mr-2">
             <label class="labelInput" for="citta">Città</label>
             <input
               id="citta"
               pInputText
               type="text"
               formControlName="citta"
-              class="w-11/12"
+              class="w-11/12 fields"
               required
             />
           </div>
@@ -179,15 +198,14 @@
               id="cap"
               pInputText
               pKeyFilter="int"
-              class="ml-2 appearance-none"
+              class="ml-2 appearance-none w-11/12 fields"
               formControlName="cap"
-              class="w-11/12"
               required
             />
           </div>
         </div>
         <div class="grid grid-cols-2 mb-2">
-          <div class="mb-1">
+          <div class="mb-1 mr-2">
             <label for="canale_com" class="labelInput"
               >Canale Comunicazione</label
             >
@@ -209,8 +227,66 @@
               </select>
             </span>
           </div>
+          <div class="mb-1 mt-4">
+            <label for="datiFattura" class="mr-2">Dati Fattura</label>
+            <p-checkbox
+              formControlName="datiFattura"
+              [(ngModel)]="checkedFattura"
+              [binary]="true"
+              id="datiFattura"
+              class="mr-2"
+            ></p-checkbox>
+          </div>
         </div>
-
+        <div
+          class="border border-gray-500 rounded-md p-3 mb-2"
+          *ngIf="checkedFattura"
+        >
+          <div class="grid grid-cols-2 mb-2">
+            <div class="mb-1 mr-2">
+              <label for="codiceFiscale" class="label">Codice Fiscale</label>
+              <input
+                type="text"
+                name="codiceFiscale"
+                id="costo"
+                class="fields"
+                formControlName="codiceFiscale"
+              />
+            </div>
+            <div class="mb-1">
+              <label for="partitaIva" class="label">P. Iva</label>
+              <input
+                type="text"
+                name="partitaIva"
+                id="costo"
+                class="fields"
+                formControlName="partitaIva"
+              />
+            </div>
+          </div>
+          <div class="grid grid-cols-2 mb-2">
+            <div class="mb-1 mr-2">
+              <label for="pec" class="label">PEC</label>
+              <input
+                type="text"
+                name="pec"
+                id="costo"
+                class="fields"
+                formControlName="pec"
+              />
+            </div>
+            <div class="mb-1">
+              <label for="codiceUnivoco" class="label">Codice Univoco</label>
+              <input
+                type="text"
+                name="codiceUnivoco"
+                id="costo"
+                class="fields"
+                formControlName="codiceUnivoco"
+              />
+            </div>
+          </div>
+        </div>
         <!-- <div class="row mb-2">
           <p
             [hidden]="!isInfo || !utenteInserimento"
@@ -272,6 +348,13 @@
       </ng-template>
     </p-table>
   </p-dialog>
-  <p-toast [baseZIndex]="3"></p-toast>
+  <p-toast></p-toast>
+  <p-overlayPanel #op>
+    <ng-template pTemplate="content">
+      <div *ngFor="let item of canaleComResults">
+        <span>{{ item.name }}: {{ item.value }}</span>
+      </div>
+    </ng-template>
+  </p-overlayPanel>
   <app-confirm-dialog></app-confirm-dialog>
 </div>

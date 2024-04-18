@@ -61,6 +61,11 @@ input::-webkit-inner-spin-button {
   border-radius: 0.5rem;
 }
 
+.fieldImei {
+  @extend .fields;
+  padding-right: 2.5rem;
+}
+
 .fieldsShort {
   appearance: none;
   -moz-appearance: none;
@@ -79,8 +84,17 @@ input::-webkit-inner-spin-button {
   border-radius: 0.5rem;
 }
 
+.outlineText {
+  padding: 5px;
+  background: #071426;
+  border: 1px solid #606060;
+  padding: 1.25rem;
+  border-radius: 6px;
+  gap: 0.5rem;
+  width: 600px;
+}
+
 ::ng-deep .p-calendar {
-  
   .p-datepicker table td {
     /*adjust the padding*/
     padding: 0.22rem;
@@ -107,4 +121,37 @@ input::-webkit-inner-spin-button {
       var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow);
     border-radius: 0.5rem;
   }
+}
+
+::ng-deep .p-breadcrumb {
+  background: transparent;
+  border: none;
+  .p-breadcrumb-list {
+    li {
+      .p-menuitem-separator {
+        color: black;
+      }
+      .p-menuitem-link {
+        .p-menuitem-icon .p-menuitem-text {
+          color: black;
+        }
+      }
+    }
+    li:last-child .p-menuitem-text {
+      color: black;
+    }
+  }
+}
+
+::ng-deep
+  .p-breadcrumb
+  .p-breadcrumb-list
+  li
+  .p-menuitem-link
+  .p-menuitem-text {
+  color: black;
+}
+
+::ng-deep .p-toolbar {
+  border: none;
 }

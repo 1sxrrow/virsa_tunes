@@ -75,6 +75,8 @@ export class UserDataService {
   }
 
   addUser(userModel: UserModel) {
+    console.log(userModel);
+    debugger;
     userModel.id = this.getLastId() + 1;
     userModel.utenteInserimento = this.authService.getUserState().displayName;
     let u = new UserModel(userModel);
@@ -124,7 +126,11 @@ export class UserDataService {
     this.usersChanged.next(this.users.slice());
   }
 
-  addNewIntervento(specific_data: SpecificDataModel, user_input?: UserModel) {
+  addNewIntervento(
+    specific_data: SpecificDataModel,
+    user_input?: UserModel,
+    prodottiAggiuntivi?: prodottiAggiuntivi[]
+  ) {
     let id = 0;
     // verifica se ho modello UserInput in input uso quello altrimenti recupero da users
     let user_work: UserModel = user_input;
@@ -138,6 +144,10 @@ export class UserDataService {
     specific_data.data_intervento = new Date();
     // Aggiunta Incasso dato che ho aggiunto un intervento
     specific_data.incasso = calculateIncassoIntervento(specific_data);
+    // Aggiunta prodotti aggiuntivi se passati in input
+    prodottiAggiuntivi
+      ? (specific_data.prodottiAggiuntivi = prodottiAggiuntivi)
+      : null;
     this.firebaseStoreService.AddIncasso(
       specific_data.incasso,
       calculateMese(new Date(specific_data.data_intervento))

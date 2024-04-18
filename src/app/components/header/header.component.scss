@@ -4,33 +4,7 @@
 
 @import "tailwindcss/utilities";
 
-.rotate {
-  transition: transform 0.2s linear;
-  transform: rotate(180deg);
-}
 
-.rotate-reset {
-  transition: transform 0.2s linear;
-  transform: rotate(0deg);
-}
-
-.fadeIn {
-  animation: fadeIn 1s linear;
-}
-
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-  }
-  to {
-    opacity: 1;
-  }
-}
-
-nav {
-  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
-  margin: 0%;
-  width: full;
-  position: relative;
-  z-index: 1;
+::ng-deep .p-button:enabled:hover {
+  border-color: transparent;
 }

@@ -57,5 +57,31 @@ export enum garanzia {
 
 export enum tipoParte {
   'Compatibile',
-  'Originale'
+  'Originale',
 }
+
+export enum negozioInventario {
+  'Negozio I',
+  'Negozio B',
+  'Magazzino',
+}
+
+export enum marcaInventario {
+  'Apple',
+  'Samsung',
+  'Xiaomi',
+  'Huawei',
+  'HP',
+  'LG',
+  'Motorola',
+  'Honor',
+  'Oppo',
+}
+
+export enum gradoInventario {
+  'Nuovo',
+  'A',
+  'AB',
+  'B',
+}
+

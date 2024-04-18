@@ -1,17 +1,19 @@
-<nav class="bg-slate-500 border-gray-200 dark:bg-slate-900">
-  <div class="flex p-4 w-full">
-    <button (click)="setSidenavState()" [hidden]="isLogin" class="mr-2" [class.fadeIn]="!isLogin">
-      <i
-        class="pi pi-cog px-2"
-        style="color: white"
-        [class]="isRotated ? 'rotate' : 'rotate-reset'"
-      ></i>
-    </button>
-    <span
-      class="self-center text-2xl font-semibold whitespace-nowrap dark:text-white"
-      [ngStyle]="{ cursor: 'pointer' }"
-      (click)="goHome()"
-      >Virsa Tunes</span
-    >
+<nav class="bg-slate-900 border-gray-200">
+  <div class="flex p-3 w-full justify-center">
+    <div class="card flex justify-content-center text-2">
+      <p-menu #menu [model]="items" [popup]="true" appendTo="body" />
+      <button
+        pButton
+        type="button"
+        (click)="menu.toggle($event)"
+        icon="pi pi-bars"
+        label="Virsa Tunes"
+        class="p-1 text-2xl hover:bg-[#1755e8] text-white outline-none"
+        [ngStyle]="{
+          borderRadius: '0px',
+          background: '#0f172a',
+        }"
+      ></button>
+    </div>
   </div>
 </nav>

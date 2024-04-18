@@ -1,0 +1,354 @@
+<div>
+  <div class="card flex justify-content-center mb-3">
+    <p-breadcrumb
+      class="max-w-full"
+      [model]="items"
+      [home]="home"
+    ></p-breadcrumb>
+  </div>
+  <p-card>
+    <p-table
+      #dt1
+      [value]="itemsInventario"
+      responsiveLayout="stack"
+      [loading]="loading"
+      [paginator]="true"
+      [rows]="5"
+      [showCurrentPageReport]="true"
+      [rowsPerPageOptions]="[5, 10, 25, 50]"
+      selectionMode="single"
+      [(selection)]="selectedItem"
+      dataKey="key"
+      (onRowSelect)="onRowSelect($event)"
+      [globalFilterFields]="['nome', 'prezzo', 'quantita', 'imei']"
+      [styleClass]="'p-datatable-sm'"
+    >
+      <ng-template pTemplate="caption" class="p-0">
+        <p-toolbar>
+          <div class="p-toolbar-group-start">
+            <p-button
+              pTooltip="Aggiungi articolo"
+              tooltipPosition="top"
+              icon="pi pi-plus"
+              (click)="addItemModal()"
+              styleClass="p-button-success"
+            ></p-button>
+          </div>
+          <div class="p-toolbar-group-center">
+            <span class="p-input-icon-left">
+              <i class="pi pi-search"></i>
+              <input
+                type="text"
+                pInputText
+                (input)="dt1.filterGlobal($event.target.value, 'contains')"
+                placeholder="Ricerca Inventario"
+                class="fields fieldsSearch"
+              />
+            </span>
+          </div>
+          <div class="p-toolbar-group-end">
+            <!-- <p-button
+              *ngIf="this.authService.getIsAdmin()"
+              pTooltip="Statistiche Utenti"
+              icon="pi pi-chart-bar"
+              class="ml-2"
+              (click)="op.toggle($event)"
+              styleClass="p-button-info"
+            ></p-button> -->
+          </div>
+        </p-toolbar>
+      </ng-template>
+      <ng-template pTemplate="header">
+        <tr>
+          <th pSortableColumn="imei" style="width: 20%">
+            IMEI<p-sortIcon field="imei"></p-sortIcon>
+          </th>
+          <th pSortableColumn="nome" style="width: 20%">
+            Nome<p-sortIcon field="nome"></p-sortIcon>
+          </th>
+          <th pSortableColumn="quantita" style="width: 20%">
+            Quantità<p-sortIcon field="quantita"></p-sortIcon>
+          </th>
+          <th pSortableColumn="prezzo" style="width: 20%">
+            Prezzo<p-sortIcon field="prezzo"></p-sortIcon>
+          </th>
+          <th style="width: 20%">Azioni</th>
+        </tr>
+      </ng-template>
+      <ng-template pTemplate="body" let-item>
+        <tr [pSelectableRowDblClick]="item">
+          <td><span class="p-column-title">IMEI</span>{{ item.imei }}</td>
+          <td><span class="p-column-title">Nome</span>{{ item.nome }}</td>
+          <td>
+            <span class="p-column-title">Quantità</span>{{ item.quantita }}
+          </td>
+          <td><span class="p-column-title">Prezzo</span>{{ item.prezzo }} €</td>
+          <td>
+            <p-button
+              styleClass="p-button-danger"
+              pTooltip="Cancella Articolo"
+              tooltipPosition="bottom"
+              icon="pi pi-times-circle"
+              (click)="confirmDeleteItem(item.key)"
+            ></p-button>
+          </td>
+        </tr>
+      </ng-template>
+      <ng-template pTemplate="emptymessage">
+        <tr>
+          <td colspan="7">Nessun articolo trovato.</td>
+        </tr>
+      </ng-template>
+    </p-table>
+  </p-card>
+
+  <!-- Modale -->
+  <p-dialog
+    [header]="modalTitle"
+    [(visible)]="showModal"
+    aria-hidden="true"
+    [style]="{ width: '50vw' }"
+    [modal]="true"
+  >
+    <div class="grid items-center" (keyup.enter)="enterCheck()">
+      <form [formGroup]="itemForm">
+        <div class="grid grid-cols-2 mb-2">
+          <div class="mb-1 mr-2">
+            <label class="labelInput" for="imei">IMEI</label>
+            <input
+              id="imei"
+              pInputText
+              type="text"
+              class="ml-2"
+              formControlName="imei"
+              class="w-11/12 fields"
+              required
+            />
+          </div>
+          <div class="mb-1">
+            <label class="labelInput" for="quantita">Quantità</label>
+            <input
+              id="quantita"
+              pInputText
+              pKeyFilter="int"
+              class="ml-2"
+              formControlName="quantita"
+              class="w-11/12 fields"
+              required
+            />
+          </div>
+        </div>
+        <div class="grid grid-cols-2 mb-2">
+          <div class="mb-1 mr-2">
+            <label for="negozio" class="labelInput">Negozio</label>
+            <span class="p-input-icon-right w-full">
+              <i class="pi pi-angle-down"></i>
+              <select
+                name="negozio"
+                id="negozio"
+                class="fields"
+                formControlName="negozio"
+              >
+                <option [ngValue]="null" disabled>Seleziona Negozio</option>
+                <option [value]="negozio" *ngFor="let negozio of selectNegozio">
+                  {{ negozio }}
+                </option>
+              </select>
+            </span>
+          </div>
+          <div class="mb-1">
+            <label for="nome" class="labelInput">Nome</label>
+            <input
+              id="nome"
+              pInputText
+              type="text"
+              formControlName="nome"
+              class="w-11/12 fields"
+              required
+            />
+          </div>
+        </div>
+        <div class="grid grid-cols-2 mb-2">
+          <div class="mb-1 mr-2">
+            <label for="marca" class="labelInput">Marca</label>
+            <span class="p-input-icon-right w-full">
+              <i class="pi pi-angle-down"></i>
+              <select
+                name="marca"
+                id="marca"
+                class="fields"
+                formControlName="marca"
+              >
+                <option [ngValue]="null" disabled>Seleziona Marca</option>
+                <option [value]="marca" *ngFor="let marca of selectMarca">
+                  {{ marca }}
+                </option>
+              </select>
+            </span>
+          </div>
+          <div class="mb-1">
+            <label for="colore" class="labelInput">Colore</label>
+            <input
+              id="colore"
+              pInputText
+              type="text"
+              formControlName="colore"
+              class="w-11/12 fields"
+              required
+            />
+          </div>
+        </div>
+        <div class="grid grid-cols-2 mb-2">
+          <div class="mb-1 mr-2">
+            <label for="grado" class="labelInput">Grado</label>
+            <span class="p-input-icon-right w-full">
+              <i class="pi pi-angle-down"></i>
+              <select
+                name="grado"
+                id="grado"
+                class="fields"
+                formControlName="grado"
+              >
+                <option [ngValue]="null" disabled>Seleziona Grado</option>
+                <option [value]="grado" *ngFor="let grado of selectGrado">
+                  {{ grado }}
+                </option>
+              </select>
+            </span>
+          </div>
+          <div class="mb-1">
+            <label for="garanzia_mesi" class="labelInput">Garanzia Mesi</label>
+            <span class="p-input-icon-right w-full">
+              <i class="pi pi-angle-down"></i>
+              <select
+                name="garanzia_mesi"
+                id="garanzia_mesi"
+                class="fields"
+                formControlName="garanzia_mesi"
+              >
+                <option [ngValue]="null" disabled>Seleziona Garanzia</option>
+                <option
+                  [value]="garanzia"
+                  *ngFor="let garanzia of selectGaranzia"
+                >
+                  {{ garanzia }}
+                </option>
+              </select>
+            </span>
+          </div>
+        </div>
+        <div class="grid grid-cols-2 mb-2">
+          <div class="mb-1 mr-2">
+            <label class="labelInput" for="fornitore"> Fornitore </label>
+            <input
+              id="fornitore"
+              pInputText
+              type="text"
+              formControlName="fornitore"
+              class="w-11/12 fields"
+              required
+            />
+          </div>
+          <div class="mb-1">
+            <label class="labelInput" for="perc_batteria">
+              Percentuale Batteria %
+            </label>
+            <input
+              id="perc_batteria"
+              pInputText
+              pKeyFilter="int"
+              formControlName="perc_batteria"
+              class="w-11/12 fields"
+              required
+            />
+          </div>
+        </div>
+        <div class="grid grid-cols-2 mb-2">
+          <div class="mb-1 mr-2">
+            <label class="labelInput" for="prezzo_acquisto">
+              Prezzo Acquisto €
+            </label>
+            <input
+              id="prezzo_acquisto"
+              pInputText
+              pKeyFilter="int"
+              formControlName="prezzo_acquisto"
+              class="w-11/12 fields"
+              required
+            />
+          </div>
+          <div class="mb-1">
+            <label class="labelInput" for="prezzo_online">
+              Prezzo Online €
+            </label>
+            <input
+              id="prezzo_online"
+              pInputText
+              pKeyFilter="int"
+              formControlName="prezzo_online"
+              class="w-11/12 fields"
+              required
+            />
+          </div>
+        </div>
+        <div class="grid grid-cols-2 mb-2">
+          <div class="mb-1 mr-2">
+            <label class="labelInput" for="prezzo_negozio">
+              Prezzo Negozio €
+            </label>
+            <input
+              id="prezzo_negozio"
+              pInputText
+              pKeyFilter="int"
+              formControlName="prezzo_negozio"
+              class="w-11/12 fields"
+              required
+            />
+          </div>
+          <div class="mb-1">
+            <label class="labelInput" for="prezzo"> Prezzo € </label>
+            <input
+              id="prezzo"
+              pInputText
+              pKeyFilter="int"
+              formControlName="prezzo"
+              class="w-11/12 fields"
+              required
+            />
+          </div>
+        </div>
+      </form>
+    </div>
+    <div class="grid justify-center">
+      <p-button *ngIf="devmode" (onClick)="findInvalidControls()">
+        check values
+      </p-button>
+      <p-button
+        styleClass="p-button-raised p-button-secondary"
+        label="Aggiungi"
+        [hidden]="isInfo"
+        (onClick)="addNewItem()"
+        [disabled]="!itemForm.valid"
+      ></p-button>
+      <p-button
+        styleClass="p-button-raised p-button-secondary"
+        label="Modifica"
+        [hidden]="!isInfo"
+        (onClick)="editItem()"
+        [disabled]="!(itemForm.valid && itemForm.dirty)"
+      ></p-button>
+    </div>
+  </p-dialog>
+  <!-- Toast per messaggi -->
+  <p-toast></p-toast>
+  <!-- Dialog di conferma per rimozione elemento -->
+  <app-confirm-dialog></app-confirm-dialog>
+  <!-- OverlayPanel per statistiche -->
+  <!-- <p-overlayPanel #op>
+    <ng-template pTemplate="content">
+      <div *ngFor="let item of inventarioResults">
+        <span>{{ item.name }}: {{ item.value }}</span>
+      </div>
+    </ng-template>
+  </p-overlayPanel> -->
+</div>

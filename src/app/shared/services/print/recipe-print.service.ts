@@ -8,6 +8,7 @@ import { callModalToast } from '../../utils/common-utils';
 })
 export class PrintService {
   private device: any;
+  chosenDevice: boolean;
 
   constructor(private messageService: MessageService) {
     if (!this.device) {
@@ -98,8 +99,8 @@ export class PrintService {
         }
       })
       .catch((error) => {
-        console.log(error);
-        if (error.message.includes('No device selected')) {
+        if (error instanceof DOMException && error.name === 'NotAllowedError') {
+        } else if (error.message.includes('No device selected')) {
           console.log('No device selected');
           setTimeout(
             () =>
@@ -113,5 +114,13 @@ export class PrintService {
           );
         }
       });
+  }
+
+  setDeviceChosen(value: boolean) {
+    this.chosenDevice = value;
+  }
+
+  isDeviceChosen() {
+    return this.chosenDevice;
   }
 }

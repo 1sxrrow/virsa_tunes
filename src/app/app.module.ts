@@ -1,7 +1,3 @@
-import { LOCALE_ID, NgModule } from '@angular/core';
-import { BrowserModule } from '@angular/platform-browser';
-import { MatSidenavModule } from '@angular/material/sidenav';
-import { MatListModule } from '@angular/material/list';
 import {
   CommonModule,
   CurrencyPipe,
@@ -9,16 +5,20 @@ import {
 } from '@angular/common';
 import { HttpClient, HttpClientModule } from '@angular/common/http';
 import localeIt from '@angular/common/locales/it';
+import { LOCALE_ID, NgModule } from '@angular/core';
 import { initializeApp, provideFirebaseApp } from '@angular/fire/app';
 import { FIREBASE_OPTIONS } from '@angular/fire/compat';
 import { getDatabase, provideDatabase } from '@angular/fire/database';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { RouterModule } from '@angular/router';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { NgSelectModule } from '@ng-select/ng-select';
 import { TranslateLoader, TranslateModule } from '@ngx-translate/core';
 import { TranslateHttpLoader } from '@ngx-translate/http-loader';
+import { MessageService } from 'primeng/api';
+import { BreadcrumbModule } from 'primeng/breadcrumb';
 import { ButtonModule } from 'primeng/button';
 import { CalendarModule } from 'primeng/calendar';
 import { CardModule } from 'primeng/card';
@@ -28,22 +28,26 @@ import { DropdownModule } from 'primeng/dropdown';
 import { InputNumberModule } from 'primeng/inputnumber';
 import { InputTextModule } from 'primeng/inputtext';
 import { KeyFilterModule } from 'primeng/keyfilter';
+import { MenuModule } from 'primeng/menu';
+import { OverlayPanelModule } from 'primeng/overlaypanel';
 import { SelectButtonModule } from 'primeng/selectbutton';
 import { TableModule } from 'primeng/table';
 import { ToastModule } from 'primeng/toast';
+import { ToolbarModule } from 'primeng/toolbar';
 import { TooltipModule } from 'primeng/tooltip';
 import { firebaseConfig } from 'src/environments/environment';
 import { AppComponent } from './app.component';
 import { routes } from './app.routes';
+import { FooterComponent } from './components/footer/footer.component';
 import { HeaderComponent } from './components/header/header.component';
+import { InventarioItemListComponent } from './components/inventario/inventario-list/inventario-item-list.component';
 import { UserDataComponent } from './components/user-data/user-data.component';
 import { UserListComponent } from './components/user-data/user-list/user-list.component';
-import { CircleSpinnerComponent } from './shared/components/circle-spinner/circle-spinner.component';
 import { PersonalConfirmDialogModule } from './shared/components/confirm-dialog/confirm.dialog.module';
-import { MessageService } from 'primeng/api';
-import { FooterComponent } from './components/footer/footer.component';
+import { UppercaseFirstLetterPipe } from './shared/pipes/uppercase.pipe';
 
 registerLocaleData(localeIt);
+
 export function HttpLoaderFactory(httpClient: HttpClient) {
   return new TranslateHttpLoader(httpClient);
 }
@@ -55,6 +59,8 @@ export function HttpLoaderFactory(httpClient: HttpClient) {
     HeaderComponent,
     FooterComponent,
     UserListComponent,
+    InventarioItemListComponent,
+    UppercaseFirstLetterPipe,
   ],
   imports: [
     CommonModule,
@@ -79,8 +85,10 @@ export function HttpLoaderFactory(httpClient: HttpClient) {
     CheckboxModule,
     SelectButtonModule,
     CalendarModule,
-    MatListModule,
-    MatSidenavModule,
+    ToolbarModule,
+    BreadcrumbModule,
+    MenuModule,
+    OverlayPanelModule,
     TranslateModule.forRoot({
       loader: {
         provide: TranslateLoader,

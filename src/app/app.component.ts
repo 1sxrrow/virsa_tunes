@@ -1,14 +1,8 @@
 import { Component, OnInit } from '@angular/core';
-import {
-  ChildrenOutletContexts,
-  NavigationEnd,
-  Router,
-  RouterOutlet,
-} from '@angular/router';
-import { PrintService } from './shared/services/print/recipe-print.service';
+import { NavigationEnd, Router } from '@angular/router';
+import { filter } from 'rxjs';
 import { TranslateCustomService } from './shared/services/translation/translate-custom-service.service';
 import { fadeInAnimation } from './shared/utils/animations';
-import { filter } from 'rxjs';
 
 @Component({
   selector: 'app-root',
@@ -21,8 +15,6 @@ export class AppComponent implements OnInit {
   animate = false;
   constructor(
     private translateCustomService: TranslateCustomService,
-    private printService: PrintService,
-    private contexts: ChildrenOutletContexts,
     private router: Router
   ) {}
 
@@ -35,14 +27,9 @@ export class AppComponent implements OnInit {
         setTimeout(() => (this.animate = true), 0); // start the animation on the next tick
       });
   }
-
-  onSidenavToggle(state: boolean) {
-    console.log('onSidenavToggle', state);
-    this.isSidenavOpen = state;
-  }
-
-  setPrinterDevice() {
-    this.printService.chooseDevice();
+  
+  isScrollbarPresent(): boolean {
+    return document.body.scrollHeight > window.innerHeight;
   }
 
   title = 'virsa_tunes';

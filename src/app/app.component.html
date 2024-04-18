@@ -1,33 +1,7 @@
-<div class="mainContent">
-  <app-header (isSidenavOpen)="onSidenavToggle($event)"></app-header>
-  <mat-sidenav-container>
-    <mat-sidenav #sidenav [(opened)]="isSidenavOpen" mode="side" opened>
-      <mat-nav-list class="buttonContainer">
-        <button
-          (click)="setPrinterDevice()"
-          pTooltip="Scegli Stampante"
-          tooltipPosition="right"
-          class="hover:bg-slate-700 rounded-sm pr-2 pt-2 pb-2"
-        >
-          <i
-            class="pi pi-print text-white hover:text-gray-800"
-            style="margin-top: 2px; margin-left: 10px"
-          ></i>
-          Set. Stampante
-        </button>
-      </mat-nav-list>
-    </mat-sidenav>
-
-    <mat-sidenav-content>
-      <!-- Main content goes here -->
-      <!-- <div
-        class="flex-auto mx-auto pt-3 pl-10 pr-10 pb-1"
-        [@slideToLeft]="animate ? 'start' : 'end'"
-      > -->
-      <div class="flex-auto mx-auto pt-10 pl-10 pr-10 pb-1 mainContent">
-        <router-outlet></router-outlet>
-        <app-footer class="text-xs bottom-0 absolute right-0"></app-footer>
-      </div>
-    </mat-sidenav-content>
-  </mat-sidenav-container>
+<div>
+  <app-header></app-header>
+  <div class="flex-auto mx-auto pt-3 pl-10 pr-10 pb-1 mainContent">
+    <router-outlet></router-outlet>
+    <app-footer class="text-xs bottom-0 fixed right-0 w-full"></app-footer>
+  </div>
 </div>

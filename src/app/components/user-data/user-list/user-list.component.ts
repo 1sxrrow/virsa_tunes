@@ -4,6 +4,7 @@ import { Router } from '@angular/router';
 import {
   ConfirmEventType,
   ConfirmationService,
+  MenuItem,
   MessageService,
 } from 'primeng/api';
 import { Table } from 'primeng/table';
@@ -11,9 +12,14 @@ import { Incasso } from 'src/app/shared/models/incasso.model';
 import { UserModel } from 'src/app/shared/models/user-data.model';
 import { FirebaseStoreService } from 'src/app/shared/services/firebase/firebase-store.service';
 import { PrintService } from 'src/app/shared/services/print/recipe-print.service';
-import { callModalToast } from 'src/app/shared/utils/common-utils';
+import {
+  callModalToast,
+  getBreadcrumbHome,
+} from 'src/app/shared/utils/common-utils';
 import { AuthService } from '../../login/auth.service';
 import { UserDataService } from '../user-data.service';
+import { canaleComunicazione } from 'src/app/shared/utils/common-enums';
+import { DatiFattura } from 'src/app/shared/models/datiFattura.model';
 
 @Component({
   selector: 'app-user-list',
@@ -22,7 +28,10 @@ import { UserDataService } from '../user-data.service';
   providers: [ConfirmationService],
 })
 export class UserListComponent implements OnInit {
+  items: MenuItem[] | undefined = [{ label: 'Database', routerLink: '/users' }];
+  home: MenuItem | undefined = getBreadcrumbHome();
   selectedUser!: UserModel;
+  canaleComResults: { name: string; value: number }[] = [];
 
   userInfoForm: FormGroup;
   modalTitle: string;
@@ -34,6 +43,7 @@ export class UserListComponent implements OnInit {
   isAdmin = false;
   incassi: Incasso[] = [];
   savedUserId: number;
+  checkedFattura: boolean = false;
 
   canaleComunicazioni: string[];
 
@@ -80,6 +90,7 @@ export class UserListComponent implements OnInit {
         this.users.push(b);
       });
       this.userDataService.users = this.users;
+      this.canaleComResults = this.getCanaleComResults();
       this.loading = false;
     });
 
@@ -87,9 +98,15 @@ export class UserListComponent implements OnInit {
     this.canaleComunicazioni = Object.keys(
       this.userDataService.canaleComunicazione
     ).filter((key) => isNaN(+key));
+
+    // Seleziona la stampante
     if (!this.printService.getDevice()) {
-      this.printService.chooseDevice();
+      if (!this.printService.isDeviceChosen()) {
+        this.printService.chooseDevice();
+        this.printService.setDeviceChosen(true);
+      }
     }
+
     this.initForm();
   }
 
@@ -136,7 +153,21 @@ export class UserListComponent implements OnInit {
    * @returns {any}
    **/
   addNewUser() {
-    this.userDataService.addUser(new UserModel(this.userInfoForm.value));
+    let datiFattura;
+    this.checkedFattura
+      ? (datiFattura = {
+          partitaIva: this.userInfoForm.value['partitaIva'],
+          pec: this.userInfoForm.value['pec'],
+          codiceUnivoco: this.userInfoForm.value['codiceUnivoco'],
+          codiceFiscale: this.userInfoForm.value['codiceFiscale'],
+          datiFattura: this.userInfoForm.value['datiFattura'],
+        })
+      : (datiFattura = {});
+    let user = new UserModel({
+      ...this.userInfoForm.value,
+      datiFattura: datiFattura,
+    });
+    this.userDataService.addUser(user);
     this.showModal = !this.showModal;
     callModalToast(this.messageService, 'Aggiunto', 'Nuovo utente aggiunto');
   }
@@ -146,11 +177,22 @@ export class UserListComponent implements OnInit {
    * @returns {any}
    **/
   editUser() {
+    let datiFattura;
+    this.checkedFattura
+      ? (datiFattura = {
+          partitaIva: this.userInfoForm.value['partitaIva'],
+          pec: this.userInfoForm.value['pec'],
+          codiceUnivoco: this.userInfoForm.value['codiceUnivoco'],
+          codiceFiscale: this.userInfoForm.value['codiceFiscale'],
+          datiFattura: this.userInfoForm.value['datiFattura'],
+        })
+      : (datiFattura = {});
+    let user = new UserModel({
+      ...this.userInfoForm.value,
+      datiFattura: datiFattura,
+    });
     //TODO: verificare che i dati siano effettivamente da modificare
-    this.userDataService.editUser(
-      this.savedUserId,
-      new UserModel(this.userInfoForm.value)
-    );
+    this.userDataService.editUser(this.savedUserId, user);
     callModalToast(
       this.messageService,
       'Modificato',
@@ -173,6 +215,7 @@ export class UserListComponent implements OnInit {
    * Metodo lanciato per aprire modale con dati cliente per modificarli
    */
   showInfoUser(user: any) {
+    this.checkedFattura = user.datiFattura?.datiFattura;
     this.userInfoForm = new FormGroup({
       nome: new FormControl(user.nome, Validators.required),
       cognome: new FormControl(user.cognome, Validators.required),
@@ -189,6 +232,11 @@ export class UserListComponent implements OnInit {
         Validators.required,
       ]),
       canale_com: new FormControl(user.canale_com, Validators.required),
+      datiFattura: new FormControl(user.datiFattura?.datiFattura),
+      partitaIva: new FormControl(user.datiFattura?.partitaIva),
+      codiceUnivoco: new FormControl(user.datiFattura?.codiceUnivoco),
+      pec: new FormControl(user.datiFattura?.pec),
+      codiceFiscale: new FormControl(user.datiFattura?.codiceFiscale),
     });
     this.utenteInserimento = user.utente_inserimento;
     this.utenteUltimaModifica = user.ultimo_utente_modifica;
@@ -216,6 +264,11 @@ export class UserListComponent implements OnInit {
       canale_com: new FormControl('', Validators.required),
       utente_inserimento: new FormControl(''),
       utente_ultima_modifica: new FormControl(''),
+      partitaIva: new FormControl(''),
+      pec: new FormControl(''),
+      codiceUnivoco: new FormControl(''),
+      codiceFiscale: new FormControl(''),
+      datiFattura: new FormControl(false),
     });
     this.utenteInserimento = undefined;
     this.utenteUltimaModifica = undefined;
@@ -253,4 +306,29 @@ export class UserListComponent implements OnInit {
       this.addNewUser();
     }
   }
+
+  getCanaleComResults() {
+    const canaleComunicazioniCount: { [key: string]: number } = {};
+    this.users.forEach((user) => {
+      const canaleCom: canaleComunicazione =
+        user.canale_com as unknown as canaleComunicazione;
+      if (canaleComunicazioniCount[canaleCom]) {
+        canaleComunicazioniCount[canaleCom]++;
+      } else {
+        canaleComunicazioniCount[canaleCom] = 1;
+      }
+    });
+    canaleComunicazioniCount['Totale'] = this.users.length;
+
+    const canaleComunicazioniResult = Object.entries(
+      canaleComunicazioniCount
+    ).map(([key, value]) => ({
+      name: key,
+      value: value,
+    }));
+
+    return canaleComunicazioniResult;
+  }
+
+  myModelChanged(event) {}
 }

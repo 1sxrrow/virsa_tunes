@@ -1132,3 +1132,7 @@ export function getTotalOfProduct(specificData: SpecificDataModel) {
   }
   return totalCost;
 }
+
+export function getBreadcrumbHome() {
+  return { icon: 'pi pi-home', routerLink: '/' };
+}

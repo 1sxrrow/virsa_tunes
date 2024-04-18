@@ -1,40 +1,10 @@
-<div class="flex flex-col">
-  <p class="text-left text-4xl font-bold mb-3">
-    {{ nome }} {{ cognome }}
-    <i class="pi pi-arrow-right align-middle"></i>
-    <span class="ml-2 font-normal text-3xl">Lista Interventi</span>
-  </p>
-  <div class="grid md:grid-cols-5 gap-3 mb-3">
-    <p-button
-      label="Lista Clienti"
-      icon="pi pi-user"
-      styleClass="p-button-raised p-button-info w-full"
-      (click)="goBack()"
-    ></p-button>
-    <p-button
-      label="Stampa Multi-S"
-      [disabled]="checkEnableStampaMultiScontrino()"
-      styleClass="p-button-raised p-button-danger w-full"
-      class="p-input-icon-right col-start-4 col-end-4"
-      icon="pi pi-print"
-      (click)="!checkEnableStampaMultiScontrino() ? openModalScontrino() : null"
-      *ngIf="multipleSelection"
-      [@fadeInOut]
-    ></p-button>
-    <p-button
-      [label]="multipleSelection ? 'Disattiva Multi-S' : ' Attiva Multi-S'"
-      styleClass="p-button-raised p-button-secondary w-full"
-      class="p-input-icon-right col-start-5 col-end-5"
-      icon="pi pi-book"
-      (click)="selezioneScontrinoMultiplo()"
-    ></p-button>
-    <p-button
-      label="Nuovo Intervento"
-      styleClass="p-button-raised p-button-info w-full"
-      class="p-input-icon-right col-start-6 col-end-6"
-      icon="pi pi-plus"
-      (click)="newIntervento()"
-    ></p-button>
+<div *ngIf="!loading" class="flex flex-col max-h-screen">
+  <div class="card flex justify-content-center mb-3">
+    <p-breadcrumb
+      class="max-w-full"
+      [model]="items"
+      [home]="home"
+    ></p-breadcrumb>
   </div>
   <p-card>
     <p-table
@@ -55,6 +25,59 @@
       [globalFilterFields]="['tipo_intervento', 'data_intervento', 'costo']"
       [styleClass]="'p-datatable-sm'"
     >
+      <ng-template pTemplate="caption" class="p-0">
+        <p-toolbar>
+          <div class="p-toolbar-group-start">
+            <p-button
+              icon="pi pi-arrow-left"
+              pTooltip="Lista Clienti"
+              tooltipPosition="top"
+              (click)="goBack()"
+              styleClass="p-button-info"
+            ></p-button>
+            <p-button
+              icon="pi pi-plus"
+              pTooltip="Aggiungi Intervento"
+              tooltipPosition="top"
+              (click)="newIntervento()"
+              class="ml-2"
+              styleClass="p-button-success"
+            ></p-button>
+          </div>
+          <div class="p-toolbar-group-center">
+            <div class="outlineText flex items-center">
+              <span class="text-2xl text-white font-bold mr-2">
+                {{ this.fullName }}
+              </span>
+              <span> Interventi Totali: {{ this.getInterventi(this.id) }}</span>
+            </div>
+          </div>
+          <div class="p-toolbar-group-end">
+            <p-button
+              pTooltip="Stampa Multi-S"
+              tooltipPosition="top"
+              [disabled]="checkEnableStampaMultiScontrino()"
+              styleClass="p-button-raised p-button-danger w-full"
+              icon="pi pi-print"
+              (click)="
+                !checkEnableStampaMultiScontrino() ? openModalScontrino() : null
+              "
+              *ngIf="multipleSelection"
+              [@fadeInOut]
+            ></p-button>
+            <p-button
+              [pTooltip]="
+                multipleSelection ? 'Disattiva Multi-S' : ' Attiva Multi-S'
+              "
+              tooltipPosition="top"
+              styleClass="p-button-raised p-button-secondary w-full"
+              class="ml-2"
+              icon="pi pi-book"
+              (click)="selezioneScontrinoMultiplo()"
+            ></p-button>
+          </div>
+        </p-toolbar>
+      </ng-template>
       <ng-template pTemplate="header">
         <tr>
           <th style="width: 4rem" *ngIf="multipleSelection">
@@ -181,7 +204,7 @@
     >
       <form [formGroup]="specificDataForm">
         <div class="grid md:grid-cols-2 gap-4 mb-3 items-center">
-          <div class="mb-6 col-span-2">
+          <div class="mb-3 col-span-2">
             <label for="tipo_intervento" class="label"> Tipo Intervento </label>
             <span class="p-input-icon-right w-full">
               <i class="pi pi-angle-down"></i>
@@ -213,11 +236,8 @@
         [(ngModel)]="selectedItem"
       >
       </ng-select> -->
-        <div
-          class="grid md:grid-cols-2 gap-4 mb-3 items-center"
-          *ngIf="showFields"
-        >
-          <div class="mb-6" *ngIf="showFieldsRiparazione">
+        <div class="grid md:grid-cols-2 gap-2 items-center" *ngIf="showFields">
+          <div class="mb-3" *ngIf="showFieldsRiparazione">
             <label for="problema" class="label"> Problema </label>
             <input
               type="text"
@@ -228,7 +248,7 @@
               required
             />
           </div>
-          <div class="mb-6" *ngIf="showFieldsRiparazione">
+          <div class="mb-3" *ngIf="showFieldsRiparazione">
             <label for="tipo_parte" class="label">Tipo parte</label>
             <span class="p-input-icon-right w-full">
               <i class="pi pi-angle-down"></i>
@@ -246,7 +266,7 @@
             </span>
           </div>
 
-          <div class="mb-6" *ngIf="showFieldsVendita">
+          <div class="mb-3" *ngIf="showFieldsVendita">
             <label for="tipo_intervento" class="label">Garanzia</label>
             <span class="p-input-icon-right w-full">
               <i class="pi pi-angle-down"></i>
@@ -267,7 +287,7 @@
             </span>
           </div>
 
-          <div class="mb-6">
+          <div class="mb-3">
             <label for="marca_telefono" class="label">Marca Telefono</label>
             <input
               type="text"
@@ -279,7 +299,7 @@
             />
           </div>
 
-          <div class="mb-6">
+          <div class="mb-3">
             <label for="modello_telefono" class="label"
               >Modello Telefono
             </label>
@@ -292,7 +312,7 @@
               required
             />
           </div>
-          <div class="mb-6">
+          <div class="mb-3">
             <label for="imei" class="label">
               IMEI
               <i
@@ -301,17 +321,20 @@
                 pTooltip="Consigliati 15 caratteri"
               ></i>
             </label>
-            <input
-              type="text"
-              name="imei"
-              id="imei"
-              class="fields"
-              formControlName="imei"
-              required
-            />
+            <span class="p-input-icon-right w-full">
+              <i class="pi pi-check cursor-pointer" (click)="checkImei()"></i>
+              <input
+                type="text"
+                name="imei"
+                id="imei"
+                class="fields fieldImei"
+                formControlName="imei"
+                required
+              />
+            </span>
           </div>
 
-          <div class="mb-6" *ngIf="showFieldsVendita">
+          <div class="mb-3" *ngIf="showFieldsVendita">
             <label for="permuta" class="mr-2">Permuta</label>
             <p-checkbox
               formControlName="checkedPermuta"
@@ -322,7 +345,7 @@
               class="mr-2"
             ></p-checkbox>
           </div>
-          <div class="mb-6" *ngIf="showFieldsVendita && checkedPermuta">
+          <div class="mb-3" *ngIf="showFieldsVendita && checkedPermuta">
             <label for="costoPermuta" class="label">Costo Permuta (€)</label>
             <input
               type="number"
@@ -334,7 +357,7 @@
             />
           </div>
 
-          <div class="mb-6">
+          <div class="mb-3">
             <label for="costo" class="label">Costo (€)</label>
             <input
               type="number"
@@ -346,7 +369,7 @@
             />
           </div>
 
-          <div class="mb-6" *ngIf="showFieldsVendita">
+          <div class="mb-3" *ngIf="showFieldsVendita">
             <label for="costo_sconto" class="label">Costo sconto(€)</label>
             <input
               type="number"
@@ -358,7 +381,7 @@
             />
           </div>
 
-          <div class="mb-6" *ngIf="showFieldsVendita">
+          <div class="mb-3" *ngIf="showFieldsVendita">
             <label for="modalita_pagamento" class="label">
               Modalità Pagamento
             </label>
@@ -381,7 +404,7 @@
             </span>
           </div>
 
-          <div class="mb-6" *ngIf="showFieldsVendita">
+          <div class="mb-3" *ngIf="showFieldsVendita">
             <label for="tipo_prodotto" class="label">Tipo Prodotto</label>
             <span class="p-input-icon-right w-full">
               <i class="pi pi-angle-down"></i>

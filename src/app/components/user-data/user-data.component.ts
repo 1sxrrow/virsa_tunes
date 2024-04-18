@@ -15,6 +15,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import {
   ConfirmEventType,
   ConfirmationService,
+  MenuItem,
   MessageService,
 } from 'primeng/api';
 import { Dropdown } from 'primeng/dropdown';
@@ -26,13 +27,16 @@ import { UserDataService } from './user-data.service';
 
 import EscPosEncoder from '@manhnd/esc-pos-encoder';
 import { TranslateService } from '@ngx-translate/core';
+import { UppercaseFirstLetterPipe } from 'src/app/shared/pipes/uppercase.pipe';
 import { PrintService } from 'src/app/shared/services/print/recipe-print.service';
 import { fadeInOutAnimation } from 'src/app/shared/utils/animations';
 import { prodottiAggiuntivi } from '../../shared/models/prodotti-aggiuntivi.model';
 import {
+  callModalToast,
   createExcel,
   createMultiScontrino,
   createScontrino,
+  getBreadcrumbHome,
   getTotalOfProduct,
   keylistener,
 } from '../../shared/utils/common-utils';
@@ -45,6 +49,9 @@ import {
   animations: [fadeInOutAnimation],
 })
 export class UserDataComponent implements OnInit, OnDestroy, AfterViewInit {
+  items: MenuItem[] | undefined = [{ label: 'Database', routerLink: '/users' }];
+  home: MenuItem | undefined = getBreadcrumbHome();
+
   totale: number = 0;
   userData: UserModel;
   tipoIntervento: string[];
@@ -85,6 +92,8 @@ export class UserDataComponent implements OnInit, OnDestroy, AfterViewInit {
   loading = true;
   nome: string;
   cognome: string;
+  fullName: string;
+
   isInfo = false;
   utenteInserimento: string;
   utenteUltimaModifica: string;
@@ -146,7 +155,7 @@ export class UserDataComponent implements OnInit, OnDestroy, AfterViewInit {
   ngOnInit(): void {
     this.valEnums();
     this.initForm();
-
+    this.loading = true;
     // recupero dati utente da database Firebase.
     this.activatedRoute.params.subscribe((params) => {
       this.id = +params['id'];
@@ -155,11 +164,12 @@ export class UserDataComponent implements OnInit, OnDestroy, AfterViewInit {
         this.userData = data.payload.toJSON() as UserModel;
         this.nome = this.userData.nome;
         this.cognome = this.userData.cognome;
-        this.loading = false;
         let specific_data = this.userData.specific_data;
         let mapped: SpecificDataModel[];
         mapped = specific_data ? Object.values(specific_data) : [];
         this._specificData = mapped;
+        this.setBreadCrumb();
+        this.loading = false;
       });
     });
     this.storedSubSpecificData =
@@ -229,10 +239,20 @@ export class UserDataComponent implements OnInit, OnDestroy, AfterViewInit {
       icon: 'pi pi-exclamation-triangle',
       accept: () => {
         this.deleteIntervento(id_intervento);
-        this.callModalToast('Eliminato', 'Intervento rimosso', 'info');
+        callModalToast(
+          this.messageService,
+          'Eliminato',
+          'Intervento rimosso',
+          'info'
+        );
       },
       reject: (type: ConfirmEventType) => {
-        this.callModalToast('Interrotto', 'Rimozione interrotta', 'warn');
+        callModalToast(
+          this.messageService,
+          'Interrotto',
+          'Rimozione interrotta',
+          'warn'
+        );
       },
     });
   }
@@ -382,11 +402,12 @@ export class UserDataComponent implements OnInit, OnDestroy, AfterViewInit {
   addNewIntervento() {
     this.userDataService.addNewIntervento(
       new SpecificDataModel(this.specificDataForm.value),
-      this.userData
+      this.userData,
+      this.prodottiAggiuntivi
     );
 
     this.showModal = !this.showModal;
-    this.callModalToast('Aggiunto', 'Nuovo utente aggiunto');
+    callModalToast(this.messageService, 'Aggiunto', 'Nuovo utente aggiunto');
   }
 
   checkCongruenzaProdottiAggiuntivi() {
@@ -407,7 +428,12 @@ export class UserDataComponent implements OnInit, OnDestroy, AfterViewInit {
     );
 
     this.showModal = !this.showModal;
-    this.callModalToast('Modificato', 'Utente modificato', 'info');
+    callModalToast(
+      this.messageService,
+      'Modificato',
+      'Utente modificato',
+      'info'
+    );
   }
 
   showModalFunction(modalTitle: string, isModify: boolean, id?: number) {
@@ -433,21 +459,6 @@ export class UserDataComponent implements OnInit, OnDestroy, AfterViewInit {
     });
     this.utenteInserimento = undefined;
     this.utenteUltimaModifica = undefined;
-  }
-
-  /**
-   * Mostra toast dialog a destra
-   * @param {string} summary -> titolo
-   * @param {string} detail -> descrizion
-   * @param {string} serverity? -> success , info , warn , error
-   * @returns {any}
-   **/
-  callModalToast(summary: string, detail: string, severity?: string) {
-    this.messageService.add({
-      severity: severity === undefined ? 'success' : severity,
-      summary: summary,
-      detail: detail,
-    });
   }
 
   checkValueIntervento() {
@@ -546,18 +557,29 @@ export class UserDataComponent implements OnInit, OnDestroy, AfterViewInit {
   private printScontrino(result: EscPosEncoder) {
     try {
       if (this.printService.getDevice() === undefined) {
-        this.callModalToast(
+        callModalToast(
+          this.messageService,
           'Non Stampato',
           'Nessuna stampante rilevata',
           'error'
         );
       } else {
         this.printService.printRecipe(this.printService.getDevice(), result);
-        this.callModalToast('Stampato', 'Scontrino stampato', 'success');
+        callModalToast(
+          this.messageService,
+          'Stampato',
+          'Scontrino stampato',
+          'success'
+        );
       }
     } catch (error) {
       console.log(error);
-      this.callModalToast('Non Stampato', 'Errore nella stampa', 'error');
+      callModalToast(
+        this.messageService,
+        'Non Stampato',
+        'Errore nella stampa',
+        'error'
+      );
     }
   }
 
@@ -588,5 +610,48 @@ export class UserDataComponent implements OnInit, OnDestroy, AfterViewInit {
           this.selectedSpecificDataScontrino.push(item);
         })
       : null;
+  }
+
+  setBreadCrumb() {
+    // BreadCrumb nome e cognome
+    let uppercaseFirstLetterPipe = new UppercaseFirstLetterPipe();
+    this.fullName =
+      uppercaseFirstLetterPipe.transform(this.nome) +
+      ' ' +
+      uppercaseFirstLetterPipe.transform(this.cognome);
+
+    this.items.push({
+      label: this.fullName,
+    });
+    this.items.push({ label: 'Lista Interventi' });
+  }
+
+  getInterventi(id: number) {
+    return this.userDataService.getTotalInterventi(id);
+  }
+
+  checkImei() {
+    this.firebaseStoreService
+      .imeiArticolo(this.specificDataForm.value['imei'])
+      .then((data) => {
+        if (data) {
+          let item = Object.values(data);
+          console.log(item);
+          this.specificDataForm.patchValue({
+            modello_telefono: item[0]['nome'],
+            costo: +item[0]['costo'],
+            marca_telefono: item[0]['marca'],
+          });
+          console.log(this.specificDataForm.value);
+          callModalToast(this.messageService, 'Completato', 'Dati valorizzati');
+        } else {
+          callModalToast(
+            this.messageService,
+            'Attenzione',
+            'IMEI non presente',
+            'warn'
+          );
+        }
+      });
   }
 }
