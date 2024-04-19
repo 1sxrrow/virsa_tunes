@@ -12,14 +12,14 @@ import { Incasso } from 'src/app/shared/models/incasso.model';
 import { UserModel } from 'src/app/shared/models/user-data.model';
 import { FirebaseStoreService } from 'src/app/shared/services/firebase/firebase-store.service';
 import { PrintService } from 'src/app/shared/services/print/recipe-print.service';
+import { canaleComunicazione } from 'src/app/shared/utils/common-enums';
 import {
   callModalToast,
   getBreadcrumbHome,
 } from 'src/app/shared/utils/common-utils';
 import { AuthService } from '../../login/auth.service';
 import { UserDataService } from '../user-data.service';
-import { canaleComunicazione } from 'src/app/shared/utils/common-enums';
-import { DatiFattura } from 'src/app/shared/models/datiFattura.model';
+import { state } from '@angular/animations';
 
 @Component({
   selector: 'app-user-list',
@@ -161,15 +161,17 @@ export class UserListComponent implements OnInit {
           codiceUnivoco: this.userInfoForm.value['codiceUnivoco'],
           codiceFiscale: this.userInfoForm.value['codiceFiscale'],
           datiFattura: this.userInfoForm.value['datiFattura'],
+          denominazione: this.userInfoForm.value['denominazione'],
         })
       : (datiFattura = {});
     let user = new UserModel({
       ...this.userInfoForm.value,
       datiFattura: datiFattura,
     });
-    this.userDataService.addUser(user);
+    let idReturned = this.userDataService.addUser(user);
     this.showModal = !this.showModal;
-    callModalToast(this.messageService, 'Aggiunto', 'Nuovo utente aggiunto');
+
+    this.router.navigate(['users', idReturned], { state: { newUser: true } });
   }
 
   /**
@@ -185,6 +187,7 @@ export class UserListComponent implements OnInit {
           codiceUnivoco: this.userInfoForm.value['codiceUnivoco'],
           codiceFiscale: this.userInfoForm.value['codiceFiscale'],
           datiFattura: this.userInfoForm.value['datiFattura'],
+          denominazione: this.userInfoForm.value['denominazione'],
         })
       : (datiFattura = {});
     let user = new UserModel({
@@ -237,6 +240,7 @@ export class UserListComponent implements OnInit {
       codiceUnivoco: new FormControl(user.datiFattura?.codiceUnivoco),
       pec: new FormControl(user.datiFattura?.pec),
       codiceFiscale: new FormControl(user.datiFattura?.codiceFiscale),
+      denominazione: new FormControl(user.datiFattura?.denominazione),
     });
     this.utenteInserimento = user.utente_inserimento;
     this.utenteUltimaModifica = user.ultimo_utente_modifica;
@@ -269,6 +273,7 @@ export class UserListComponent implements OnInit {
       codiceUnivoco: new FormControl(''),
       codiceFiscale: new FormControl(''),
       datiFattura: new FormControl(false),
+      denominazione: new FormControl(''),
     });
     this.utenteInserimento = undefined;
     this.utenteUltimaModifica = undefined;

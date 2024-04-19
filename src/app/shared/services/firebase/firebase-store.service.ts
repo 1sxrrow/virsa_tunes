@@ -75,9 +75,10 @@ export class FirebaseStoreService {
   }
 
   // User CRUD
-  AddUser(user: UserModel) {
+  AddUser(user: UserModel): string {
     let id: FirebaseOperation = user.id.toString();
     this.UsersRef.set(id, user);
+    return id.toString();
   }
 
   GetUser(id: string | number) {

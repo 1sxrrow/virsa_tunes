@@ -20,6 +20,7 @@ import {
   callModalToast,
   getBreadcrumbHome,
 } from 'src/app/shared/utils/common-utils';
+import { AuthService } from '../../login/auth.service';
 
 @Component({
   selector: 'app-inventario-item-list',
@@ -46,6 +47,7 @@ export class InventarioItemListComponent implements OnInit, OnDestroy {
   devmode: boolean = false;
   key: string;
   subscription;
+  isAdmin = false;
 
   selectNegozio: string[];
   selectMarca: string[];
@@ -54,6 +56,7 @@ export class InventarioItemListComponent implements OnInit, OnDestroy {
 
   constructor(
     private firebaseStoreService: FirebaseStoreService,
+    private authService: AuthService,
     private confirmationService: ConfirmationService,
     private messageService: MessageService
   ) {}
@@ -72,6 +75,7 @@ export class InventarioItemListComponent implements OnInit, OnDestroy {
       isNaN(+key)
     );
     this.selectGaranzia = Object.keys(garanzia).filter((key) => isNaN(+key));
+    this.isAdmin = this.authService.getIsAdmin();
   }
 
   ngOnDestroy(): void {
@@ -88,7 +92,10 @@ export class InventarioItemListComponent implements OnInit, OnDestroy {
   editItemModal() {
     this.initForm();
     this.itemForm.patchValue(this.selectedItem);
-    this.showModalFunction('Modifica Articolo', true);
+    this.showModalFunction(
+      this.isAdmin ? 'Modifica Articolo' : 'Visualizza Articolo',
+      true
+    );
   }
 
   editItem() {
@@ -174,20 +181,59 @@ export class InventarioItemListComponent implements OnInit, OnDestroy {
    **/
   initForm() {
     this.itemForm = new FormGroup({
-      nome: new FormControl('', Validators.required),
-      colore: new FormControl('', Validators.required),
-      grado: new FormControl('', Validators.required),
+      nome: new FormControl(
+        { value: '', disabled: this.isAdmin ? false : true },
+        Validators.required
+      ),
+      colore: new FormControl(
+        { value: '', disabled: this.isAdmin ? false : true },
+        Validators.required
+      ),
+      grado: new FormControl(
+        { value: '', disabled: this.isAdmin ? false : true },
+        Validators.required
+      ),
       prezzo_acquisto: new FormControl(0, Validators.required),
-      fornitore: new FormControl('', Validators.required),
-      perc_batteria: new FormControl('', Validators.required),
-      garanzia_mesi: new FormControl('', Validators.required),
-      marca: new FormControl('', Validators.required),
-      negozio: new FormControl('', Validators.required),
-      prezzo: new FormControl(0, Validators.required),
-      prezzo_online: new FormControl(0, Validators.required),
-      prezzo_negozio: new FormControl(0, Validators.required),
-      quantita: new FormControl('', Validators.required),
-      imei: new FormControl('', Validators.required),
+      fornitore: new FormControl(
+        { value: '', disabled: this.isAdmin ? false : true },
+        Validators.required
+      ),
+      perc_batteria: new FormControl(
+        { value: '', disabled: this.isAdmin ? false : true },
+        Validators.required
+      ),
+      garanzia_mesi: new FormControl(
+        { value: '', disabled: this.isAdmin ? false : true },
+        Validators.required
+      ),
+      marca: new FormControl(
+        { value: '', disabled: this.isAdmin ? false : true },
+        Validators.required
+      ),
+      negozio: new FormControl(
+        { value: '', disabled: this.isAdmin ? false : true },
+        Validators.required
+      ),
+      prezzo: new FormControl(
+        { value: 0, disabled: this.isAdmin ? false : true },
+        Validators.required
+      ),
+      prezzo_online: new FormControl(
+        { value: 0, disabled: this.isAdmin ? false : true },
+        Validators.required
+      ),
+      prezzo_negozio: new FormControl(
+        { value: 0, disabled: this.isAdmin ? false : true },
+        Validators.required
+      ),
+      quantita: new FormControl(
+        { value: '', disabled: this.isAdmin ? false : true },
+        Validators.required
+      ),
+      imei: new FormControl(
+        { value: '', disabled: this.isAdmin ? false : true },
+        Validators.required
+      ),
       data: new FormControl(''),
     });
     this.devmode = isDevMode();
@@ -241,5 +287,9 @@ export class InventarioItemListComponent implements OnInit, OnDestroy {
       }
     }
     console.log(invalid);
+  }
+
+  closeDialog() {
+    this.selectedItem = null;
   }
 }

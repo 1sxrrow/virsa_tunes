@@ -9,7 +9,7 @@ import { AngularFireAuth } from '@angular/fire/compat/auth';
 import { Router } from '@angular/router';
 import { updateProfile } from 'firebase/auth';
 import { AuthService } from './auth.service';
-import { environment } from 'src/app/shared/utils/enviroment';
+import { environmentValues } from 'src/app/shared/utils/enviromentValues';
 
 @Component({
   selector: 'app-login',
@@ -37,8 +37,8 @@ export class LoginComponent {
   ) {
     this.afAuth.authState.subscribe((user) => {});
     if (isDevMode()) {
-      this.emailValue = environment.emailValue;
-      this.passwordValue = environment.passwordValue;
+      this.emailValue = environmentValues.emailValue;
+      this.passwordValue = environmentValues.passwordValue;
       this.CheckLogin();
     }
   }

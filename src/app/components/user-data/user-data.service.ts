@@ -75,14 +75,13 @@ export class UserDataService {
   }
 
   addUser(userModel: UserModel) {
-    console.log(userModel);
-    debugger;
     userModel.id = this.getLastId() + 1;
     userModel.utenteInserimento = this.authService.getUserState().displayName;
     let u = new UserModel(userModel);
     this.users.push(u);
-    this.firebaseStoreService.AddUser(u);
+    let idReturned = this.firebaseStoreService.AddUser(u);
     this.usersChanged.next(this.users.slice());
+    return idReturned;
   }
 
   deleteUser(id: number) {

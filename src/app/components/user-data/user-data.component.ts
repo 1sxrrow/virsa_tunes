@@ -117,7 +117,19 @@ export class UserDataComponent implements OnInit, OnDestroy, AfterViewInit {
 
     private translateService: TranslateService,
     @Inject(LOCALE_ID) public locale: string
-  ) {}
+  ) {
+    const navigation = this.router.getCurrentNavigation();
+    const state = navigation.extras.state;
+    state?.newUser
+      ? setTimeout(() => {
+          callModalToast(
+            this.messageService,
+            'Aggiunto',
+            'Nuovo utente aggiunto'
+          );
+        }, 500)
+      : null;
+  }
 
   // metodo per verificare quale dato nel form non funziona
   public findInvalidControls() {
@@ -639,8 +651,9 @@ export class UserDataComponent implements OnInit, OnDestroy, AfterViewInit {
           console.log(item);
           this.specificDataForm.patchValue({
             modello_telefono: item[0]['nome'],
-            costo: +item[0]['costo'],
+            costo: +item[0]['prezzo_acquisto'],
             marca_telefono: item[0]['marca'],
+            tipo_prodotto: item[0]['grado'] === 'Nuovo' ? 'Nuovo' : 'Usato',
           });
           console.log(this.specificDataForm.value);
           callModalToast(this.messageService, 'Completato', 'Dati valorizzati');

@@ -9,7 +9,6 @@ export class InventarioItemModel {
   public fornitore: string;
   public perc_batteria: string;
   public garanzia_mesi: string;
-  public prezzo: number;
   public prezzo_online: number;
   public prezzo_negozio: number;
   public negozio: string;
