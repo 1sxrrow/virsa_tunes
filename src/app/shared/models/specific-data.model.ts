@@ -19,6 +19,7 @@ export class SpecificDataModel {
   public data_consegna_riparazione: Date;
   public codice_sblocco: string;
   public caparra: string;
+  public costoCambio: number;
   public data_rest_dispositivo_cliente: Date;
   public nome_fornitore_pezzo: string;
   public incasso: number;

@@ -3,7 +3,8 @@
     "data_consegna_riparazione": "Repair Date Delivery",
     "caparra": "Deposit (€)",
     "nome_fornitore_pezzo": "Price Supplier Name",
-    "data_rest_dispositivo_cliente": "Customer Device Return Date"
+    "data_rest_dispositivo_cliente": "Customer Device Return Date",
+    "costoCambio": "Change Cost (€)"
   },
   "primeng": {
     "dayNames": [

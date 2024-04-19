@@ -3,7 +3,8 @@
     "data_consegna_riparazione": "Data Consegna Riparazione",
     "caparra": "Caparra (€)",
     "nome_fornitore_pezzo": "Nome Fornitore Pezzo",
-    "data_rest_dispositivo_cliente": "Data Restituzione Disp. Cliente"
+    "data_rest_dispositivo_cliente": "Data Restituzione Disp. Cliente",
+    "costoCambio": "Costo Cambio (€)"
   },
   "primeng": {
     "dayNames": [

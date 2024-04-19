@@ -20,7 +20,13 @@
       [(selection)]="selectedItem"
       dataKey="key"
       (onRowSelect)="onRowSelect($event)"
-      [globalFilterFields]="['nome', 'prezzo_acquisto', 'quantita', 'imei']"
+      [globalFilterFields]="[
+        'nome',
+        'prezzo_acquisto',
+        'quantita',
+        'imei',
+        'negozio'
+      ]"
       [styleClass]="'p-datatable-sm'"
     >
       <ng-template pTemplate="caption" class="p-0">
@@ -34,6 +40,12 @@
               [disabled]="!isAdmin"
               (click)="isAdmin ? addItemModal() : null"
             ></p-button>
+            <span
+              *ngIf="isFilterNegozio"
+              class="text-sm text-white font-bold ml-2"
+            >
+              {{ this.negozioSwitch ? "Negozio B" : "Negozio I" }}
+            </span>
           </div>
           <div class="p-toolbar-group-center">
             <span class="p-input-icon-left">
@@ -56,6 +68,25 @@
               (click)="op.toggle($event)"
               styleClass="p-button-info"
             ></p-button> -->
+            <div class="border rounded-md border-gray-200 p-2">
+              <p-button
+                [pTooltip]="negozioSwitch ? 'Negozio I' : 'Negozio B'"
+                tooltipPosition="top"
+                icon="pi pi-shopping-cart"
+                styleClass="p-button-secondary"
+                (click)="filterNegozio(dt1)"
+                class="mr-2"
+              >
+              </p-button>
+              <p-button
+                icon="pi pi-filter-slash"
+                pTooltip="Cancella Filtro"
+                tooltipPosition="top"
+                styleClass="p-button-secondary"
+                (click)="clear(dt1)"
+              >
+              </p-button>
+            </div>
           </div>
         </p-toolbar>
       </ng-template>
@@ -84,8 +115,8 @@
             <span class="p-column-title">Quantità</span>{{ item.quantita }}
           </td>
           <td>
-            <span class="p-column-title">Prezzo Acquisto</span
-            >{{ item.prezzo_acquisto }} €
+            <span class="p-column-title">Prezzo Acquisto</span>
+            {{ item.prezzo_acquisto }} €
           </td>
           <td>
             <p-button

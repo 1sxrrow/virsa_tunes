@@ -21,6 +21,7 @@ import {
   getBreadcrumbHome,
 } from 'src/app/shared/utils/common-utils';
 import { AuthService } from '../../login/auth.service';
+import { Table } from 'primeng/table';
 
 @Component({
   selector: 'app-inventario-item-list',
@@ -48,6 +49,8 @@ export class InventarioItemListComponent implements OnInit, OnDestroy {
   key: string;
   subscription;
   isAdmin = false;
+  negozioSwitch = false; // false: Negozio I, true: Negozio B
+  isFilterNegozio = false;
 
   selectNegozio: string[];
   selectMarca: string[];
@@ -291,5 +294,33 @@ export class InventarioItemListComponent implements OnInit, OnDestroy {
 
   closeDialog() {
     this.selectedItem = null;
+  }
+
+  clear(table: Table) {
+    table.clear();
+    this.isFilterNegozio = false;
+    this.negozioSwitch = false;
+  }
+
+  filterNegozio(dt1: Table) {
+    this.negozioSwitch = !this.negozioSwitch;
+    this.isFilterNegozio = true;
+    dt1.filterGlobal(this.negozioSwitch ? 'Negozio B' : 'Negozio I', 'equals');
+    this.checkFilterNegozio(dt1);
+  }
+
+  checkFilterNegozio(dt1: Table) {
+    const hasFilters = dt1.hasFilter();
+    console.log(hasFilters);
+    if (hasFilters) {
+      const filters = dt1.filters;
+      let values = Object.values(filters['global']);
+      let result;
+      values.forEach((item) => {
+        item === 'Negozio B' || 'Negozio I' ? true : false;
+      });
+      return result;
+    }
+    return false;
   }
 }

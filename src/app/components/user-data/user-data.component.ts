@@ -399,6 +399,7 @@ export class UserDataComponent implements OnInit, OnDestroy, AfterViewInit {
         nome_fornitore_pezzo: new FormControl(
           this.selectedSpecificData.nome_fornitore_pezzo
         ),
+        costoCambio: new FormControl(this.selectedSpecificData.costoCambio),
       });
     }
     this.prodottiAggiuntivi =
@@ -526,6 +527,7 @@ export class UserDataComponent implements OnInit, OnDestroy, AfterViewInit {
         caparra: new FormControl(''),
         nome_fornitore_pezzo: new FormControl(''),
         data_rest_dispositivo_cliente: new FormControl(''),
+        costoCambio: new FormControl(''),
       });
     }
   }

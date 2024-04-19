@@ -495,6 +495,19 @@
             />
           </div>
 
+          <div *ngIf="showFieldsRiparazione">
+            <label for="costoCambio" class="label">
+              {{ "user_data.costoCambio" | translate }}
+            </label>
+            <input
+              type="number"
+              name="costoCambio"
+              id="costoCambio"
+              class="fields"
+              formControlName="costoCambio"
+            />
+          </div>
+
           <div class="col-start-1 col-end-2">
             <label for="prodotti_aggiuntivi" class="mr-2"
               >Prodotti Aggiuntivi</label
