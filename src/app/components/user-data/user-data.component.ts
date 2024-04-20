@@ -49,7 +49,10 @@ import {
   animations: [fadeInOutAnimation],
 })
 export class UserDataComponent implements OnInit, OnDestroy, AfterViewInit {
-  items: MenuItem[] | undefined = [{ label: 'Database', routerLink: '/users' }];
+  items: MenuItem[] | undefined = [
+    // prettier-ignore
+    { label: 'Database', routerLink: '/users'},
+  ];
   home: MenuItem | undefined = getBreadcrumbHome();
 
   totale: number = 0;
@@ -633,11 +636,22 @@ export class UserDataComponent implements OnInit, OnDestroy, AfterViewInit {
       uppercaseFirstLetterPipe.transform(this.nome) +
       ' ' +
       uppercaseFirstLetterPipe.transform(this.cognome);
-
+    // prettier-ignore
     this.items.push({
       label: this.fullName,
+      id: 'userFullName',
+      style: {
+        'color': '#ffffff',
+        'font-weight': 'bold',
+        'background-color': '#b4b4b4',
+        'border-radius': '5px',
+        'border': '1px solid #b4b4b4',
+        'padding': '5px',
+      },
     });
-    this.items.push({ label: 'Lista Interventi' });
+    this.items.push({
+      label: 'Lista Interventi',
+    });
   }
 
   getInterventi(id: number) {

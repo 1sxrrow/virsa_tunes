@@ -99,9 +99,13 @@
             Nome<p-sortIcon field="nome"></p-sortIcon>
           </th>
           <th pSortableColumn="quantita" style="width: 20%">
-            Quantità<p-sortIcon field="quantita"></p-sortIcon>
+            Percentuale Batteria<p-sortIcon field="quantita"></p-sortIcon>
           </th>
-          <th pSortableColumn="prezzo_acquisto" style="width: 20%">
+          <th
+            pSortableColumn="prezzo_acquisto"
+            style="width: 20%"
+            *ngIf="isAdmin"
+          >
             Prezzo Acquisto<p-sortIcon field="prezzo_acquisto"></p-sortIcon>
           </th>
           <th style="width: 20%">Azioni</th>
@@ -112,9 +116,10 @@
           <td><span class="p-column-title">IMEI</span>{{ item.imei }}</td>
           <td><span class="p-column-title">Nome</span>{{ item.nome }}</td>
           <td>
-            <span class="p-column-title">Quantità</span>{{ item.quantita }}
+            <span class="p-column-title">Percentuale Batteria</span>
+            {{ item.perc_batteria }} %
           </td>
-          <td>
+          <td *ngIf="isAdmin">
             <span class="p-column-title">Prezzo Acquisto</span>
             {{ item.prezzo_acquisto }} €
           </td>

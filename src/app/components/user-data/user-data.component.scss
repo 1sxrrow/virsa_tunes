@@ -132,7 +132,10 @@ input::-webkit-inner-spin-button {
         color: black;
       }
       .p-menuitem-link {
-        .p-menuitem-icon .p-menuitem-text {
+        .p-menuitem-icon {
+          color: black;
+        }
+        .p-menuitem-text {
           color: black;
         }
       }
@@ -141,15 +144,6 @@ input::-webkit-inner-spin-button {
       color: black;
     }
   }
-}
-
-::ng-deep
-  .p-breadcrumb
-  .p-breadcrumb-list
-  li
-  .p-menuitem-link
-  .p-menuitem-text {
-  color: black;
 }
 
 ::ng-deep .p-toolbar {

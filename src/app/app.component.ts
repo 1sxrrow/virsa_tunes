@@ -3,12 +3,20 @@ import { NavigationEnd, Router } from '@angular/router';
 import { filter } from 'rxjs';
 import { TranslateCustomService } from './shared/services/translation/translate-custom-service.service';
 import { fadeInAnimation } from './shared/utils/animations';
+import { animate, style, transition, trigger } from '@angular/animations';
 
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.scss'],
-  animations: [fadeInAnimation],
+  animations: [
+    trigger('fadeAnimation', [
+      transition('* <=> *', [
+        style({ opacity: 0 }),
+        animate('0.7s', style({ opacity: 1 })),
+      ]),
+    ]),
+  ],
 })
 export class AppComponent implements OnInit {
   isSidenavOpen = false;
@@ -27,7 +35,7 @@ export class AppComponent implements OnInit {
         setTimeout(() => (this.animate = true), 0); // start the animation on the next tick
       });
   }
-  
+
   isScrollbarPresent(): boolean {
     return document.body.scrollHeight > window.innerHeight;
   }

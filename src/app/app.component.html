@@ -1,7 +1,10 @@
 <div>
   <app-header></app-header>
-  <div class="flex-auto mx-auto pt-3 pl-10 pr-10 pb-1 mainContent">
-    <router-outlet></router-outlet>
+  <div
+    class="flex-auto mx-auto pt-3 pl-10 pr-10 pb-1 mainContent container"
+    [@fadeAnimation]="o.isActivated ? o.activatedRoute : ''"
+  >
+    <router-outlet #o="outlet"></router-outlet>
     <app-footer class="text-xs bottom-0 fixed right-0 w-full"></app-footer>
   </div>
 </div>
