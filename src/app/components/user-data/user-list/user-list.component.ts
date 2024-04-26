@@ -19,6 +19,7 @@ import {
 } from 'src/app/shared/utils/common-utils';
 import { AuthService } from '../../login/auth.service';
 import { UserDataService } from '../user-data.service';
+import { state } from '@angular/animations';
 
 @Component({
   selector: 'app-user-list',
