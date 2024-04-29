@@ -20,7 +20,12 @@
       [(selection)]="selectedUser"
       dataKey="id"
       (onRowSelect)="onRowSelect($event)"
-      [globalFilterFields]="['nome', 'cognome', 'canale_com']"
+      [globalFilterFields]="[
+        'nome',
+        'cognome',
+        'canale_com',
+        'numero_telefono'
+      ]"
       [styleClass]="'p-datatable-sm'"
     >
       <ng-template pTemplate="caption" class="p-0">
