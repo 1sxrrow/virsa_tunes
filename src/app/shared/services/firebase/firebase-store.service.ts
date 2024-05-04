@@ -5,10 +5,13 @@ import {
   AngularFireObject,
 } from '@angular/fire/compat/database';
 import { FirebaseOperation } from '@angular/fire/compat/database/interfaces';
-import { UserModel } from '../../models/user-data.model';
 import { Incasso } from '../../models/incasso.model';
-import { createIncasso } from '../../utils/common-utils';
 import { InventarioItemModel } from '../../models/inventarioItem.model';
+import { SpesaFissa } from '../../models/spesaFissa.model';
+import { UserModel } from '../../models/user-data.model';
+import { createIncasso } from '../../utils/common-utils';
+import { Observable } from 'rxjs';
+import { from } from 'rxjs';
 
 @Injectable({ providedIn: 'root' })
 export class FirebaseStoreService {
@@ -65,6 +68,73 @@ export class FirebaseStoreService {
           incasso = createIncasso(incasso_i, mese);
           let id: FirebaseOperation = incasso.mese.toString();
           this.IncassiRef.set(id, incasso);
+        }
+      });
+  }
+
+  getSpeseFisse(mese: string): Observable<any> {
+    return from(
+      this.IncassiRef.query.orderByChild('mese').equalTo(mese).once('value')
+    );
+  }
+
+  AddSpesaFissa(meseIncassoFisso: string, spesaFissa: SpesaFissa) {
+    spesaFissa.id = this.db.createPushId();
+    this.IncassiRef.query
+      .orderByChild('mese')
+      .equalTo(meseIncassoFisso)
+      .once('value', (snapshot) => {
+        if (snapshot.exists()) {
+          let incassoObject = snapshot.val();
+          let incasso: Incasso = Object.values(incassoObject)[0] as Incasso;
+          incasso.spesaFissa = incasso.spesaFissa || [];
+          incasso.spesaFissa.push(spesaFissa);
+          this.UpdateIncasso(incasso);
+        }
+      });
+  }
+
+  UpdateSpesaFissa(
+    id: string,
+    meseIncassoFisso: string,
+    spesaFissa: SpesaFissa
+  ) {
+    this.IncassiRef.query
+      .orderByChild('mese')
+      .equalTo(meseIncassoFisso)
+      .once('value', (snapshot) => {
+        if (snapshot.exists()) {
+          let incassoObject = snapshot.val();
+          let incasso: Incasso = Object.values(incassoObject)[0] as Incasso;
+          let retrievedSpesaFissa: SpesaFissa[] = incasso.spesaFissa;
+
+          retrievedSpesaFissa.forEach((spesa: SpesaFissa, index: number) => {
+            if (spesa.id === id) {
+              retrievedSpesaFissa[index] = spesaFissa;
+            }
+          });
+
+          incasso.spesaFissa = retrievedSpesaFissa;
+          this.UpdateIncasso(incasso);
+        }
+      });
+  }
+
+  DeleteSpesaFissa(id: string, meseIncassoFisso: string) {
+    this.IncassiRef.query
+      .orderByChild('mese')
+      .equalTo(meseIncassoFisso)
+      .once('value', (snapshot) => {
+        if (snapshot.exists()) {
+          let incassoObject = snapshot.val();
+          let incasso: Incasso = Object.values(incassoObject)[0] as Incasso;
+          incasso.spesaFissa = incasso.spesaFissa || [];
+          incasso.spesaFissa.forEach((spesa: SpesaFissa, index: number) => {
+            if (spesa.id === id) {
+              incasso.spesaFissa.splice(index, 1);
+            }
+          });
+          this.UpdateIncasso(incasso);
         }
       });
   }

@@ -19,6 +19,7 @@ import {
 } from 'src/app/shared/utils/common-utils';
 import { AuthService } from '../../login/auth.service';
 import { UserDataService } from '../user-data.service';
+import { SpesaFissa } from 'src/app/shared/models/spesaFissa.model';
 
 @Component({
   selector: 'app-user-list',
@@ -30,25 +31,34 @@ export class UserListComponent implements OnInit {
   items: MenuItem[] | undefined = [{ label: 'Database', routerLink: '/users' }];
   home: MenuItem | undefined = getBreadcrumbHome();
   selectedUser!: UserModel;
+  selectedSpesaFissa: SpesaFissa;
+  selectedSpesaFissaId: string;
   canaleComResults: { name: string; value: number }[] = [];
 
   userInfoForm: FormGroup;
+  spesaFissaForm: FormGroup;
   modalTitle: string;
   loading = true;
   showModal = false;
   showModalIncassi = false;
+  showModalSpesaFissa = false;
+  showModalListaSpeseFisse = false;
+  spesaFissaMode: string;
+  listaSpeseFisse: SpesaFissa[] = [];
+
   isInfo = false;
   visible = false;
   isAdmin = false;
-  incassi: Incasso[] = [];
   savedUserId: number;
   checkedFattura: boolean = false;
 
+  incassi: Incasso[] = [];
   canaleComunicazioni: string[];
+  mesiSpesaFissa: string[] = [];
+  users: UserModel[] = [];
 
   utenteUltimaModifica: string;
   utenteInserimento: string;
-  users: UserModel[] = [];
   constructor(
     private userDataService: UserDataService,
     private firebaseStoreService: FirebaseStoreService,
@@ -72,7 +82,16 @@ export class UserListComponent implements OnInit {
         .subscribe((data) => {
           this.incassi = [];
           data.map((item) => {
-            this.incassi.push(item.payload.toJSON() as Incasso);
+            let spesaFissa = item.payload
+              .child('spesaFissa')
+              .val() as SpesaFissa[];
+            let incasso = item.payload.val() as Incasso;
+            incasso.spesaFissa = spesaFissa;
+            this.incassi.push(incasso);
+          });
+
+          this.incassi.map((incasso) => {
+            this.mesiSpesaFissa.push(incasso.mese);
           });
         });
     }
@@ -111,6 +130,34 @@ export class UserListComponent implements OnInit {
 
   modaleIncassi() {
     this.showModalIncassi = !this.showModalIncassi;
+  }
+
+  modaleSpesaFissa() {
+    this.spesaFissaMode = 'Aggiungi';
+    this.showModalSpesaFissa = !this.showModalSpesaFissa;
+    this.selectedSpesaFissaId = '';
+    this.spesaFissaForm = new FormGroup({
+      meseSpesaFissa: new FormControl('', Validators.required),
+      notaSpesaFissa: new FormControl('', Validators.required),
+      costoSpesaFissa: new FormControl('', Validators.required),
+    });
+  }
+
+  modaleListaSpeseFisse(mese: string) {
+    this.firebaseStoreService
+      .GetIncassi()
+      .snapshotChanges()
+      .subscribe((data) => {
+        data.map((item) => {
+          if (item.payload.child('mese').val() === mese) {
+            let spesaFissa = item.payload
+              .child('spesaFissa')
+              .val() as SpesaFissa[];
+            this.listaSpeseFisse = spesaFissa;
+          }
+        });
+      });
+    this.showModalListaSpeseFisse = !this.showModalListaSpeseFisse;
   }
 
   addUser() {
@@ -161,6 +208,9 @@ export class UserListComponent implements OnInit {
           codiceFiscale: this.userInfoForm.value['codiceFiscale'],
           datiFattura: this.userInfoForm.value['datiFattura'],
           denominazione: this.userInfoForm.value['denominazione'],
+          indirizzoFatturazione:
+            this.userInfoForm.value['indirizzoFatturazione'],
+          cittaFatturazione: this.userInfoForm.value['cittaFatturazione'],
         })
       : (datiFattura = {});
     let user = new UserModel({
@@ -187,6 +237,9 @@ export class UserListComponent implements OnInit {
           codiceFiscale: this.userInfoForm.value['codiceFiscale'],
           datiFattura: this.userInfoForm.value['datiFattura'],
           denominazione: this.userInfoForm.value['denominazione'],
+          indirizzoFatturazione:
+            this.userInfoForm.value['indirizzoFatturazione'],
+          cittaFatturazione: this.userInfoForm.value['cittaFatturazione'],
         })
       : (datiFattura = {});
     let user = new UserModel({
@@ -240,6 +293,10 @@ export class UserListComponent implements OnInit {
       pec: new FormControl(user.datiFattura?.pec),
       codiceFiscale: new FormControl(user.datiFattura?.codiceFiscale),
       denominazione: new FormControl(user.datiFattura?.denominazione),
+      indirizzoFatturazione: new FormControl(
+        user.datiFattura?.indirizzoFatturazione
+      ),
+      cittaFatturazione: new FormControl(user.datiFattura?.cittaFatturazione),
     });
     this.utenteInserimento = user.utente_inserimento;
     this.utenteUltimaModifica = user.ultimo_utente_modifica;
@@ -273,9 +330,17 @@ export class UserListComponent implements OnInit {
       codiceFiscale: new FormControl(''),
       datiFattura: new FormControl(false),
       denominazione: new FormControl(''),
+      indirizzoFatturazione: new FormControl(''),
+      cittaFatturazione: new FormControl(''),
     });
     this.utenteInserimento = undefined;
     this.utenteUltimaModifica = undefined;
+
+    this.spesaFissaForm = new FormGroup({
+      meseSpesaFissa: new FormControl('', Validators.required),
+      notaSpesaFissa: new FormControl('', Validators.required),
+      costoSpesaFissa: new FormControl('', Validators.required),
+    });
   }
   confirmDeleteUser(user_id: number) {
     this.confirmationService.confirm({
@@ -335,4 +400,52 @@ export class UserListComponent implements OnInit {
   }
 
   myModelChanged(event) {}
+
+  editSpesaFissa() {
+    let meseSpesaFissa = this.spesaFissaForm.value['meseSpesaFissa'];
+    if (this.spesaFissaMode === 'Aggiungi') {
+      this.firebaseStoreService.AddSpesaFissa(
+        meseSpesaFissa,
+        this.spesaFissaForm.value as SpesaFissa
+      );
+    } else if (this.spesaFissaMode === 'Modifica') {
+      this.firebaseStoreService.UpdateSpesaFissa(
+        this.selectedSpesaFissaId,
+        meseSpesaFissa,
+        this.spesaFissaForm.value as SpesaFissa
+      );
+    }
+    callModalToast(
+      this.messageService,
+      this.spesaFissaMode === 'Aggiungi' ? 'Aggiunto' : 'Modificato',
+      'Incasso fisso aggiunto',
+      this.spesaFissaMode === 'Aggiungi' ? 'success' : 'info'
+    );
+
+    this.modaleSpesaFissa();
+  }
+
+  onRowSelectSpesaFissa(event) {
+    this.spesaFissaMode = 'Modifica';
+    this.showModalSpesaFissa = true;
+    this.selectedSpesaFissaId = event.data.id;
+    this.spesaFissaForm = new FormGroup({
+      meseSpesaFissa: new FormControl(
+        event.data.meseSpesaFissa,
+        Validators.required
+      ),
+      notaSpesaFissa: new FormControl(
+        event.data.notaSpesaFissa,
+        Validators.required
+      ),
+      costoSpesaFissa: new FormControl(
+        event.data.costoSpesaFissa,
+        Validators.required
+      ),
+    });
+  }
+
+  confirmDeleteSpesaFissa(id: string, mese: string) {
+    this.firebaseStoreService.DeleteSpesaFissa(id, mese);
+  }
 }

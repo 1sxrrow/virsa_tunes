@@ -4,6 +4,7 @@ export class InventarioItemModel {
   public nome: string;
   public marca: string;
   public colore: string;
+  public memoria: string;
   public grado: string;
   public prezzo_acquisto: number;
   public fornitore: string;

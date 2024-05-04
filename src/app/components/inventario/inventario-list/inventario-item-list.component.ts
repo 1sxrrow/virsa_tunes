@@ -192,6 +192,10 @@ export class InventarioItemListComponent implements OnInit, OnDestroy {
         { value: '', disabled: this.isAdmin ? false : true },
         Validators.required
       ),
+      memoria: new FormControl(
+        { value: '', disabled: this.isAdmin ? false : true },
+        Validators.required
+      ),
       grado: new FormControl(
         { value: '', disabled: this.isAdmin ? false : true },
         Validators.required

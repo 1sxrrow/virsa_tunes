@@ -237,6 +237,17 @@
             />
           </div>
           <div class="mb-1 mr-2">
+            <label for="memoria" class="labelInput">Memoria (GB)</label>
+            <input
+              id="memoria"
+              pInputText
+              type="text"
+              formControlName="memoria"
+              class="w-11/12 fields"
+              required
+            />
+          </div>
+          <div class="mb-1">
             <label for="grado" class="labelInput">Grado</label>
             <span class="p-input-icon-right w-full">
               <i class="pi pi-angle-down"></i>
@@ -253,7 +264,7 @@
               </select>
             </span>
           </div>
-          <div class="mb-1">
+          <div class="mb-1 mr-2">
             <label for="garanzia_mesi" class="labelInput">Garanzia Mesi</label>
             <span class="p-input-icon-right w-full">
               <i class="pi pi-angle-down"></i>
@@ -273,7 +284,7 @@
               </select>
             </span>
           </div>
-          <div class="mb-1 mr-2">
+          <div class="mb-1">
             <label class="labelInput" for="fornitore"> Fornitore </label>
             <input
               id="fornitore"
@@ -284,7 +295,7 @@
               required
             />
           </div>
-          <div class="mb-1">
+          <div class="mb-1 mr-2">
             <label class="labelInput" for="perc_batteria">
               Percentuale Batteria %
             </label>
@@ -297,7 +308,7 @@
               required
             />
           </div>
-          <div class="mb-1 mr-2">
+          <div class="mb-1">
             <label class="labelInput" for="prezzo_negozio">
               Prezzo Negozio €
             </label>
@@ -310,7 +321,7 @@
               required
             />
           </div>
-          <div class="mb-1">
+          <div class="mb-1 mr-2">
             <label class="labelInput" for="prezzo_online">
               Prezzo Online €
             </label>
@@ -323,7 +334,7 @@
               required
             />
           </div>
-          <div class="mb-1 mr-2" [hidden]="!this.isAdmin">
+          <div class="mb-1" [hidden]="!this.isAdmin">
             <label class="labelInput" for="prezzo_acquisto">
               Prezzo Acquisto €
             </label>
