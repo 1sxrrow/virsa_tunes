@@ -398,6 +398,8 @@ export class UserDataComponent implements OnInit, OnDestroy, AfterViewInit {
         caparra: new FormControl(this.selectedSpecificData.caparra),
         data_rest_dispositivo_cliente: new FormControl(
           this.selectedSpecificData.data_rest_dispositivo_cliente
+            ? new Date(this.selectedSpecificData.data_rest_dispositivo_cliente)
+            : ''
         ),
         nome_fornitore_pezzo: new FormControl(
           this.selectedSpecificData.nome_fornitore_pezzo
