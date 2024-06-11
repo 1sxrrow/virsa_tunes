@@ -1120,12 +1120,15 @@ export function getTotalOfProduct(specificData: SpecificDataModel) {
   if (specificData.prodottiAggiuntivi) {
     Object.values(specificData.prodottiAggiuntivi).forEach(
       (prodottoAggiuntivo: prodottiAggiuntivi) => {
-        totalCost += +prodottoAggiuntivo.costo;
+        totalCost += (prodottoAggiuntivo.quantita * (+prodottoAggiuntivo.costo));
       }
     );
   }
   if (specificData.costo_sconto) {
     totalCost -= +specificData.costo_sconto;
+  }
+if (specificData.costoPermuta) {
+    totalCost -= +specificData.costoPermuta;
   }
   return totalCost;
 }

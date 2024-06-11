@@ -322,7 +322,11 @@
               ></i>
             </label>
             <span class="p-input-icon-right w-full">
-              <i class="pi pi-check cursor-pointer" (click)="checkImei()"></i>
+              <i
+                class="pi pi-check cursor-pointer"
+                (click)="checkImei()"
+                *ngIf="showFieldsVendita"
+              ></i>
               <input
                 type="text"
                 name="imei"

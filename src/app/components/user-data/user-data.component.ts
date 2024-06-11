@@ -669,7 +669,7 @@ export class UserDataComponent implements OnInit, OnDestroy, AfterViewInit {
           console.log(item);
           this.specificDataForm.patchValue({
             modello_telefono: item[0]['nome'],
-            costo: +item[0]['prezzo_acquisto'],
+            costo: +item[0]['prezzo_negozio'],
             marca_telefono: item[0]['marca'],
             tipo_prodotto: item[0]['grado'] === 'Nuovo' ? 'Nuovo' : 'Usato',
           });

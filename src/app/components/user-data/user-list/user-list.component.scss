@@ -68,6 +68,10 @@
   padding: 0px;
 }
 
+::ng-deep ul.p-breadcrumb-list {
+  height: 30px;
+}
+
 ::ng-deep .p-toolbar {
   border: none;
 }
