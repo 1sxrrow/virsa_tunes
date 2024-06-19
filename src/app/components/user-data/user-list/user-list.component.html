@@ -24,7 +24,8 @@
         'nome',
         'cognome',
         'canale_com',
-        'numero_telefono'
+        'numero_telefono',
+        'dataInserimento'
       ]"
       [styleClass]="'p-datatable-sm'"
     >
@@ -36,6 +37,7 @@
               pTooltip="Aggiungi Utente"
               tooltipPosition="top"
               (click)="addUser()"
+              class="mr-2"
               styleClass="p-button-success"
             ></p-button>
           </div>
@@ -54,19 +56,10 @@
           <div class="p-toolbar-group-end">
             <p-button
               *ngIf="this.authService.getIsAdmin()"
-              pTooltip="Incassi"
+              icon="pi pi-wrench"
+              pTooltip="Admin Tools"
               tooltipPosition="top"
-              icon="pi pi-chart-line"
-              (click)="modaleIncassi()"
-              class="ml-2"
-              styleClass="p-button-secondary"
-            ></p-button>
-            <p-button
-              *ngIf="this.authService.getIsAdmin()"
-              pTooltip="Statistiche Utenti"
-              icon="pi pi-chart-bar"
-              class="ml-2"
-              (click)="op.toggle($event)"
+              (click)="showAdminDialogModal()"
               styleClass="p-button-info"
             ></p-button>
           </div>
@@ -75,28 +68,54 @@
       <ng-template pTemplate="header">
         <tr>
           <th pSortableColumn="nome" style="width: 20%">
-            Nome<p-sortIcon field="nome"></p-sortIcon>
+            {{ "user_data.nome" | translate }}
+            <p-sortIcon field="nome"></p-sortIcon>
           </th>
           <th pSortableColumn="cognome" style="width: 20%">
-            Cognome<p-sortIcon field="cognome"></p-sortIcon>
+            {{ "user_data.cognome" | translate }}
+            <p-sortIcon field="cognome"></p-sortIcon>
           </th>
-          <th style="width: 20%">Interventi</th>
-          <th style="width: 20%">Azioni</th>
+          <th style="width: 20%">
+            {{ "user_data.interventi" | translate }}
+          </th>
+          <th pSortableColumn="dataInserimento" style="width: 20%">
+            {{ "user_data.data_ins" | translate }}
+            <p-sortIcon field="dataInserimento"></p-sortIcon>
+          </th>
+          <th style="width: 20%">
+            {{ "user_data.azioni" | translate }}
+          </th>
         </tr>
       </ng-template>
       <ng-template pTemplate="body" let-user *ngIf="!showModal">
         <tr [pSelectableRowDblClick]="user">
           <td>
-            <span class="p-column-title">Nome</span>
+            <span class="p-column-title">
+              {{ "user_data.nome" | translate }}
+            </span>
             {{ user.nome | uppercaseFirstLetter }}
           </td>
           <td class="flex-auto items-center">
-            <span class="p-column-title">Cognome</span>
+            <span class="p-column-title">
+              {{ "user_data.cognome" | translate }}
+            </span>
             {{ user.cognome | uppercaseFirstLetter }}
           </td>
           <td>
-            <span class="p-column-title">Interventi</span>
+            <span class="p-column-title">
+              {{ "user_data.interventi" | translate }}
+            </span>
             {{ getInterventi(user.id) }}
+          </td>
+          <td>
+            <span class="p-column-title">
+              {{ "user_data.data_ins" | translate }}
+            </span>
+            {{
+              user.dataInserimento
+                ? user.dataInserimento
+                : "Nessuna data presente"
+            }}
           </td>
           <td>
             <p-button
@@ -137,7 +156,9 @@
       <form [formGroup]="userInfoForm">
         <div class="grid grid-cols-2 mb-2">
           <div class="mb-1 mr-2">
-            <label for="nome" class="labelInput">Nome</label>
+            <label for="nome" class="labelInput">
+              {{ "user_data.nome" | translate }}
+            </label>
             <input
               id="nome"
               pInputText
@@ -148,7 +169,9 @@
             />
           </div>
           <div class="mb-1">
-            <label class="labelInput" for="cognome">Cognome</label>
+            <label class="labelInput" for="cognome">
+              {{ "user_data.cognome" | translate }}
+            </label>
             <input
               id="cognome"
               pInputText
@@ -162,7 +185,9 @@
         </div>
         <div class="grid grid-cols-2 mb-2">
           <div class="mb-1 mr-2">
-            <label class="labelInput" for="numero_telefono">Telefono</label>
+            <label class="labelInput" for="numero_telefono">
+              {{ "user_data.telefono" | translate }}
+            </label>
             <input
               id="numero_telefono"
               pInputText
@@ -173,7 +198,9 @@
             />
           </div>
           <div class="mb-1">
-            <label class="labelInput" for="indirizzo">Indirizzo</label>
+            <label class="labelInput" for="indirizzo">
+              {{ "user_data.indirizzo" | translate }}
+            </label>
             <input
               id="indirizzo"
               pInputText
@@ -187,7 +214,9 @@
         </div>
         <div class="grid grid-cols-2 mb-2">
           <div class="mb-1 mr-2">
-            <label class="labelInput" for="citta">Città</label>
+            <label class="labelInput" for="citta">
+              {{ "user_data.citta" | translate }}
+            </label>
             <input
               id="citta"
               pInputText
@@ -198,7 +227,9 @@
             />
           </div>
           <div class="mb-1">
-            <label class="labelInput" for="cap">CAP</label>
+            <label class="labelInput" for="cap">
+              {{ "user_data.cap" | translate }}
+            </label>
             <input
               id="cap"
               pInputText
@@ -211,9 +242,9 @@
         </div>
         <div class="grid grid-cols-2 mb-2">
           <div class="mb-1 mr-2">
-            <label for="canale_com" class="labelInput"
-              >Canale Comunicazione</label
-            >
+            <label for="canale_com" class="labelInput">
+              {{ "user_data.canale_com" | translate }}
+            </label>
             <span class="p-input-icon-right w-11/12">
               <i class="pi pi-angle-down"></i>
               <select
@@ -233,7 +264,9 @@
             </span>
           </div>
           <div class="mb-1 mt-4">
-            <label for="datiFattura" class="mr-2">Dati Fattura</label>
+            <label for="datiFattura" class="mr-2">
+              {{ "user_data.dati_fattura" | translate }}
+            </label>
             <p-checkbox
               formControlName="datiFattura"
               [(ngModel)]="checkedFattura"
@@ -249,7 +282,9 @@
         >
           <div class="grid grid-cols-2 mb-2">
             <div class="mb-1 mr-2">
-              <label for="codiceFiscale" class="label">Codice Fiscale</label>
+              <label for="codiceFiscale" class="label">
+                {{ "user_data.codice_fiscale" | translate }}
+              </label>
               <input
                 type="text"
                 name="codiceFiscale"
@@ -259,7 +294,9 @@
               />
             </div>
             <div class="mb-1">
-              <label for="partitaIva" class="label">P. Iva</label>
+              <label for="partitaIva" class="label">
+                {{ "user_data.partita_iva" | translate }}
+              </label>
               <input
                 type="text"
                 name="partitaIva"
@@ -271,7 +308,9 @@
           </div>
           <div class="grid grid-cols-2 mb-2">
             <div class="mb-1 mr-2">
-              <label for="pec" class="label">PEC</label>
+              <label for="pec" class="label">
+                {{ "user_data.pec" | translate }}
+              </label>
               <input
                 type="text"
                 name="pec"
@@ -281,7 +320,9 @@
               />
             </div>
             <div class="mb-1">
-              <label for="codiceUnivoco" class="label">Codice Univoco</label>
+              <label for="codiceUnivoco" class="label">
+                {{ "user_data.codice_univoco" | translate }}
+              </label>
               <input
                 type="text"
                 name="codiceUnivoco"
@@ -291,7 +332,9 @@
               />
             </div>
             <div class="mb-1 mr-2 col-span-2">
-              <label for="denominazione" class="label">Denominazione</label>
+              <label for="denominazione" class="label">
+                {{ "user_data.denominazione" | translate }}
+              </label>
               <input
                 type="text"
                 name="denominazione"
@@ -301,9 +344,9 @@
               />
             </div>
             <div class="mb-1 mr-2">
-              <label for="indirizzoFatturazione" class="label"
-                >Indirizzo Fatturazione</label
-              >
+              <label for="indirizzoFatturazione" class="label">
+                {{ "user_data.indirizzo_fatturazione" | translate }}
+              </label>
               <input
                 type="text"
                 name="indirizzoFatturazione"
@@ -313,7 +356,9 @@
               />
             </div>
             <div class="mb-1">
-              <label for="cittaFatturazione" class="label">Città</label>
+              <label for="cittaFatturazione" class="label">
+                {{ "user_data.citta_fatturazione" | translate }}
+              </label>
               <input
                 type="text"
                 name="cittaFatturazione"
@@ -367,8 +412,17 @@
     [modal]="true"
   >
     <ng-template pTemplate="header">
-      <div class="flex align-items-center justify-between gap-2 w-full">
-        <span class="font-bold text-2xl">Incassi</span>
+      <div
+        class="flex align-items-center justify-between gap-2 w-full col-span-3"
+      >
+        <span class="font-bold text-2xl">
+          {{ "user_data.incassi" | translate }}
+        </span>
+        <span *ngIf="selectedNegozio">
+          Negozio Selezionato:{{
+            selectedNegozio ? selectedNegozio : "Nessun negozio"
+          }}
+        </span>
         <p-button
           type="button"
           label="Spesa fissa"
@@ -379,13 +433,42 @@
         ></p-button>
       </div>
     </ng-template>
-    <p-table [value]="incassi">
+    <div class="mb-3">
+      <label for="filterNegozio" class="label">
+        {{ "user_data.negozio" | translate }}
+      </label>
+      <span class="p-input-icon-right w-full">
+        <i class="pi pi-angle-down" *ngIf="!selectedNegozio"></i>
+        <i
+          class="pi pi-times"
+          *ngIf="selectedNegozio"
+          (click)="clearSelectedNegozio()"
+        ></i>
+        <select
+          name="filterNegozio"
+          id="filterNegozio"
+          class="fields"
+          (change)="retrieveValueNegozioForTableView()"
+          [(ngModel)]="selectedNegozio"
+        >
+          <option [ngValue]="null" disabled>Seleziona negozio</option>
+          <option
+            [value]="filterNegozioItem"
+            *ngFor="let filterNegozioItem of filterNegozio"
+          >
+            {{ filterNegozioItem }}
+          </option>
+        </select>
+      </span>
+    </div>
+    <!-- Table per incassi non filtrati -->
+    <p-table [value]="incassi" *ngIf="!selectedNegozio">
       <ng-template pTemplate="header">
         <tr>
-          <th>Mese</th>
-          <th>Lordo</th>
-          <th>Spese</th>
-          <th>Netto</th>
+          <th>{{ "user_data.mese" | translate }}</th>
+          <th>{{ "user_data.lordo" | translate }}</th>
+          <th>{{ "user_data.spese" | translate }}</th>
+          <th>{{ "user_data.netto" | translate }}</th>
         </tr>
       </ng-template>
       <ng-template pTemplate="body" let-incasso>
@@ -402,9 +485,39 @@
               ></i>
             </span>
           </td>
-          <td>{{ incasso.incassoTotale }} €</td>
-          <td>{{ incasso.spese }} €</td>
-          <td>{{ incasso.netto }} €</td>
+          <td>{{ incasso.incassoTotale }}€</td>
+          <td>{{ incasso.speseTotale }}€</td>
+          <td>{{ incasso.nettoTotale }}€</td>
+        </tr>
+      </ng-template>
+    </p-table>
+    <!-- Table per incassi filtrati -->
+    <p-table [value]="filteredIncassi" *ngIf="selectedNegozio">
+      <ng-template pTemplate="header">
+        <tr>
+          <th>Mese</th>
+          <th>Lordo Negozio</th>
+          <th>Spese Negozio</th>
+          <th>Netto Negozio</th>
+        </tr>
+      </ng-template>
+      <ng-template pTemplate="body" let-filteredIncassi>
+        <tr>
+          <td>
+            <span>
+              {{ filteredIncassi.mese }}
+              <i
+                *ngIf="filteredIncassi.spesaFissa?.length > 0"
+                class="pi pi-question-circle cursor-pointer"
+                style="font-size: 0.75rem"
+                pTooltip="Spese fisse"
+                (click)="modaleListaSpeseFisse(filteredIncassi.mese)"
+              ></i>
+            </span>
+          </td>
+          <td>{{ filteredIncassi.negozio.incasso }}€</td>
+          <td>{{ filteredIncassi.negozio.spese }}€</td>
+          <td>{{ filteredIncassi.negozio.netto }}€</td>
         </tr>
       </ng-template>
     </p-table>
@@ -425,7 +538,9 @@
     <form [formGroup]="spesaFissaForm">
       <div class="grid grid-cols-3 mb-2 gap-2">
         <div>
-          <label for="meseSpesaFissa" class="label">Mese incasso</label>
+          <label for="meseSpesaFissa" class="label">
+            {{ "user_data.mese" | translate }}
+          </label>
           <span class="p-input-icon-right w-full">
             <i class="pi pi-angle-down"></i>
             <select
@@ -445,7 +560,9 @@
           </span>
         </div>
         <div>
-          <label for="notaSpesaFissa" class="label">Nota</label>
+          <label for="notaSpesaFissa" class="label">
+            {{ "user_data.nota" | translate }}
+          </label>
           <input
             type="text"
             name="notaSpesaFissa"
@@ -455,7 +572,9 @@
           />
         </div>
         <div>
-          <label for="costoSpesaFissa" class="label">Costo Incasso</label>
+          <label for="costoSpesaFissa" class="label">
+            {{ "user_data.costo_spesa_fissa" | translate }}
+          </label>
           <input
             type="number"
             name="costoSpesaFissa"
@@ -492,10 +611,10 @@
     >
       <ng-template pTemplate="header">
         <tr>
-          <th>Mese</th>
-          <th>Nota</th>
-          <th>Costo</th>
-          <th>Azioni</th>
+          <th>{{ "user_data.mese" | translate }}</th>
+          <th>{{ "user_data.nota" | translate }}</th>
+          <th>{{ "user_data.costo_noeuro" | translate }}</th>
+          <th>{{ "user_data.azioni" | translate }}</th>
         </tr>
       </ng-template>
       <ng-template pTemplate="body" let-spesaFissa>
@@ -525,12 +644,72 @@
 
   <p-toast></p-toast>
 
-  <p-overlayPanel #op>
+  <p-overlayPanel #opStats>
     <ng-template pTemplate="content">
       <div *ngFor="let item of canaleComResults">
         <span>{{ item.name }}: {{ item.value }}</span>
       </div>
     </ng-template>
   </p-overlayPanel>
+
+  <!-- Modale Admin Tools -->
+  <p-dialog
+    [header]="'Admin Tools'"
+    [(visible)]="showAdminDialog"
+    aria-hidden="true"
+    [style]="{ width: '50vw' }"
+    [modal]="true"
+  >
+    <div class="grid grid-cols-4 p-3 place-items-center gap-2">
+      <p-button
+        label="Export DB"
+        (click)="exportFirebaseDatabaseToJSON()"
+        class="mr-2"
+        styleClass="p-button-secondary"
+      ></p-button>
+      <p-button
+        label="Import DB"
+        (click)="showUploadComponentMethod()"
+        class="mr-2"
+        styleClass="p-button-secondary"
+      ></p-button>
+      <p-button
+        label="Incassi"
+        (click)="modaleIncassi()"
+        class="mr-2"
+        styleClass="p-button-secondary"
+      ></p-button>
+      <p-button
+        label="Statistiche"
+        (click)="opStats.toggle($event)"
+        styleClass="p-button-info"
+      ></p-button>
+      <p-button
+        [hidden]="true"
+        [label]="ambiente === 'test' ? 'Passa a Produzione' : 'Passa a Test'"
+        (click)="passaggioAmbiente()"
+        styleClass="p-button-info"
+      ></p-button>
+    </div>
+    <div *ngIf="showUploadComponent">
+      <p-fileUpload
+        *ngIf="showUploadComponent"
+        [showUploadButton]="false"
+        [showCancelButton]="false"
+        (onSelect)="onUploadFileJSON($event)"
+      >
+      </p-fileUpload>
+      <div class="grid grid-cols-4 p-3">
+        <p-button
+          label="Aggiorna"
+          [disabled]="!FileJSON"
+          (click)="confirmImportFirebaseDatabaseFromJSON()"
+          class="col-start-4 flex justify-end"
+          styleClass="p-button-info"
+        ></p-button>
+      </div>
+    </div>
+  </p-dialog>
+
   <app-confirm-dialog></app-confirm-dialog>
 </div>

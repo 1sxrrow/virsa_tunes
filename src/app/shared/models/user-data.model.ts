@@ -14,6 +14,7 @@ export class UserModel {
   public utenteInserimento?: string;
   public ultimoUtenteModifica?: string;
   public datiFattura: DatiFattura;
+  public dataInserimento: string;
 
   public constructor(init?: Partial<UserModel>) {
     Object.assign(this, init);

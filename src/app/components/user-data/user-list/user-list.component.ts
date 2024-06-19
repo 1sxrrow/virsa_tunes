@@ -1,14 +1,16 @@
 import { Component, OnInit } from '@angular/core';
+import { FirebaseApp } from '@angular/fire/app';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import {
-  ConfirmEventType,
   ConfirmationService,
+  ConfirmEventType,
   MenuItem,
   MessageService,
 } from 'primeng/api';
 import { Table } from 'primeng/table';
 import { Incasso } from 'src/app/shared/models/incasso.model';
+import { SpesaFissa } from 'src/app/shared/models/spesaFissa.model';
 import { UserModel } from 'src/app/shared/models/user-data.model';
 import { FirebaseStoreService } from 'src/app/shared/services/firebase/firebase-store.service';
 import { PrintService } from 'src/app/shared/services/print/recipe-print.service';
@@ -16,10 +18,10 @@ import { canaleComunicazione } from 'src/app/shared/utils/common-enums';
 import {
   callModalToast,
   getBreadcrumbHome,
+  UploadEvent,
 } from 'src/app/shared/utils/common-utils';
 import { AuthService } from '../../login/auth.service';
 import { UserDataService } from '../user-data.service';
-import { SpesaFissa } from 'src/app/shared/models/spesaFissa.model';
 
 @Component({
   selector: 'app-user-list',
@@ -28,11 +30,15 @@ import { SpesaFissa } from 'src/app/shared/models/spesaFissa.model';
   providers: [ConfirmationService],
 })
 export class UserListComponent implements OnInit {
+  ambiente: string = '';
   items: MenuItem[] | undefined = [{ label: 'Database', routerLink: '/users' }];
   home: MenuItem | undefined = getBreadcrumbHome();
   selectedUser!: UserModel;
   selectedSpesaFissa: SpesaFissa;
   selectedSpesaFissaId: string;
+  selectedNegozio: string = '';
+  filterNegozio: string[] = [];
+  filteredIncassi: any = [];
   canaleComResults: { name: string; value: number }[] = [];
 
   userInfoForm: FormGroup;
@@ -43,12 +49,14 @@ export class UserListComponent implements OnInit {
   showModalIncassi = false;
   showModalSpesaFissa = false;
   showModalListaSpeseFisse = false;
+  showAdminDialog = false;
+  showUploadComponent = false;
   spesaFissaMode: string;
   listaSpeseFisse: SpesaFissa[] = [];
+  FileJSON: File;
 
   isInfo = false;
   visible = false;
-  isAdmin = false;
   savedUserId: number;
   checkedFattura: boolean = false;
 
@@ -65,9 +73,12 @@ export class UserListComponent implements OnInit {
     private confirmationService: ConfirmationService,
     private printService: PrintService,
     private authService: AuthService,
+    private firebaseApp: FirebaseApp,
     private router: Router,
     private messageService: MessageService
-  ) {}
+  ) {
+    this.ambiente = this.firebaseApp.name;
+  }
 
   showDialog() {
     this.visible = !this.visible;
@@ -116,6 +127,10 @@ export class UserListComponent implements OnInit {
     this.canaleComunicazioni = Object.keys(
       this.userDataService.canaleComunicazione
     ).filter((key) => isNaN(+key));
+
+    this.filterNegozio = Object.keys(this.userDataService.negozio).filter(
+      (key) => key !== 'Magazzino' && isNaN(+key)
+    );
 
     // Seleziona la stampante
     if (!this.printService.getDevice()) {
@@ -448,4 +463,83 @@ export class UserListComponent implements OnInit {
   confirmDeleteSpesaFissa(id: string, mese: string) {
     this.firebaseStoreService.DeleteSpesaFissa(id, mese);
   }
+
+  retrieveValueNegozioForTableView() {
+    this.filteredIncassi = [];
+    this.incassi.forEach((incasso) => {
+      return incasso.negozi.forEach((negozio) => {
+        if (negozio.negozio === this.selectedNegozio) {
+          this.filteredIncassi.push({
+            mese: incasso.mese,
+            negozio: negozio,
+            spesaFissa: incasso.spesaFissa,
+          });
+        }
+      });
+    });
+    console.log(this.filteredIncassi);
+  }
+
+  clearSelectedNegozio() {
+    this.selectedNegozio = '';
+    console.log(this.selectedNegozio);
+  }
+
+  showAdminDialogModal() {
+    this.showAdminDialog = !this.showAdminDialog;
+  }
+  showUploadComponentMethod() {
+    this.showUploadComponent = !this.showUploadComponent;
+  }
+
+  async exportFirebaseDatabaseToJSON() {
+    this.firebaseStoreService.exportDatabaseToJSON();
+  }
+
+  confirmImportFirebaseDatabaseFromJSON() {
+    this.confirmationService.confirm({
+      message: `Sei sicuro di voler procedere?
+    Questa operazione sovrascriverà il database attuale`,
+      header: 'Conferma',
+      icon: 'pi pi-exclamation-triangle',
+      accept: () => {
+        this.importFirebaseDatabaseFromJSON();
+      },
+      reject: (type: ConfirmEventType) => {
+        callModalToast(
+          this.messageService,
+          'Interrotto',
+          'Importazione database interrotta',
+          'warn'
+        );
+      },
+    });
+  }
+  async importFirebaseDatabaseFromJSON() {
+    this.firebaseStoreService.importDatabaseFromJSON(this.FileJSON).then(
+      () => {
+        callModalToast(
+          this.messageService,
+          'Importato',
+          'Database importato con successo'
+        );
+        this.showUploadComponentMethod();
+      },
+      (error) => {
+        console.log(error);
+        callModalToast(
+          this.messageService,
+          'Errore',
+          'Errore import database',
+          'error'
+        );
+      }
+    );
+  }
+
+  onUploadFileJSON(event: UploadEvent) {
+    this.FileJSON = event.files[0];
+  }
+
+  passaggioAmbiente() {}
 }

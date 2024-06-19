@@ -85,3 +85,7 @@ export enum gradoInventario {
   'B',
 }
 
+export enum Filtri {
+  'Data Inserimento (Crescente)',
+  'Data Inserimento (Decrescente)',
+}

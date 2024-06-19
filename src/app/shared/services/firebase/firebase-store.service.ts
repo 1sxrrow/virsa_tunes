@@ -5,13 +5,20 @@ import {
   AngularFireObject,
 } from '@angular/fire/compat/database';
 import { FirebaseOperation } from '@angular/fire/compat/database/interfaces';
+import { saveAs } from 'file-saver';
+import firebase from 'firebase/compat/app';
+import { from, Observable } from 'rxjs';
 import { Incasso } from '../../models/incasso.model';
 import { InventarioItemModel } from '../../models/inventarioItem.model';
 import { SpesaFissa } from '../../models/spesaFissa.model';
 import { UserModel } from '../../models/user-data.model';
 import { createIncasso } from '../../utils/common-utils';
-import { Observable } from 'rxjs';
-import { from } from 'rxjs';
+import { AngularFireAuth } from '@angular/fire/compat/auth';
+import { AngularFireStorage } from '@angular/fire/compat/storage';
+import {
+  devFirebaseConfig,
+  prodFirebaseConfig,
+} from 'src/environments/environment';
 
 @Injectable({ providedIn: 'root' })
 export class FirebaseStoreService {
@@ -19,18 +26,65 @@ export class FirebaseStoreService {
   IncassiRef: AngularFireList<any>;
   StatsUsersRef: AngularFireList<any>;
   StatsCanaleComRef: AngularFireList<any>;
+  InventarioListRef: AngularFireList<any>;
 
   UserRef: AngularFireObject<any>;
   IncassoRef: AngularFireObject<any>;
-  InventarioListRef: AngularFireList<any>;
   InventarioRef: AngularFireObject<any>;
 
-  constructor(private db: AngularFireDatabase) {
+  private currentApp: firebase.app.App;
+
+  constructor(
+    private db: AngularFireDatabase,
+    private afAuth: AngularFireAuth,
+    private afs: AngularFireStorage
+  ) {
     this.IncassiRef = this.db.list('incassi');
     this.InventarioListRef = this.db.list('inventario');
     this.UsersRef = this.db.list('users');
-    this.StatsUsersRef = this.db.list('stats/users'); // Fix: Change the type to AngularFireList<any>
-    this.StatsUsersRef = this.db.list('stats/canale_com'); // Fix: Change the type to AngularFireList<any>
+    this.StatsUsersRef = this.db.list('stats/users');
+  }
+
+  switchProject(projectKey: string) {
+    const config =
+      projectKey === 'test' ? devFirebaseConfig : prodFirebaseConfig;
+    if (!config) {
+      throw new Error('Invalid project key');
+    }
+
+    if (firebase.apps.length > 1) {
+      firebase
+        .app(projectKey)
+        .delete()
+        .then(() => {
+          this.currentApp = firebase.initializeApp(config, projectKey);
+        });
+    } else {
+      this.currentApp = firebase.initializeApp(config, projectKey);
+    }
+
+    // this.afAuth.useEmulator(this.currentApp.auth().useEmulator);
+    // this.afs.firestore.settings({
+    //   host: `${this.currentApp.options.projectId}.firebaseapp.com`,
+    // });
+  }
+
+  async exportDatabaseToJSON() {
+    const snapshot = await this.db.database.ref().once('value');
+    const data = snapshot.val();
+    const jsonData = JSON.stringify(data, null, 2);
+    const blob = new Blob([jsonData], { type: 'application/json' });
+    const filename = `database_export_${new Date().toLocaleDateString()}.json`;
+    saveAs(blob, filename);
+  }
+
+  async importDatabaseFromJSON(file: File) {
+    const reader = new FileReader();
+    reader.readAsText(file);
+    reader.onload = async () => {
+      const data = JSON.parse(reader.result as string);
+      await this.db.database.ref().set(data);
+    };
   }
 
   GetIncassi() {
@@ -52,7 +106,7 @@ export class FirebaseStoreService {
     return this.UsersRef;
   }
 
-  AddIncasso(incasso_i: number, mese: string) {
+  AddIncasso(incasso_intervento: Incasso, mese: string, negozio: string) {
     this.GetIncassi();
     let incasso: Incasso;
     this.IncassiRef.query
@@ -62,10 +116,30 @@ export class FirebaseStoreService {
         if (snapshot.exists()) {
           let incassoObject = snapshot.val();
           let incasso: Incasso = Object.values(incassoObject)[0] as Incasso;
-          incasso.incassoTotale += incasso_i;
+          incasso_intervento.negozi.forEach((negozioIntervento) => {
+            let foundNegozio = incasso.negozi.find(
+              (n) => n.negozio === negozioIntervento.negozio
+            );
+            if (foundNegozio) {
+              foundNegozio.incasso += +negozioIntervento.incasso;
+              foundNegozio.spese += +negozioIntervento.spese;
+              foundNegozio.netto = foundNegozio.incasso - foundNegozio.spese;
+            } else {
+              incasso.negozi.push(negozioIntervento);
+            }
+          });
+
+          incasso.incassoTotale += incasso_intervento.incassoTotale;
+          incasso.speseTotale += incasso_intervento.speseTotale;
+          incasso.nettoTotale = incasso.incassoTotale - incasso.speseTotale;
           this.UpdateIncasso(incasso);
         } else {
-          incasso = createIncasso(incasso_i, mese);
+          incasso = createIncasso(
+            incasso_intervento.incassoTotale,
+            mese,
+            incasso_intervento.speseTotale,
+            negozio
+          );
           let id: FirebaseOperation = incasso.mese.toString();
           this.IncassiRef.set(id, incasso);
         }
@@ -200,6 +274,18 @@ export class FirebaseStoreService {
           return snapshot.val();
         } else {
           return null;
+        }
+      });
+  }
+
+  updateArticoloImei(imei: string, item: InventarioItemModel) {
+    this.InventarioListRef.query
+      .orderByChild('imei')
+      .equalTo(imei)
+      .once('value', (snapshot) => {
+        if (snapshot.exists()) {
+          let key = Object.keys(snapshot.val())[0];
+          this.InventarioListRef.update(key, item);
         }
       });
   }

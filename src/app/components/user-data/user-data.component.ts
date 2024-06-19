@@ -8,6 +8,7 @@ import {
   OnDestroy,
   OnInit,
   ViewChild,
+  inject,
   isDevMode,
 } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
@@ -19,12 +20,11 @@ import {
   MessageService,
 } from 'primeng/api';
 import { Dropdown } from 'primeng/dropdown';
-import { Subscription } from 'rxjs';
+import { finalize, Subscription } from 'rxjs';
 import { SpecificDataModel } from '../../shared/models/specific-data.model';
 import { UserModel } from '../../shared/models/user-data.model';
 import { FirebaseStoreService } from '../../shared/services/firebase/firebase-store.service';
 import { UserDataService } from './user-data.service';
-
 import EscPosEncoder from '@manhnd/esc-pos-encoder';
 import { TranslateService } from '@ngx-translate/core';
 import { UppercaseFirstLetterPipe } from 'src/app/shared/pipes/uppercase.pipe';
@@ -36,10 +36,15 @@ import {
   createExcel,
   createMultiScontrino,
   createScontrino,
+  FileUpload,
   getBreadcrumbHome,
   getTotalOfProduct,
   keylistener,
+  UploadEvent,
 } from '../../shared/utils/common-utils';
+import { AngularFireStorage } from '@angular/fire/compat/storage';
+import { FileRemoveEvent } from 'primeng/fileupload';
+import { saveAs } from 'file-saver';
 
 @Component({
   selector: 'app-user-data',
@@ -49,7 +54,7 @@ import {
   animations: [fadeInOutAnimation],
 })
 export class UserDataComponent implements OnInit, OnDestroy, AfterViewInit {
-  items: MenuItem[] | undefined = [
+  breadCrumbItems: MenuItem[] | undefined = [
     // prettier-ignore
     { label: 'Database', routerLink: '/users'},
   ];
@@ -61,8 +66,12 @@ export class UserDataComponent implements OnInit, OnDestroy, AfterViewInit {
   tipoParte: string[];
   mesiGaranzia: string[];
   condizioniProdotto: string[];
+  negozio: string[];
   tipoPagamento: string[];
   _specificData: SpecificDataModel[] = [];
+  uploadedFiles: FileUpload[] = [];
+  uploadedFilesDone = false;
+  percentage: number = 0;
 
   @ViewChild('tipoInterventoDropdown') tipoInterventoDropdown: Dropdown;
   @ViewChild('navdrop_tipo_intervento') t: ElementRef;
@@ -105,6 +114,7 @@ export class UserDataComponent implements OnInit, OnDestroy, AfterViewInit {
 
   showFieldsVendita = false;
   showFieldsRiparazione = false;
+  isUploading = false;
 
   prodottiAggiuntivi: prodottiAggiuntivi[] = [];
 
@@ -114,10 +124,10 @@ export class UserDataComponent implements OnInit, OnDestroy, AfterViewInit {
     private confirmationService: ConfirmationService,
     private messageService: MessageService,
     private firebaseStoreService: FirebaseStoreService,
+    private firebaseStorage: AngularFireStorage,
     private printService: PrintService,
     private router: Router,
     private http: HttpClient,
-
     private translateService: TranslateService,
     @Inject(LOCALE_ID) public locale: string
   ) {
@@ -155,6 +165,25 @@ export class UserDataComponent implements OnInit, OnDestroy, AfterViewInit {
     if (this.checkedPermuta) {
       e = false;
     }
+    return e;
+  }
+
+  verifyAuthAdd(): boolean {
+    let e = false;
+    if (this.checkedProdottiAggiuntivi && this.checkedPermuta) {
+      e =
+        this.specificDataForm.valid &&
+        this.checkCongruenzaProdottiAggiuntivi() &&
+        this.uploadedFilesDone;
+    } else if (!this.checkedProdottiAggiuntivi && this.checkedPermuta) {
+      e = this.specificDataForm.valid && this.uploadedFilesDone;
+    } else if (this.checkedProdottiAggiuntivi && !this.checkedPermuta) {
+      e =
+        this.specificDataForm.valid && this.checkCongruenzaProdottiAggiuntivi();
+    } else {
+      e = this.specificDataForm.valid;
+    }
+
     return e;
   }
 
@@ -232,6 +261,10 @@ export class UserDataComponent implements OnInit, OnDestroy, AfterViewInit {
     this.tipoParte = Object.keys(this.userDataService.tipoParte).filter((key) =>
       isNaN(+key)
     );
+
+    this.negozio = Object.keys(this.userDataService.negozio).filter((key) =>
+      isNaN(+key)
+    );
   }
 
   onRowSelect(event: any) {
@@ -302,6 +335,10 @@ export class UserDataComponent implements OnInit, OnDestroy, AfterViewInit {
     if (this.selectedSpecificData.tipo_intervento === 'Vendita') {
       this.showFieldsVendita = true;
       this.showFieldsRiparazione = false;
+
+      if (this.checkedPermuta) {
+        this.uploadedFiles = Object.values(this.selectedSpecificData.files);
+      }
       this.specificDataForm = new FormGroup({
         costo: new FormControl(
           this.selectedSpecificData.costo,
@@ -347,6 +384,10 @@ export class UserDataComponent implements OnInit, OnDestroy, AfterViewInit {
         ),
         checkedPermuta: new FormControl(this.checkedPermuta),
         costoPermuta: new FormControl(this.selectedSpecificData.costoPermuta),
+        negozio: new FormControl(
+          this.selectedSpecificData.negozio,
+          Validators.required
+        ),
       });
     } else {
       this.showFieldsRiparazione = true;
@@ -405,27 +446,57 @@ export class UserDataComponent implements OnInit, OnDestroy, AfterViewInit {
           this.selectedSpecificData.nome_fornitore_pezzo
         ),
         costoCambio: new FormControl(this.selectedSpecificData.costoCambio),
+        negozio: new FormControl(
+          this.selectedSpecificData.negozio,
+          Validators.required
+        ),
       });
     }
-    this.prodottiAggiuntivi =
-      this.selectedSpecificData.prodottiAggiuntivi !== undefined
-        ? Object.values(this.selectedSpecificData.prodottiAggiuntivi)
-        : [];
+    // Verifica se ci sono prodotti aggiuntivi e se esiste l'id altrimenti glielo assegno
+    if (this.selectedSpecificData.prodottiAggiuntivi) {
+      let array = Object.values(this.selectedSpecificData.prodottiAggiuntivi);
+      array.forEach((item) => {
+        if (!item.id) {
+          item.id = Math.random().toString(36).substr(2, 9);
+        }
+      });
+      this.prodottiAggiuntivi = array;
+    } else {
+      this.prodottiAggiuntivi = [];
+    }
+
     this.showFields = true;
     this.utenteInserimento = this.userData.utenteInserimento;
     this.utenteUltimaModifica = this.userData.ultimoUtenteModifica;
     this.showModalFunction('Modifica Intervento', true, id);
   }
 
-  addNewIntervento() {
-    this.userDataService.addNewIntervento(
-      new SpecificDataModel(this.specificDataForm.value),
-      this.userData,
-      this.prodottiAggiuntivi
-    );
-
-    this.showModal = !this.showModal;
-    callModalToast(this.messageService, 'Aggiunto', 'Nuovo utente aggiunto');
+  // Main metodo per aggiungere un nuovo intervento
+  async addNewIntervento() {
+    await this.userDataService
+      .addNewIntervento(
+        new SpecificDataModel(this.specificDataForm.value),
+        this.userData,
+        this.prodottiAggiuntivi,
+        this.uploadedFiles
+      )
+      .then((result) => {
+        if (result) {
+          this.showModal = !this.showModal;
+          callModalToast(
+            this.messageService,
+            'Aggiunto',
+            'Nuovo intervento aggiunto'
+          );
+        } else {
+          callModalToast(
+            this.messageService,
+            'Errore',
+            'Articolo non disponibile',
+            'error'
+          );
+        }
+      });
   }
 
   checkCongruenzaProdottiAggiuntivi() {
@@ -442,7 +513,8 @@ export class UserDataComponent implements OnInit, OnDestroy, AfterViewInit {
       this.modifyInterventoId,
       new SpecificDataModel(this.specificDataForm.value),
       this.prodottiAggiuntivi,
-      this.userData
+      this.userData,
+      this.uploadedFiles
     );
 
     this.showModal = !this.showModal;
@@ -505,6 +577,7 @@ export class UserDataComponent implements OnInit, OnDestroy, AfterViewInit {
         checkedProdottiAggiuntivi: new FormControl(''),
         checkedPermuta: new FormControl(''),
         costoPermuta: new FormControl(''),
+        negozio: new FormControl('', Validators.required),
       });
     } else {
       this.showFields = true;
@@ -533,6 +606,7 @@ export class UserDataComponent implements OnInit, OnDestroy, AfterViewInit {
         nome_fornitore_pezzo: new FormControl(''),
         data_rest_dispositivo_cliente: new FormControl(''),
         costoCambio: new FormControl(''),
+        negozio: new FormControl(''),
       });
     }
   }
@@ -547,6 +621,7 @@ export class UserDataComponent implements OnInit, OnDestroy, AfterViewInit {
         quantita: quantita,
         nomeProdotto: nome,
         costo: costo,
+        id: Math.random().toString(36).substr(2, 9),
       });
     }
     this.quantitaProdottoInput.nativeElement.value = '';
@@ -557,6 +632,21 @@ export class UserDataComponent implements OnInit, OnDestroy, AfterViewInit {
   removeProdottoAggiuntivi(prodotto: prodottiAggiuntivi) {
     let index = this.prodottiAggiuntivi.indexOf(prodotto, 1);
     this.prodottiAggiuntivi.splice(index, 1);
+  }
+
+  changeValueProdottoAggiuntivi(
+    id: string,
+    costo: number,
+    nome: string,
+    quantita: number
+  ) {
+    this.prodottiAggiuntivi.forEach((item) => {
+      item.id === id
+        ? ((item.costo = costo),
+          (item.quantita = quantita),
+          (item.nomeProdotto = nome))
+        : null;
+    });
   }
 
   createExcelFile(specificData: SpecificDataModel) {
@@ -632,28 +722,35 @@ export class UserDataComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   setBreadCrumb() {
-    // BreadCrumb nome e cognome
-    let uppercaseFirstLetterPipe = new UppercaseFirstLetterPipe();
-    this.fullName =
-      uppercaseFirstLetterPipe.transform(this.nome) +
-      ' ' +
-      uppercaseFirstLetterPipe.transform(this.cognome);
-    // prettier-ignore
-    this.items.push({
-      label: this.fullName,
-      id: 'userFullName',
-      style: {
-        'color': '#ffffff',
-        'font-weight': 'bold',
-        'background-color': '#b4b4b4',
-        'border-radius': '5px',
-        'border': '1px solid #b4b4b4',
-        'padding': '5px',
-      },
+    // Verifica esistenza breadcrumb utente
+    let foundBreadCrumbUserItem = this.breadCrumbItems.find((n) => {
+      n.label === this.fullName;
     });
-    this.items.push({
-      label: 'Lista Interventi',
-    });
+    // Se già presente non aggiungere
+    if (!foundBreadCrumbUserItem) {
+      // BreadCrumb nome e cognome
+      let uppercaseFirstLetterPipe = new UppercaseFirstLetterPipe();
+      this.fullName =
+        uppercaseFirstLetterPipe.transform(this.nome) +
+        ' ' +
+        uppercaseFirstLetterPipe.transform(this.cognome);
+      // prettier-ignore
+      this.breadCrumbItems.push({
+        label: this.fullName,
+        id: 'userFullName',
+        style: {
+          'color': '#ffffff',
+          'font-weight': 'bold',
+          'background-color': '#b4b4b4',
+          'border-radius': '5px',
+          'border': '1px solid #b4b4b4',
+          'padding': '5px',
+        },
+      });
+      this.breadCrumbItems.push({
+        label: 'Lista Interventi',
+      });
+    }
   }
 
   getInterventi(id: number) {
@@ -684,5 +781,134 @@ export class UserDataComponent implements OnInit, OnDestroy, AfterViewInit {
           );
         }
       });
+  }
+  // Metodi per p-FileUpload
+  onUpload(event: UploadEvent) {
+    for (let file of event.files) {
+      this.uploadedFilesDone = false;
+      this.isUploading = true;
+      // let fileExtension = file.name.split('.').pop();
+      // Storage path && upload task
+      const filePath = `files/${this.id}/${this.userData.nome}_${this.userData.cognome}_${file.name}`;
+      const storageRef = this.firebaseStorage.ref(filePath);
+      const uploadTask = this.firebaseStorage.upload(filePath, file);
+      // Monitor uploading process
+      uploadTask.percentageChanges().subscribe((percentage) => {
+        this.percentage = Math.round(percentage);
+        if (percentage === 100) {
+          this.percentage = 0;
+          this.isUploading = false;
+        }
+      });
+
+      uploadTask
+        .snapshotChanges()
+        .pipe(
+          finalize(() => {
+            storageRef.getDownloadURL().subscribe((downloadURL) => {
+              console.log(`File available at ${downloadURL}`);
+              if (this.uploadedFiles === undefined) {
+                this.uploadedFiles = [];
+              }
+              this.uploadedFiles.push({
+                file: {
+                  filename: file.name,
+                  filetype: file.type,
+                  filesize: file.size,
+                  addDate: new Date(),
+                },
+                filePath: filePath,
+                uploadURL: downloadURL,
+              });
+              this.uploadedFilesDone = true;
+              callModalToast(
+                this.messageService,
+                'File Caricato',
+                'Il file è stato caricato correttamente',
+                'info'
+              );
+            });
+          })
+        )
+        .subscribe();
+    }
+  }
+
+  onRemove(event: FileRemoveEvent) {
+    // X su singolo elemento della lista
+    this.uploadedFiles.forEach((item) => {
+      if (item.file.filename === event.file.name) {
+        this.firebaseStorage.storage
+          .refFromURL(item.uploadURL)
+          .delete()
+          .then(() => {
+            callModalToast(
+              this.messageService,
+              'File Rimosso',
+              'Il file è stato rimosso',
+              'info'
+            );
+            console.log('File deleted successfully');
+          })
+          .catch((error) => {
+            callModalToast(
+              this.messageService,
+              'Errore rimozione',
+              'Il file non è stato rimosso',
+              'error'
+            );
+          });
+        this.uploadedFiles.splice(this.uploadedFiles.indexOf(item), 1);
+      }
+    });
+  }
+
+  onClear(event: Event) {
+    // X per rimozione di tutti gli elementi
+    this.uploadedFiles.forEach((item) => {
+      this.firebaseStorage.storage
+        .refFromURL(item.uploadURL)
+        .delete()
+        .then(() => {
+          callModalToast(
+            this.messageService,
+            'File Rimosso',
+            'Il file è stato rimosso',
+            'info'
+          );
+          console.log('File deleted successfully');
+        })
+        .catch((error) => {
+          callModalToast(
+            this.messageService,
+            'Errore rimozione',
+            'Il file non è stato rimosso',
+            'error'
+          );
+        });
+    });
+    this.uploadedFiles = [];
+  }
+
+  downloadFile(downloadUrl: string) {
+    this.firebaseStorage
+      .refFromURL(downloadUrl)
+      .getDownloadURL()
+      .subscribe(
+        (url) => {
+          // Fetch the file
+          fetch(url).then((response) => {
+            response.blob().then((blob) => {
+              // Use FileSaver to save the blob
+              const filename = url.split('/').pop().split('?')[0]; // Extract filename from URL
+              saveAs(blob, filename || 'downloaded-file');
+            });
+          });
+        },
+        (error) => {
+          console.error('Error downloading file:', error);
+          // Handle any errors here, such as showing an error message to the user
+        }
+      );
   }
 }

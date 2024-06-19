@@ -2,7 +2,7 @@
   <div class="card flex justify-content-center mb-3">
     <p-breadcrumb
       class="max-w-full"
-      [model]="items"
+      [model]="breadCrumbItems"
       [home]="home"
     ></p-breadcrumb>
   </div>
@@ -84,18 +84,24 @@
             <p-tableHeaderCheckbox></p-tableHeaderCheckbox>
           </th>
           <th pSortableColumn="tipo_intervento">
-            Tipo Intervento<p-sortIcon field="tipo_intervento"></p-sortIcon>
+            {{ "user_data.tipo_intervento" | translate }}
+            <p-sortIcon field="tipo_intervento"></p-sortIcon>
           </th>
           <th pSortableColumn="modello_telefono">
+            {{ "user_data.modello_telefono_table" | translate }}
             Prodotto<p-sortIcon field="modello_telefono"></p-sortIcon>
           </th>
           <th pSortableColumn="data_intervento">
-            Data Inserimento<p-sortIcon field="data_intervento"></p-sortIcon>
+            {{ "user_data.data_intervento" | translate }}
+            <p-sortIcon field="data_intervento"></p-sortIcon>
           </th>
           <th pSortableColumn="costo">
-            Costo <p-sortIcon field="costo"></p-sortIcon>
+            {{ "user_data.costo" | translate }}
+            <p-sortIcon field="costo"></p-sortIcon>
           </th>
-          <th>Azioni</th>
+          <th>
+            {{ "user_data.azioni" | translate }}
+          </th>
         </tr>
       </ng-template>
       <ng-template pTemplate="body" let-specificData>
@@ -104,19 +110,27 @@
             <p-tableCheckbox [value]="specificData"></p-tableCheckbox>
           </td>
           <td>
-            <span class="p-column-title">Tipo Intervento</span
-            >{{ specificData.tipo_intervento }}
+            <span class="p-column-title">
+              {{ "user_data.tipo_intervento" | translate }}
+            </span>
+            {{ specificData.tipo_intervento }}
           </td>
           <td>
-            <span class="p-column-title">Prodotto</span
-            >{{ specificData.modello_telefono }}
+            <span class="p-column-title">
+              {{ "user_data.modello_telefono_table" | translate }}
+            </span>
+            {{ specificData.modello_telefono }}
           </td>
           <td>
-            <span class="p-column-title">Data</span
-            >{{ specificData.data_intervento | date : "dd/MM/yyyy" }}
+            <span class="p-column-title">
+              {{ "user_data.data_intervento" | translate }}
+            </span>
+            {{ specificData.data_intervento | date : "dd/MM/yyyy" }}
           </td>
           <td>
-            <span class="p-column-title">Totale</span>
+            <span class="p-column-title">
+              {{ "user_data.totale" | translate }}
+            </span>
             {{ getTotalOfProduct(specificData) }}
             €
           </td>
@@ -171,8 +185,8 @@
     <p-table [value]="selectedSpecificDataScontrino">
       <ng-template pTemplate="header">
         <tr>
-          <th>Prodotto</th>
-          <th>Costo</th>
+          <th>{{ "user_data.modello_telefono_table" | translate }}</th>
+          <th>{{ "user_data.costo_noeuro" | translate }}</th>
         </tr>
       </ng-template>
       <ng-template pTemplate="body" let-selectedSpecificDataItem>
@@ -205,7 +219,9 @@
       <form [formGroup]="specificDataForm">
         <div class="grid md:grid-cols-2 gap-4 mb-3 items-center">
           <div class="mb-3 col-span-2">
-            <label for="tipo_intervento" class="label"> Tipo Intervento </label>
+            <label for="tipo_intervento" class="label">
+              {{ "user_data.tipo_intervento" | translate }}
+            </label>
             <span class="p-input-icon-right w-full">
               <i class="pi pi-angle-down"></i>
               <fieldset [disabled]="!isInfo">
@@ -238,7 +254,9 @@
       </ng-select> -->
         <div class="grid md:grid-cols-2 gap-2 items-center" *ngIf="showFields">
           <div class="mb-3" *ngIf="showFieldsRiparazione">
-            <label for="problema" class="label"> Problema </label>
+            <label for="problema" class="label">
+              {{ "user_data.problema" | translate }}
+            </label>
             <input
               type="text"
               name="problema"
@@ -249,7 +267,9 @@
             />
           </div>
           <div class="mb-3" *ngIf="showFieldsRiparazione">
-            <label for="tipo_parte" class="label">Tipo parte</label>
+            <label for="tipo_parte" class="label">
+              {{ "user_data.tipo_parte" | translate }}
+            </label>
             <span class="p-input-icon-right w-full">
               <i class="pi pi-angle-down"></i>
               <select
@@ -267,7 +287,9 @@
           </div>
 
           <div class="mb-3" *ngIf="showFieldsVendita">
-            <label for="tipo_intervento" class="label">Garanzia</label>
+            <label for="garanzia" class="label">
+              {{ "user_data.garanzia" | translate }}
+            </label>
             <span class="p-input-icon-right w-full">
               <i class="pi pi-angle-down"></i>
               <select
@@ -288,7 +310,9 @@
           </div>
 
           <div class="mb-3">
-            <label for="marca_telefono" class="label">Marca Telefono</label>
+            <label for="marca_telefono" class="label">
+              {{ "user_data.marca_telefono" | translate }}
+            </label>
             <input
               type="text"
               name="marca_telefono"
@@ -300,8 +324,8 @@
           </div>
 
           <div class="mb-3">
-            <label for="modello_telefono" class="label"
-              >Modello Telefono
+            <label for="modello_telefono" class="label">
+              {{ "user_data.modello_telefono" | translate }}
             </label>
             <input
               type="text"
@@ -314,7 +338,7 @@
           </div>
           <div class="mb-3">
             <label for="imei" class="label">
-              IMEI
+              {{ "user_data.imei" | translate }}
               <i
                 class="pi pi-question-circle"
                 style="font-size: 0.75rem"
@@ -339,7 +363,9 @@
           </div>
 
           <div class="mb-3" *ngIf="showFieldsVendita">
-            <label for="permuta" class="mr-2">Permuta</label>
+            <label for="permuta" class="mr-2">{{
+              "user_data.permuta" | translate
+            }}</label>
             <p-checkbox
               formControlName="checkedPermuta"
               (ngModelChange)="myModelChanged($event)"
@@ -349,8 +375,11 @@
               class="mr-2"
             ></p-checkbox>
           </div>
+
           <div class="mb-3" *ngIf="showFieldsVendita && checkedPermuta">
-            <label for="costoPermuta" class="label">Costo Permuta (€)</label>
+            <label for="costoPermuta" class="label">
+              {{ "user_data.costo_permuta" | translate }}</label
+            >
             <input
               type="number"
               name="costoPermuta"
@@ -360,9 +389,60 @@
               required
             />
           </div>
+          <div
+            class="col-start-1 col-end-3 mb-3"
+            *ngIf="showFieldsVendita && checkedPermuta"
+          >
+            <p-fileUpload
+              (onSelect)="onUpload($event)"
+              (onRemove)="onRemove($event)"
+              (onClear)="onClear($event)"
+              [multiple]="true"
+              accept="image/*"
+              [showUploadButton]="false"
+              maxFileSize="5000000"
+            >
+              <ng-template pTemplate="content">
+                <ul *ngIf="uploadedFiles">
+                  <li *ngFor="let file of uploadedFiles">
+                    <div
+                      class="w-full flex justify-evenly items-center border border-neutral-700 rounded-md p-2"
+                    >
+                      <span>
+                        {{ file.file.filename }} -
+                        {{ file.file.filesize }} bytes
+                      </span>
+                      <p-button
+                        styleClass="p-button-help"
+                        icon="pi pi-download"
+                        pTooltip="Download"
+                        tooltipPosition="bottom"
+                        (click)="downloadFile(file.uploadURL)"
+                        class="ml-2"
+                      ></p-button>
+                    </div>
+                  </li>
+                </ul>
+              </ng-template>
+            </p-fileUpload>
+          </div>
+
+          <div
+            class="col-start-1 col-end-3 mb-3"
+            *ngIf="
+              showFieldsVendita &&
+              checkedPermuta &&
+              isUploading &&
+              !uploadedFilesDone
+            "
+          >
+            <p-progressBar [value]="percentage" />
+          </div>
 
           <div class="mb-3">
-            <label for="costo" class="label">Costo (€)</label>
+            <label for="costo" class="label">
+              {{ "user_data.costo" | translate }}</label
+            >
             <input
               type="number"
               name="costo"
@@ -374,7 +454,9 @@
           </div>
 
           <div class="mb-3" *ngIf="showFieldsVendita">
-            <label for="costo_sconto" class="label">Costo sconto(€)</label>
+            <label for="costo_sconto" class="label">
+              {{ "user_data.costo_sconto" | translate }}</label
+            >
             <input
               type="number"
               name="costo_sconto"
@@ -387,7 +469,7 @@
 
           <div class="mb-3" *ngIf="showFieldsVendita">
             <label for="modalita_pagamento" class="label">
-              Modalità Pagamento
+              {{ "user_data.modalita_pagamento" | translate }}
             </label>
             <span class="p-input-icon-right w-full">
               <i class="pi pi-angle-down"></i>
@@ -409,7 +491,9 @@
           </div>
 
           <div class="mb-3" *ngIf="showFieldsVendita">
-            <label for="tipo_prodotto" class="label">Tipo Prodotto</label>
+            <label for="tipo_prodotto" class="label">{{
+              "user_data.tipo_prodotto" | translate
+            }}</label>
             <span class="p-input-icon-right w-full">
               <i class="pi pi-angle-down"></i>
               <select
@@ -429,8 +513,10 @@
             </span>
           </div>
 
-          <div *ngIf="showFieldsRiparazione">
-            <label for="codice_sblocco" class="label">Codice Sblocco</label>
+          <div class="mb-3" *ngIf="showFieldsRiparazione">
+            <label for="codice_sblocco" class="label">{{
+              "user_data.codice_sblocco" | translate
+            }}</label>
             <input
               type="text"
               name="codice_sblocco"
@@ -439,8 +525,7 @@
               formControlName="codice_sblocco"
             />
           </div>
-
-          <div *ngIf="showFieldsRiparazione">
+          <div class="mb-3" *ngIf="showFieldsRiparazione">
             <label for="nome_fornitore_pezzo" class="label">{{
               "user_data.nome_fornitore_pezzo" | translate
             }}</label>
@@ -452,8 +537,7 @@
               formControlName="nome_fornitore_pezzo"
             />
           </div>
-
-          <div *ngIf="showFieldsRiparazione">
+          <div class="mb-3" *ngIf="showFieldsRiparazione">
             <label for="data_consegna_riparazione" class="label">
               {{ "user_data.data_consegna_riparazione" | translate }}
             </label>
@@ -469,8 +553,7 @@
               dateFormat="dd/mm/yy"
             ></p-calendar>
           </div>
-
-          <div *ngIf="showFieldsRiparazione">
+          <div class="mb-3" *ngIf="showFieldsRiparazione">
             <label for="data_rest_dispositivo_cliente" class="label">
               {{ "user_data.data_rest_dispositivo_cliente" | translate }}
             </label>
@@ -486,7 +569,7 @@
             ></p-calendar>
           </div>
 
-          <div *ngIf="showFieldsRiparazione">
+          <div class="mb-3" *ngIf="showFieldsRiparazione">
             <label for="caparra" class="label">
               {{ "user_data.caparra" | translate }}
             </label>
@@ -499,7 +582,7 @@
             />
           </div>
 
-          <div *ngIf="showFieldsRiparazione">
+          <div class="mb-3" *ngIf="showFieldsRiparazione">
             <label for="costoCambio" class="label">
               {{ "user_data.costoCambio" | translate }}
             </label>
@@ -512,10 +595,33 @@
             />
           </div>
 
+          <div class="mb-3">
+            <label for="negozio" class="label">{{
+              "user_data.negozio" | translate
+            }}</label>
+            <span class="p-input-icon-right w-full">
+              <i class="pi pi-angle-down"></i>
+              <select
+                name="negozio"
+                id="negozio"
+                class="fields"
+                formControlName="negozio"
+              >
+                <option [ngValue]="null" disabled>Seleziona Negozio</option>
+                <option
+                  [value]="elencoNegozio"
+                  *ngFor="let elencoNegozio of negozio"
+                >
+                  {{ elencoNegozio }}
+                </option>
+              </select>
+            </span>
+          </div>
+
           <div class="col-start-1 col-end-2">
-            <label for="prodotti_aggiuntivi" class="mr-2"
-              >Prodotti Aggiuntivi</label
-            >
+            <label for="prodotti_aggiuntivi" class="mr-2">{{
+              "user_data.prodotti_aggiuntivi" | translate
+            }}</label>
             <p-checkbox
               formControlName="checkedProdottiAggiuntivi"
               (ngModelChange)="myModelChanged($event)"
@@ -528,43 +634,70 @@
 
           <div
             *ngIf="checkedProdottiAggiuntivi"
-            class="col-span-2 bg-gray-500 border border-neutral-700 rounded-md mb-2"
+            class="col-span-2 border border-neutral-700 rounded-md mb-2"
           >
             <div *ngFor="let prodotto of prodottiAggiuntivi">
               <div
                 class="grid md:grid-cols-4 place-items-center auto-cols-min ml-2"
               >
                 <div class="m-1">
-                  <label for="quantita" class="labelShort">Quantita</label>
+                  <label for="quantita" class="labelShort">{{
+                    "user_data.quantita" | translate
+                  }}</label>
                   <input
-                    disabled
                     #quantita
                     id="quantita"
                     type="number"
                     class="fieldsShort mb-1"
-                    [value]="prodotto.quantita"
+                    (input)="
+                      changeValueProdottoAggiuntivi(
+                        prodotto.id,
+                        costo.value,
+                        nome.value,
+                        quantita.value
+                      )
+                    "
+                    [(value)]="prodotto.quantita"
                   />
                 </div>
                 <div class="m-1">
-                  <label for="nome" class="labelShort">Nome</label>
+                  <label for="nome" class="labelShort">{{
+                    "user_data.nome" | translate
+                  }}</label>
                   <input
-                    disabled
                     #nome
                     id="nome"
                     type="text"
                     class="fieldsShort mb-1"
-                    [value]="prodotto.nomeProdotto"
+                    (input)="
+                      changeValueProdottoAggiuntivi(
+                        prodotto.id,
+                        costo.value,
+                        nome.value,
+                        quantita.value
+                      )
+                    "
+                    [(value)]="prodotto.nomeProdotto"
                   />
                 </div>
                 <div class="m-1">
-                  <label for="costo" class="labelShort">Costo (€)</label>
+                  <label for="costo" class="labelShort">{{
+                    "user_data.costo" | translate
+                  }}</label>
                   <input
-                    disabled
                     #costo
                     id="costo"
                     type="number"
                     class="fieldsShort mb-1"
-                    [value]="prodotto.costo"
+                    (input)="
+                      changeValueProdottoAggiuntivi(
+                        prodotto.id,
+                        costo.value,
+                        nome.value,
+                        quantita.value
+                      )
+                    "
+                    [(value)]="prodotto.costo"
                   />
                 </div>
                 <p-button
@@ -579,7 +712,9 @@
               class="grid md:grid-cols-4 place-items-center auto-cols-min ml-2"
             >
               <div class="m-1">
-                <label for="quantita" class="labelShort">Quantita</label>
+                <label for="quantita" class="labelShort">{{
+                  "user_data.quantita" | translate
+                }}</label>
                 <input
                   #quantitaProdottoInput
                   id="quantita"
@@ -588,7 +723,9 @@
                 />
               </div>
               <div class="m-1">
-                <label for="nome" class="labelShort">Nome</label>
+                <label for="nome" class="labelShort">{{
+                  "user_data.nome" | translate
+                }}</label>
                 <input
                   #nomeProdottoInput
                   id="nome"
@@ -597,7 +734,9 @@
                 />
               </div>
               <div class="m-1">
-                <label for="costo" class="labelShort">Costo (€)</label>
+                <label for="costo" class="labelShort">{{
+                  "user_data.costo" | translate
+                }}</label>
                 <input
                   #costoProdottoInput
                   id="costo"
@@ -643,7 +782,7 @@
             [disabled]="!specificDataForm.valid"
             (onClick)="addNewIntervento()"
           >
-            Aggiungi
+            {{ "user_data.aggiungi" | translate }}
           </p-button>
           <p-button *ngIf="devmode" (onClick)="findInvalidControls()">
             check values
@@ -654,7 +793,7 @@
             [disabled]="verifyAuthModify()"
             (onClick)="modifyUserIntervento()"
           >
-            Modifica
+            {{ "user_data.modifica" | translate }}
           </p-button>
         </div>
       </form>

@@ -5,9 +5,9 @@ import {
 } from '@angular/common';
 import { HttpClient, HttpClientModule } from '@angular/common/http';
 import localeIt from '@angular/common/locales/it';
-import { LOCALE_ID, NgModule } from '@angular/core';
+import { isDevMode, LOCALE_ID, NgModule } from '@angular/core';
 import { initializeApp, provideFirebaseApp } from '@angular/fire/app';
-import { FIREBASE_OPTIONS } from '@angular/fire/compat';
+import { AngularFireModule, FIREBASE_OPTIONS } from '@angular/fire/compat';
 import { getDatabase, provideDatabase } from '@angular/fire/database';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { BrowserModule } from '@angular/platform-browser';
@@ -25,17 +25,22 @@ import { CardModule } from 'primeng/card';
 import { CheckboxModule } from 'primeng/checkbox';
 import { DialogModule } from 'primeng/dialog';
 import { DropdownModule } from 'primeng/dropdown';
+import { FileUploadModule } from 'primeng/fileupload';
 import { InputNumberModule } from 'primeng/inputnumber';
 import { InputTextModule } from 'primeng/inputtext';
 import { KeyFilterModule } from 'primeng/keyfilter';
 import { MenuModule } from 'primeng/menu';
 import { OverlayPanelModule } from 'primeng/overlaypanel';
+import { ProgressBarModule } from 'primeng/progressbar';
 import { SelectButtonModule } from 'primeng/selectbutton';
 import { TableModule } from 'primeng/table';
 import { ToastModule } from 'primeng/toast';
 import { ToolbarModule } from 'primeng/toolbar';
 import { TooltipModule } from 'primeng/tooltip';
-import { firebaseConfig } from 'src/environments/environment';
+import {
+  prodFirebaseConfig,
+  devFirebaseConfig,
+} from 'src/environments/environment';
 import { AppComponent } from './app.component';
 import { routes } from './app.routes';
 import { FooterComponent } from './components/footer/footer.component';
@@ -45,13 +50,13 @@ import { UserDataComponent } from './components/user-data/user-data.component';
 import { UserListComponent } from './components/user-data/user-list/user-list.component';
 import { PersonalConfirmDialogModule } from './shared/components/confirm-dialog/confirm.dialog.module';
 import { UppercaseFirstLetterPipe } from './shared/pipes/uppercase.pipe';
-
 registerLocaleData(localeIt);
 
 export function HttpLoaderFactory(httpClient: HttpClient) {
   return new TranslateHttpLoader(httpClient);
 }
-
+const firebaseConfig = isDevMode() ? devFirebaseConfig : prodFirebaseConfig;
+const dbname = isDevMode() ? 'dev' : 'prod';
 @NgModule({
   declarations: [
     AppComponent,
@@ -87,6 +92,8 @@ export function HttpLoaderFactory(httpClient: HttpClient) {
     CalendarModule,
     ToolbarModule,
     BreadcrumbModule,
+    FileUploadModule,
+    ProgressBarModule,
     MenuModule,
     OverlayPanelModule,
     TranslateModule.forRoot({
@@ -97,7 +104,7 @@ export function HttpLoaderFactory(httpClient: HttpClient) {
       },
     }),
     HttpClientModule,
-    provideFirebaseApp(() => initializeApp(firebaseConfig)),
+    provideFirebaseApp(() => initializeApp(firebaseConfig, dbname)),
     provideDatabase(() => getDatabase()),
   ],
   providers: [

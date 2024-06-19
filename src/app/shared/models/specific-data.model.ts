@@ -1,3 +1,5 @@
+import { FileUpload } from '../utils/common-utils';
+import { Incasso } from './incasso.model';
 import { prodottiAggiuntivi } from './prodotti-aggiuntivi.model';
 
 export class SpecificDataModel {
@@ -22,9 +24,11 @@ export class SpecificDataModel {
   public costoCambio: number;
   public data_rest_dispositivo_cliente: Date;
   public nome_fornitore_pezzo: string;
-  public incasso: number;
+  public incasso: Incasso;
   public checkedPermuta: boolean;
   public costoPermuta: number;
+  public negozio: string;
+  public files?: FileUpload[];
 
   public constructor(init?: Partial<SpecificDataModel>) {
     Object.assign(this, init);

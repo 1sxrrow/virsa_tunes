@@ -1,9 +1,11 @@
 import { Injectable } from '@angular/core';
-import { Subject, map } from 'rxjs';
+import { map, Subject } from 'rxjs';
 import { Incasso } from 'src/app/shared/models/incasso.model';
+import { InventarioItemModel } from 'src/app/shared/models/inventarioItem.model';
 import {
   calculateIncassoIntervento,
   calculateMese,
+  FileUpload,
 } from 'src/app/shared/utils/common-utils';
 import { prodottiAggiuntivi } from '../../shared/models/prodotti-aggiuntivi.model';
 import { SpecificDataModel } from '../../shared/models/specific-data.model';
@@ -13,6 +15,7 @@ import {
   canaleComunicazione,
   condizioniProdotto,
   garanzia,
+  negozioInventario,
   tipoIntervento,
   tipoPagamento,
   tipoParte,
@@ -35,6 +38,7 @@ export class UserDataService {
   public condizioniProdotto = condizioniProdotto;
   public mesiGaranzia = garanzia;
   public tipoParte = tipoParte;
+  public negozio = negozioInventario;
 
   setStandardUsers() {
     this.usersChanged.next(this.users.slice());
@@ -77,6 +81,7 @@ export class UserDataService {
   addUser(userModel: UserModel) {
     userModel.id = this.getLastId() + 1;
     userModel.utenteInserimento = this.authService.getUserState().displayName;
+    userModel.dataInserimento = new Date().toLocaleDateString();
     let u = new UserModel(userModel);
     this.users.push(u);
     let idReturned = this.firebaseStoreService.AddUser(u);
@@ -125,12 +130,16 @@ export class UserDataService {
     this.usersChanged.next(this.users.slice());
   }
 
-  addNewIntervento(
+  async addNewIntervento(
     specific_data: SpecificDataModel,
     user_input?: UserModel,
-    prodottiAggiuntivi?: prodottiAggiuntivi[]
-  ) {
+    prodottiAggiuntivi?: prodottiAggiuntivi[],
+    uploadedFiles?: FileUpload[]
+  ): Promise<boolean> {
     let id = 0;
+    if (uploadedFiles.length) {
+      specific_data.files = [...uploadedFiles];
+    }
     // verifica se ho modello UserInput in input uso quello altrimenti recupero da users
     let user_work: UserModel = user_input;
     if (user_work.specific_data) {
@@ -140,32 +149,63 @@ export class UserDataService {
       user_work.specific_data = [];
       specific_data.id = 1;
     }
-    specific_data.data_intervento = new Date();
-    // Aggiunta Incasso dato che ho aggiunto un intervento
-    specific_data.incasso = calculateIncassoIntervento(specific_data);
-    // Aggiunta prodotti aggiuntivi se passati in input
-    prodottiAggiuntivi
-      ? (specific_data.prodottiAggiuntivi = prodottiAggiuntivi)
-      : null;
-    this.firebaseStoreService.AddIncasso(
-      specific_data.incasso,
-      calculateMese(new Date(specific_data.data_intervento))
-    );
+    // Verifica imei intervento e rimozione di una quantità se vendita
+    if (specific_data.imei && specific_data.tipo_intervento === 'Vendita') {
+      let data: InventarioItemModel =
+        await this.firebaseStoreService.imeiArticolo(specific_data.imei);
+      if (!data) {
+        return false;
+      }
+      let articolo: InventarioItemModel = Object.values(
+        data
+      )[0] as InventarioItemModel;
+      // Verifica se articolo è disponibile
+      if (articolo.quantita > 0) {
+        articolo.quantita -= 1;
+        this.firebaseStoreService.updateArticoloImei(
+          specific_data.imei,
+          articolo
+        );
+      } else {
+        return false;
+      }
+      // Aggiunta data intervento
+      specific_data.data_intervento = new Date();
+      // Aggiunta prodotti aggiuntivi se passati in input
+      prodottiAggiuntivi
+        ? (specific_data.prodottiAggiuntivi = prodottiAggiuntivi)
+        : null;
+
+      // Aggiunta Incasso dato che ho aggiunto un intervento
+      let incassoIntervento = await calculateIncassoIntervento(
+        specific_data,
+        this.firebaseStoreService
+      );
+      specific_data.incasso = incassoIntervento;
+      // Aggiornamento Incasso
+      this.firebaseStoreService.AddIncasso(
+        specific_data.incasso,
+        calculateMese(new Date(specific_data.data_intervento)),
+        specific_data.negozio
+      );
+    }
+
     let t: SpecificDataModel[] = Object.values(user_work.specific_data);
     t.push(specific_data);
     user_work.specific_data = t;
     user_work.ultimoUtenteModifica =
       this.authService.getUserState().displayName;
     user_work.utenteInserimento = this.authService.getUserState().displayName;
-
     this.firebaseStoreService.UpdateUser(user_work);
+    return true;
   }
 
   modifyIntervento(
     id_intervento: number,
     specific_data_input: SpecificDataModel,
     prodotti_aggiuntivi_input: prodottiAggiuntivi[],
-    user_input?: UserModel
+    user_input?: UserModel,
+    uploadedFiles?: FileUpload[]
   ) {
     specific_data_input.id = id_intervento;
     specific_data_input.prodottiAggiuntivi = prodotti_aggiuntivi_input;
@@ -196,6 +236,10 @@ export class UserDataService {
           }
         }
         specific_data_input.data_intervento = specific_data.data_intervento;
+        if (specific_data_input.files === undefined) {
+          specific_data_input.files = [];
+        }
+        specific_data_input.files = uploadedFiles;
         spec_retrieved[i] = new SpecificDataModel(specific_data_input);
       }
     });
@@ -213,7 +257,7 @@ export class UserDataService {
 
     // Update Incasso dato che ho cancellato un intervento
 
-    let incassoIntervento: number =
+    let incassoIntervento: Incasso =
       spec_retrieved[spec_retrieved.indexOf(i[0])].incasso;
 
     this.firebaseStoreService
@@ -228,7 +272,9 @@ export class UserDataService {
         if (snapshot.exists()) {
           let incassoObject = snapshot.val();
           let incasso: Incasso = Object.values(incassoObject)[0] as Incasso;
-          incasso.incassoTotale = incasso.incassoTotale - incassoIntervento;
+          incasso.incassoTotale -= incassoIntervento.incassoTotale;
+          incasso.speseTotale -= incassoIntervento.speseTotale;
+          incasso.nettoTotale = incasso.incassoTotale - incasso.speseTotale;
           this.firebaseStoreService.UpdateIncasso(incasso);
         }
       });

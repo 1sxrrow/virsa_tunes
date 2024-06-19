@@ -7,7 +7,26 @@ import { Incasso } from '../models/incasso.model';
 import { prodottiAggiuntivi } from '../models/prodotti-aggiuntivi.model';
 import { SpecificDataModel } from '../models/specific-data.model';
 import { UserModel } from '../models/user-data.model';
+import { FirebaseStoreService } from '../services/firebase/firebase-store.service';
+import { InventarioItemModel } from '../models/inventarioItem.model';
 
+export type FileUpload = {
+  file: { filename: string; filetype: string; filesize: number; addDate: Date };
+  filePath: string;
+  uploadURL: string;
+};
+
+export type Negozio = {
+  negozio: string;
+  incasso: number;
+  spese: number;
+  netto: number;
+};
+
+export interface UploadEvent {
+  originalEvent: Event;
+  files: File[];
+}
 export function arrayBufferToBufferCycle(ab): Buffer {
   var buffer = new Buffer(ab.byteLength);
   var view = new Uint8Array(ab);
@@ -26,29 +45,67 @@ export function keylistener(mode: boolean) {
   }
 }
 
-export function calculateIncassoIntervento(
-  specificData: SpecificDataModel
-): number {
-  let incassoValue =
-    specificData.costo -
-    (specificData.costo_sconto ? Number(specificData.costo_sconto) : 0);
+export async function calculateIncassoIntervento(
+  specificData: SpecificDataModel,
+  firebaseStoreService: FirebaseStoreService
+): Promise<Incasso> {
+  let incassoInterventoValue: number = specificData.costo;
+  let speseValue: number = specificData.costoCambio
+    ? Number(specificData.costoCambio)
+    : 0;
+  if (specificData.imei && specificData.tipo_intervento === 'Vendita') {
+    let data = await firebaseStoreService.imeiArticolo(specificData.imei);
+    if (data) {
+      let articolo: InventarioItemModel = Object.values(
+        data
+      )[0] as InventarioItemModel;
+      speseValue += Number(articolo.prezzo_acquisto);
+    }
+  }
+
+  if (specificData.prodottiAggiuntivi.length > 0) {
+    specificData.prodottiAggiuntivi.forEach((x: prodottiAggiuntivi) => {
+      incassoInterventoValue += Number(x.quantita) * Number(x.costo);
+    });
+  }
 
   let incasso: Incasso = {
-    incassoTotale: incassoValue,
+    incassoTotale: incassoInterventoValue,
     mese: specificData.data_intervento.getMonth().toString(),
-    spese: 0,
-    netto: 0,
+    speseTotale: speseValue,
+    nettoTotale: (specificData.costo - speseValue) as number,
+    negozi: [
+      {
+        negozio: specificData.negozio,
+        incasso: incassoInterventoValue,
+        spese: speseValue,
+        netto: (specificData.costo - speseValue) as number,
+      },
+    ],
   };
-
-  return incassoValue;
+  return incasso;
 }
 
 export function createIncasso(
-  incasso: number,
+  incassoTotale: number,
   mese: string,
-  spese?: number
-): Incasso {
-  return { incassoTotale: incasso, mese: mese, spese: 0, netto: 0 };
+  spese?: number,
+  negozio?: string
+) {
+  return {
+    incassoTotale: incassoTotale,
+    mese: mese,
+    speseTotale: spese,
+    nettoTotale: incassoTotale - spese,
+    negozi: [
+      {
+        negozio: negozio,
+        spese: spese,
+        incasso: incassoTotale,
+        netto: incassoTotale - spese,
+      },
+    ],
+  };
 }
 
 export function createExcel(specificData: SpecificDataModel) {
@@ -1120,14 +1177,14 @@ export function getTotalOfProduct(specificData: SpecificDataModel) {
   if (specificData.prodottiAggiuntivi) {
     Object.values(specificData.prodottiAggiuntivi).forEach(
       (prodottoAggiuntivo: prodottiAggiuntivi) => {
-        totalCost += (prodottoAggiuntivo.quantita * (+prodottoAggiuntivo.costo));
+        totalCost += prodottoAggiuntivo.quantita * +prodottoAggiuntivo.costo;
       }
     );
   }
   if (specificData.costo_sconto) {
     totalCost -= +specificData.costo_sconto;
   }
-if (specificData.costoPermuta) {
+  if (specificData.costoPermuta) {
     totalCost -= +specificData.costoPermuta;
   }
   return totalCost;
