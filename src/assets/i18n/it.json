@@ -52,6 +52,7 @@
     "denominazione": "Denominazione",
     "indirizzo_fatturazione": "Indirizzo Fatturazione",
     "dati_fattura": "Dati Fattura",
+    "costoCambio": "Costo Cambio(€)",
     "aggiungi": "Aggiungi",
     "modifica": "Modifica"
   },
