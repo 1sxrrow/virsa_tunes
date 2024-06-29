@@ -169,26 +169,25 @@ export class UserDataService {
       } else {
         return false;
       }
-      // Aggiunta data intervento
-      specific_data.data_intervento = new Date();
-      // Aggiunta prodotti aggiuntivi se passati in input
-      prodottiAggiuntivi
-        ? (specific_data.prodottiAggiuntivi = prodottiAggiuntivi)
-        : null;
-
-      // Aggiunta Incasso dato che ho aggiunto un intervento
-      let incassoIntervento = await calculateIncassoIntervento(
-        specific_data,
-        this.firebaseStoreService
-      );
-      specific_data.incasso = incassoIntervento;
-      // Aggiornamento Incasso
-      this.firebaseStoreService.AddIncasso(
-        specific_data.incasso,
-        calculateMese(new Date(specific_data.data_intervento)),
-        specific_data.negozio
-      );
     }
+    // Aggiunta data intervento
+    specific_data.data_intervento = new Date().toString();
+    // Aggiunta prodotti aggiuntivi se passati in input
+    prodottiAggiuntivi
+      ? (specific_data.prodottiAggiuntivi = prodottiAggiuntivi)
+      : null;
+    // Aggiunta Incasso dato che ho aggiunto un intervento
+    let incassoIntervento = await calculateIncassoIntervento(
+      specific_data,
+      this.firebaseStoreService
+    );
+    specific_data.incasso = incassoIntervento;
+    // Aggiornamento Incasso
+    this.firebaseStoreService.AddIncasso(
+      specific_data.incasso,
+      calculateMese(new Date(specific_data.data_intervento)),
+      specific_data.negozio
+    );
 
     let t: SpecificDataModel[] = Object.values(user_work.specific_data);
     t.push(specific_data);

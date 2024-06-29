@@ -22,7 +22,24 @@ export type Negozio = {
   spese: number;
   netto: number;
 };
+export function getMonthNumber(monthStr: string): number {
+  const monthMap: { [key: string]: number } = {
+    gennaio: 1,
+    febbraio: 2,
+    marzo: 3,
+    aprile: 4,
+    maggio: 5,
+    giugno: 6,
+    luglio: 7,
+    agosto: 8,
+    settembre: 9,
+    ottobre: 10,
+    novembre: 11,
+    dicembre: 12,
+  };
 
+  return monthMap[monthStr] || 0; // Returns 0 if the monthStr is not found
+}
 export interface UploadEvent {
   originalEvent: Event;
   files: File[];
@@ -69,9 +86,10 @@ export async function calculateIncassoIntervento(
     });
   }
 
+  let dataInervento = new Date(specificData.data_intervento);
   let incasso: Incasso = {
     incassoTotale: incassoInterventoValue,
-    mese: specificData.data_intervento.getMonth().toString(),
+    mese: dataInervento.getMonth().toString(),
     speseTotale: speseValue,
     nettoTotale: (specificData.costo - speseValue) as number,
     negozi: [

@@ -18,6 +18,7 @@ import { canaleComunicazione } from 'src/app/shared/utils/common-enums';
 import {
   callModalToast,
   getBreadcrumbHome,
+  getMonthNumber,
   UploadEvent,
 } from 'src/app/shared/utils/common-utils';
 import { AuthService } from '../../login/auth.service';
@@ -103,6 +104,18 @@ export class UserListComponent implements OnInit {
 
           this.incassi.map((incasso) => {
             this.mesiSpesaFissa.push(incasso.mese);
+          });
+          // Ordinamento incassi da più recente a meno recente per mese
+          this.incassi.sort((a, b) => {
+            let stringA = `01/${getMonthNumber(a.mese.split('-')[0])}/${
+              a.mese.split('-')[1]
+            }`;
+            let stringB = `01/${getMonthNumber(b.mese.split('-')[0])}/${
+              b.mese.split('-')[1]
+            }`;
+            let dataA = new Date(stringA);
+            let dataB = new Date(stringB);
+            return dataB.getTime() - dataA.getTime();
           });
         });
     }
@@ -467,15 +480,17 @@ export class UserListComponent implements OnInit {
   retrieveValueNegozioForTableView() {
     this.filteredIncassi = [];
     this.incassi.forEach((incasso) => {
-      return incasso.negozi.forEach((negozio) => {
-        if (negozio.negozio === this.selectedNegozio) {
-          this.filteredIncassi.push({
-            mese: incasso.mese,
-            negozio: negozio,
-            spesaFissa: incasso.spesaFissa,
-          });
-        }
-      });
+      if (incasso.negozi) {
+        return incasso.negozi.forEach((negozio) => {
+          if (negozio.negozio === this.selectedNegozio) {
+            this.filteredIncassi.push({
+              mese: incasso.mese,
+              negozio: negozio,
+              spesaFissa: incasso.spesaFissa,
+            });
+          }
+        });
+      }
     });
     console.log(this.filteredIncassi);
   }

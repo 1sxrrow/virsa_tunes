@@ -117,14 +117,18 @@ export class FirebaseStoreService {
           let incassoObject = snapshot.val();
           let incasso: Incasso = Object.values(incassoObject)[0] as Incasso;
           incasso_intervento.negozi.forEach((negozioIntervento) => {
-            let foundNegozio = incasso.negozi.find(
-              (n) => n.negozio === negozioIntervento.negozio
-            );
+            let foundNegozio = undefined;
+            if (incasso.negozi) {
+              foundNegozio = incasso.negozi.find(
+                (n) => n.negozio === negozioIntervento.negozio
+              );
+            }
             if (foundNegozio) {
               foundNegozio.incasso += +negozioIntervento.incasso;
               foundNegozio.spese += +negozioIntervento.spese;
               foundNegozio.netto = foundNegozio.incasso - foundNegozio.spese;
             } else {
+              incasso.negozi = [];
               incasso.negozi.push(negozioIntervento);
             }
           });

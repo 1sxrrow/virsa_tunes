@@ -9,7 +9,7 @@ export class SpecificDataModel {
   public modello_telefono: string;
   public modalita_pagamento: string;
   public tipo_prodotto: string;
-  public data_intervento: Date;
+  public data_intervento: Date | string;
   public costo: number;
   public imei: string;
   public costo_sconto: number;
