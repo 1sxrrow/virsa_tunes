@@ -396,9 +396,9 @@
             <p-fileUpload
               (onSelect)="onUpload($event)"
               (onRemove)="onRemove($event)"
-              (onClear)="onClear($event)"
               [multiple]="true"
               accept="image/*"
+              [showCancelButton]="false"
               [showUploadButton]="false"
               maxFileSize="5000000"
             >

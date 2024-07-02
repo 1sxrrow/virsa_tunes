@@ -337,7 +337,9 @@ export class UserDataComponent implements OnInit, OnDestroy, AfterViewInit {
       this.showFieldsRiparazione = false;
 
       if (this.checkedPermuta) {
-        this.uploadedFiles = Object.values(this.selectedSpecificData.files);
+        if (this.selectedSpecificData.files) {
+          this.uploadedFiles = Object.values(this.selectedSpecificData.files);
+        }
       }
       this.specificDataForm = new FormGroup({
         costo: new FormControl(
