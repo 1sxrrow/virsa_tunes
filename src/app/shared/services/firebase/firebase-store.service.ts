@@ -22,7 +22,6 @@ import { createIncasso } from '../../utils/common-utils';
 
 @Injectable({ providedIn: 'root' })
 export class FirebaseStoreService {
-
   UsersRef: AngularFireList<any>;
   IncassiRef: AngularFireList<any>;
   StatsUsersRef: AngularFireList<any>;
@@ -129,8 +128,12 @@ export class FirebaseStoreService {
               foundNegozio.spese += +negozioIntervento.spese;
               foundNegozio.netto = foundNegozio.incasso - foundNegozio.spese;
             } else {
-              incasso.negozi = [];
-              incasso.negozi.push(negozioIntervento);
+              if (incasso.negozi.length > 0) {
+                incasso.negozi.push(negozioIntervento);
+              } else {
+                incasso.negozi = [];
+                incasso.negozi.push(negozioIntervento);
+              }
             }
           });
 
