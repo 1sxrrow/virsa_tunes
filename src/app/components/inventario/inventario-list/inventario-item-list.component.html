@@ -22,6 +22,7 @@
       (onRowSelect)="onRowSelect($event)"
       [globalFilterFields]="[
         'nome',
+        'colore',
         'prezzo_acquisto',
         'quantita',
         'imei',
@@ -98,6 +99,9 @@
           <th pSortableColumn="nome" style="width: 20%">
             Nome<p-sortIcon field="nome"></p-sortIcon>
           </th>
+          <th pSortableColumn="colore" style="width: 20%">
+            Colore<p-sortIcon field="colore"></p-sortIcon>
+          </th>
           <th pSortableColumn="quantita" style="width: 20%">
             Quantità<p-sortIcon field="quantita"></p-sortIcon>
           </th>
@@ -121,6 +125,7 @@
         <tr [pSelectableRowDblClick]="item">
           <td><span class="p-column-title">IMEI</span>{{ item.imei }}</td>
           <td><span class="p-column-title">Nome</span>{{ item.nome }}</td>
+          <td><span class="p-column-title">Colore</span>{{ item.colore }}</td>
           <td>
             <span class="p-column-title">Quantità</span>
             {{ item.quantita }}
