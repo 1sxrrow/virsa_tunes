@@ -255,18 +255,17 @@ export class UserDataService {
     });
 
     // Update Incasso dato che ho cancellato un intervento
-
-    let incassoIntervento: Incasso =
-      spec_retrieved[spec_retrieved.indexOf(i[0])].incasso;
-
+    debugger;
+    let single = spec_retrieved[spec_retrieved.indexOf(i[0])];
+    let negozioIncasso = single.negozio;
+    let incassoIntervento: Incasso = single.incasso;
+    let calculatedMese = calculateMese(
+      new Date(spec_retrieved[spec_retrieved.indexOf(i[0])].data_intervento)
+    );
     this.firebaseStoreService
       .GetIncassi()
       .query.orderByChild('mese')
-      .equalTo(
-        calculateMese(
-          new Date(spec_retrieved[spec_retrieved.indexOf(i[0])].data_intervento)
-        )
-      )
+      .equalTo(calculatedMese)
       .once('value', (snapshot) => {
         if (snapshot.exists()) {
           let incassoObject = snapshot.val();
@@ -274,6 +273,14 @@ export class UserDataService {
           incasso.incassoTotale -= incassoIntervento.incassoTotale;
           incasso.speseTotale -= incassoIntervento.speseTotale;
           incasso.nettoTotale = incasso.incassoTotale - incasso.speseTotale;
+          incasso.negozi.forEach((negozio) => {
+            debugger;
+            if (negozio.negozio === negozioIncasso) {
+              negozio.incasso -= incassoIntervento.incassoTotale;
+              negozio.spese -= incassoIntervento.speseTotale;
+              negozio.netto = negozio.incasso - negozio.spese;
+            }
+          });
           this.firebaseStoreService.UpdateIncasso(incasso);
         }
       });
