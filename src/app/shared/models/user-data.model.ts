@@ -6,7 +6,7 @@ export class UserModel {
   public nome: string;
   public cognome: string;
   public indirizzo: string;
-  public numero_telefono: number;
+  public numero_telefono: string;
   public citta: string;
   public cap: number;
   public canale_com: string;
