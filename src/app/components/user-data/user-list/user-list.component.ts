@@ -303,8 +303,6 @@ export class UserListComponent implements OnInit {
       nome: new FormControl(user.nome, Validators.required),
       cognome: new FormControl(user.cognome, Validators.required),
       numero_telefono: new FormControl(user.numero_telefono, [
-        Validators.minLength(10),
-        Validators.maxLength(10),
         Validators.required,
       ]),
       indirizzo: new FormControl(user.indirizzo, Validators.required),
@@ -339,10 +337,7 @@ export class UserListComponent implements OnInit {
     this.userInfoForm = new FormGroup({
       nome: new FormControl('', Validators.required),
       cognome: new FormControl('', Validators.required),
-      numero_telefono: new FormControl('', [
-        Validators.minLength(10),
-        Validators.maxLength(10),
-      ]),
+      numero_telefono: new FormControl(''),
       indirizzo: new FormControl(''),
       citta: new FormControl(''),
       cap: new FormControl('', [
