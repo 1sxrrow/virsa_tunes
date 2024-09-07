@@ -77,6 +77,9 @@ export async function calculateIncassoIntervento(
         data
       )[0] as InventarioItemModel;
       speseValue += Number(articolo.prezzo_acquisto);
+      if(specificData.costoCambio && specificData.costoCambio !== 0) {
+        speseValue += Number(specificData.costoCambio);
+      }
     }
   }
 
@@ -1202,9 +1205,9 @@ export function getTotalOfProduct(specificData: SpecificDataModel) {
   if (specificData.costo_sconto) {
     totalCost -= +specificData.costo_sconto;
   }
-  if (specificData.costoPermuta) {
-    totalCost -= +specificData.costoPermuta;
-  }
+  // if (specificData.costoPermuta) {
+  //   totalCost -= +specificData.costoPermuta;
+  // }
   return totalCost;
 }
 

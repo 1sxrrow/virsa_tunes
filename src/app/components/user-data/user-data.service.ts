@@ -179,7 +179,7 @@ export class UserDataService {
     // Aggiunta Incasso dato che ho aggiunto un intervento
     let incassoIntervento = await calculateIncassoIntervento(
       specific_data,
-      this.firebaseStoreService
+      this.firebaseStoreService,
     );
     specific_data.incasso = incassoIntervento;
     // Aggiornamento Incasso
@@ -255,7 +255,6 @@ export class UserDataService {
     });
 
     // Update Incasso dato che ho cancellato un intervento
-    debugger;
     let single = spec_retrieved[spec_retrieved.indexOf(i[0])];
     let negozioIncasso = single.negozio;
     let incassoIntervento: Incasso = single.incasso;
@@ -274,7 +273,6 @@ export class UserDataService {
           incasso.speseTotale -= incassoIntervento.speseTotale;
           incasso.nettoTotale = incasso.incassoTotale - incasso.speseTotale;
           incasso.negozi.forEach((negozio) => {
-            debugger;
             if (negozio.negozio === negozioIncasso) {
               negozio.incasso -= incassoIntervento.incassoTotale;
               negozio.spese -= incassoIntervento.speseTotale;

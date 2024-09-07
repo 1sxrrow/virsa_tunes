@@ -4,33 +4,34 @@ import {
   Component,
   ElementRef,
   Inject,
+  isDevMode,
   LOCALE_ID,
   OnDestroy,
   OnInit,
   ViewChild,
-  inject,
-  isDevMode,
 } from '@angular/core';
+import { AngularFireStorage } from '@angular/fire/compat/storage';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
+import EscPosEncoder from '@manhnd/esc-pos-encoder';
+import { TranslateService } from '@ngx-translate/core';
+import { saveAs } from 'file-saver';
 import {
-  ConfirmEventType,
   ConfirmationService,
+  ConfirmEventType,
   MenuItem,
   MessageService,
 } from 'primeng/api';
 import { Dropdown } from 'primeng/dropdown';
+import { FileRemoveEvent } from 'primeng/fileupload';
 import { finalize, Subscription } from 'rxjs';
-import { SpecificDataModel } from '../../shared/models/specific-data.model';
-import { UserModel } from '../../shared/models/user-data.model';
-import { FirebaseStoreService } from '../../shared/services/firebase/firebase-store.service';
-import { UserDataService } from './user-data.service';
-import EscPosEncoder from '@manhnd/esc-pos-encoder';
-import { TranslateService } from '@ngx-translate/core';
 import { UppercaseFirstLetterPipe } from 'src/app/shared/pipes/uppercase.pipe';
 import { PrintService } from 'src/app/shared/services/print/recipe-print.service';
 import { fadeInOutAnimation } from 'src/app/shared/utils/animations';
 import { prodottiAggiuntivi } from '../../shared/models/prodotti-aggiuntivi.model';
+import { SpecificDataModel } from '../../shared/models/specific-data.model';
+import { UserModel } from '../../shared/models/user-data.model';
+import { FirebaseStoreService } from '../../shared/services/firebase/firebase-store.service';
 import {
   callModalToast,
   createExcel,
@@ -42,9 +43,7 @@ import {
   keylistener,
   UploadEvent,
 } from '../../shared/utils/common-utils';
-import { AngularFireStorage } from '@angular/fire/compat/storage';
-import { FileRemoveEvent } from 'primeng/fileupload';
-import { saveAs } from 'file-saver';
+import { UserDataService } from './user-data.service';
 
 @Component({
   selector: 'app-user-data',
@@ -200,6 +199,7 @@ export class UserDataComponent implements OnInit, OnDestroy, AfterViewInit {
     this.valEnums();
     this.initForm();
     this.loading = true;
+    let firstTime = false;
     // recupero dati utente da database Firebase.
     this.activatedRoute.params.subscribe((params) => {
       this.id = +params['id'];
@@ -212,7 +212,9 @@ export class UserDataComponent implements OnInit, OnDestroy, AfterViewInit {
         let mapped: SpecificDataModel[];
         mapped = specific_data ? Object.values(specific_data) : [];
         this._specificData = mapped;
-        this.setBreadCrumb();
+        if (!firstTime) {
+          this.setBreadCrumb();
+        }
         this.loading = false;
       });
     });
@@ -313,6 +315,7 @@ export class UserDataComponent implements OnInit, OnDestroy, AfterViewInit {
   newIntervento() {
     this.isInfo = true;
     this.checkedProdottiAggiuntivi = false;
+    this.checkedPermuta = false;
     this.initForm();
     this.showModalFunction('Aggiungi Intervento', false);
   }
