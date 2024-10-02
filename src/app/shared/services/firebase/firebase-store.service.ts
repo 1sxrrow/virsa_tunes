@@ -126,7 +126,7 @@ export class FirebaseStoreService {
             if (foundNegozio) {
               foundNegozio.incasso += +negozioIntervento.incasso;
               foundNegozio.spese += +negozioIntervento.spese;
-              foundNegozio.netto = foundNegozio.incasso - foundNegozio.spese;
+              foundNegozio.netto = (foundNegozio.incasso - foundNegozio.spese) as Number;
             } else {
               if (incasso.negozi.length > 0) {
                 incasso.negozi.push(negozioIntervento);

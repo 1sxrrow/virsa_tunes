@@ -179,7 +179,7 @@ export class UserDataService {
     // Aggiunta Incasso dato che ho aggiunto un intervento
     let incassoIntervento = await calculateIncassoIntervento(
       specific_data,
-      this.firebaseStoreService,
+      this.firebaseStoreService
     );
     specific_data.incasso = incassoIntervento;
     // Aggiornamento Incasso

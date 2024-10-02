@@ -66,23 +66,32 @@ export async function calculateIncassoIntervento(
   specificData: SpecificDataModel,
   firebaseStoreService: FirebaseStoreService
 ): Promise<Incasso> {
-  let incassoInterventoValue: number = specificData.costo;
-  let speseValue: number = specificData.costoCambio
-    ? Number(specificData.costoCambio)
-    : 0;
+  let incassoInterventoValue: number = 0;
+  if (specificData.costo_sconto) {
+    incassoInterventoValue = specificData.costo - specificData.costo_sconto;
+  } else {
+    incassoInterventoValue = specificData.costo;
+  }
+  let speseValue: number = 0;
+  // Verifico presenza dato costoCambio e se presente aggiungo alla spesa
+  if (specificData.costoCambio) {
+    speseValue += Number(specificData.costoCambio);
+  }
+  // Se intervento vendita recupero da imei articolo e aggiungo alla spesa
   if (specificData.imei && specificData.tipo_intervento === 'Vendita') {
     let data = await firebaseStoreService.imeiArticolo(specificData.imei);
     if (data) {
       let articolo: InventarioItemModel = Object.values(
         data
       )[0] as InventarioItemModel;
-      speseValue += Number(articolo.prezzo_acquisto);
-      if(specificData.costoCambio && specificData.costoCambio !== 0) {
-        speseValue += Number(specificData.costoCambio);
+      if (speseValue === 0) {
+        speseValue = Number(articolo.prezzo_acquisto);
+      } else {
+        speseValue += Number(articolo.prezzo_acquisto);
       }
     }
   }
-
+  // Verifica presenza prodotti aggiuntivi
   if (specificData.prodottiAggiuntivi.length > 0) {
     specificData.prodottiAggiuntivi.forEach((x: prodottiAggiuntivi) => {
       incassoInterventoValue += Number(x.quantita) * Number(x.costo);
@@ -94,13 +103,13 @@ export async function calculateIncassoIntervento(
     incassoTotale: incassoInterventoValue,
     mese: dataInervento.getMonth().toString(),
     speseTotale: speseValue,
-    nettoTotale: (specificData.costo - speseValue) as number,
+    nettoTotale: (incassoInterventoValue - speseValue) as number,
     negozi: [
       {
         negozio: specificData.negozio,
         incasso: incassoInterventoValue,
         spese: speseValue,
-        netto: (specificData.costo - speseValue) as number,
+        netto: (incassoInterventoValue - speseValue) as number,
       },
     ],
   };
