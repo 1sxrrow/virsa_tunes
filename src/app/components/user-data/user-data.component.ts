@@ -44,6 +44,7 @@ import {
   UploadEvent,
 } from '../../shared/utils/common-utils';
 import { UserDataService } from './user-data.service';
+import { Toast } from 'primeng/toast';
 
 @Component({
   selector: 'app-user-data',
@@ -116,6 +117,7 @@ export class UserDataComponent implements OnInit, OnDestroy, AfterViewInit {
   isUploading = false;
 
   prodottiAggiuntivi: prodottiAggiuntivi[] = [];
+  private breadCrumbSet = false; // Add this flag
 
   constructor(
     private userDataService: UserDataService,
@@ -212,8 +214,10 @@ export class UserDataComponent implements OnInit, OnDestroy, AfterViewInit {
         let mapped: SpecificDataModel[];
         mapped = specific_data ? Object.values(specific_data) : [];
         this._specificData = mapped;
-        if (!firstTime) {
+        if (!this.breadCrumbSet) {
+          // Check the flag
           this.setBreadCrumb();
+          this.breadCrumbSet = true; // Set the flag
         }
         this.loading = false;
       });
@@ -231,6 +235,7 @@ export class UserDataComponent implements OnInit, OnDestroy, AfterViewInit {
 
   ngOnDestroy(): void {
     this.storedSubSpecificData.unsubscribe();
+    this.messageService.clear();
   }
 
   ngAfterViewInit(): void {
@@ -455,6 +460,7 @@ export class UserDataComponent implements OnInit, OnDestroy, AfterViewInit {
           this.selectedSpecificData.negozio,
           Validators.required
         ),
+        note: new FormControl(this.selectedSpecificData.note),
       });
     }
     // Verifica se ci sono prodotti aggiuntivi e se esiste l'id altrimenti glielo assegno
@@ -612,6 +618,7 @@ export class UserDataComponent implements OnInit, OnDestroy, AfterViewInit {
         data_rest_dispositivo_cliente: new FormControl(''),
         costoCambio: new FormControl(''),
         negozio: new FormControl(''),
+        note: new FormControl(''),
       });
     }
   }
@@ -775,7 +782,6 @@ export class UserDataComponent implements OnInit, OnDestroy, AfterViewInit {
             marca_telefono: item[0]['marca'],
             tipo_prodotto: item[0]['grado'] === 'Nuovo' ? 'Nuovo' : 'Usato',
           });
-          console.log(this.specificDataForm.value);
           callModalToast(this.messageService, 'Completato', 'Dati valorizzati');
         } else {
           callModalToast(

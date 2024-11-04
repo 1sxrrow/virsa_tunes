@@ -37,7 +37,6 @@
               pTooltip="Aggiungi Utente"
               tooltipPosition="top"
               (click)="addUser()"
-              class="mr-2"
               styleClass="p-button-success"
             ></p-button>
           </div>
@@ -59,7 +58,7 @@
               icon="pi pi-wrench"
               pTooltip="Admin Tools"
               tooltipPosition="top"
-              (click)="showAdminDialogModal()"
+              (click)="showAdminToolsModal()"
               styleClass="p-button-info"
             ></p-button>
           </div>
@@ -145,10 +144,10 @@
       </ng-template>
     </p-table>
   </p-card>
+
   <p-dialog
     [header]="modalTitle"
     [(visible)]="showModal"
-    aria-hidden="true"
     [style]="{ width: '50vw' }"
     [modal]="true"
   >
@@ -403,312 +402,12 @@
     </div>
   </p-dialog>
 
-  <!-- Modale Incassi -->
-  <p-dialog
-    [(visible)]="showModalIncassi"
-    aria-hidden="true"
-    [style]="{ width: '60%' }"
-    [modal]="true"
-  >
-    <ng-template pTemplate="header">
-      <div
-        class="flex align-items-center justify-between gap-2 w-full col-span-3"
-      >
-        <span class="font-bold text-2xl">
-          {{ "user_data.incassi" | translate }}
-        </span>
-        <span *ngIf="selectedNegozio">
-          Negozio Selezionato:{{
-            selectedNegozio ? selectedNegozio : "Nessun negozio"
-          }}
-        </span>
-        <p-button
-          type="button"
-          label="Spesa fissa"
-          icon="p-icon pi pi-plus"
-          (click)="modaleSpesaFissa()"
-          class="p-2"
-          styleClass="p-button-info"
-        ></p-button>
-      </div>
-    </ng-template>
-    <div class="mb-3">
-      <label for="filterNegozio" class="label">
-        {{ "user_data.negozio" | translate }}
-      </label>
-      <span class="p-input-icon-right w-full">
-        <i class="pi pi-angle-down" *ngIf="!selectedNegozio"></i>
-        <i
-          class="pi pi-times"
-          *ngIf="selectedNegozio"
-          (click)="clearSelectedNegozio()"
-        ></i>
-        <select
-          name="filterNegozio"
-          id="filterNegozio"
-          class="fields"
-          (change)="retrieveValueNegozioForTableView()"
-          [(ngModel)]="selectedNegozio"
-        >
-          <option [ngValue]="null" disabled>Seleziona negozio</option>
-          <option
-            [value]="filterNegozioItem"
-            *ngFor="let filterNegozioItem of filterNegozio"
-          >
-            {{ filterNegozioItem }}
-          </option>
-        </select>
-      </span>
-    </div>
-    <!-- Table per incassi non filtrati -->
-    <p-table [value]="incassi" *ngIf="!selectedNegozio">
-      <ng-template pTemplate="header">
-        <tr>
-          <th>{{ "user_data.mese" | translate }}</th>
-          <th>{{ "user_data.lordo" | translate }}</th>
-          <th>{{ "user_data.spese" | translate }}</th>
-          <th>{{ "user_data.netto" | translate }}</th>
-        </tr>
-      </ng-template>
-      <ng-template pTemplate="body" let-incasso>
-        <tr>
-          <td>
-            <span>
-              {{ incasso.mese }}
-              <i
-                *ngIf="incasso.spesaFissa?.length > 0"
-                class="pi pi-question-circle cursor-pointer"
-                style="font-size: 0.75rem"
-                pTooltip="Spese fisse"
-                (click)="modaleListaSpeseFisse(incasso.mese)"
-              ></i>
-            </span>
-          </td>
-          <td>{{ incasso.incassoTotale }}€</td>
-          <td>{{ incasso.speseTotale }}€</td>
-          <td>{{ incasso.nettoTotale }}€</td>
-        </tr>
-      </ng-template>
-    </p-table>
-    <!-- Table per incassi filtrati -->
-    <p-table [value]="filteredIncassi" *ngIf="selectedNegozio">
-      <ng-template pTemplate="header">
-        <tr>
-          <th>Mese</th>
-          <th>Lordo Negozio</th>
-          <th>Spese Negozio</th>
-          <th>Netto Negozio</th>
-        </tr>
-      </ng-template>
-      <ng-template pTemplate="body" let-filteredIncassi>
-        <tr>
-          <td>
-            <span>
-              {{ filteredIncassi.mese }}
-              <i
-                *ngIf="filteredIncassi.spesaFissa?.length > 0"
-                class="pi pi-question-circle cursor-pointer"
-                style="font-size: 0.75rem"
-                pTooltip="Spese fisse"
-                (click)="modaleListaSpeseFisse(filteredIncassi.mese)"
-              ></i>
-            </span>
-          </td>
-          <td>{{ filteredIncassi.negozio.incasso }}€</td>
-          <td>{{ filteredIncassi.negozio.spese }}€</td>
-          <td>{{ filteredIncassi.negozio.netto }}€</td>
-        </tr>
-      </ng-template>
-    </p-table>
-  </p-dialog>
 
-  <!-- Modale Spesa Fissa -->
-  <p-dialog
-    [header]="
-      spesaFissaMode === 'Aggiungi'
-        ? 'Aggiungi spesa fissa'
-        : 'Modifica spesa fissa'
-    "
-    [(visible)]="showModalSpesaFissa"
-    aria-hidden="true"
-    [style]="{ width: '40%' }"
-    [modal]="true"
-  >
-    <form [formGroup]="spesaFissaForm">
-      <div class="grid grid-cols-3 mb-2 gap-2">
-        <div>
-          <label for="meseSpesaFissa" class="label">
-            {{ "user_data.mese" | translate }}
-          </label>
-          <span class="p-input-icon-right w-full">
-            <i class="pi pi-angle-down"></i>
-            <select
-              name="meseSpesaFissa"
-              id="meseSpesaFissa"
-              class="fields"
-              formControlName="meseSpesaFissa"
-            >
-              <option [ngValue]="null" disabled>Seleziona Mese</option>
-              <option
-                [value]="meseSpesaFissa"
-                *ngFor="let meseSpesaFissa of mesiSpesaFissa"
-              >
-                {{ meseSpesaFissa }}
-              </option>
-            </select>
-          </span>
-        </div>
-        <div>
-          <label for="notaSpesaFissa" class="label">
-            {{ "user_data.nota" | translate }}
-          </label>
-          <input
-            type="text"
-            name="notaSpesaFissa"
-            id="notaSpesaFissa"
-            class="fields"
-            formControlName="notaSpesaFissa"
-          />
-        </div>
-        <div>
-          <label for="costoSpesaFissa" class="label">
-            {{ "user_data.costo_spesa_fissa" | translate }}
-          </label>
-          <input
-            type="number"
-            name="costoSpesaFissa"
-            id="costoSpesaFissa"
-            class="fields"
-            formControlName="costoSpesaFissa"
-          />
-        </div>
-      </div>
-      <div class="grid justify-center">
-        <p-button
-          [label]="spesaFissaMode === 'Aggiungi' ? 'Aggiungi' : 'Modifica'"
-          class="col-start-3"
-          styleClass="p-button-raised p-button-secondary"
-          (click)="editSpesaFissa()"
-          [disabled]="!spesaFissaForm.valid"
-        ></p-button>
-      </div>
-    </form>
-  </p-dialog>
-
-  <p-dialog
-    header="Spese fisse"
-    [(visible)]="showModalListaSpeseFisse"
-    aria-hidden="true"
-    [style]="{ width: '40%' }"
-    [modal]="true"
-  >
-    <p-table
-      [value]="listaSpeseFisse"
-      selectionMode="single"
-      [(selection)]="selectedSpesaFissa"
-      (onRowSelect)="onRowSelectSpesaFissa($event)"
-    >
-      <ng-template pTemplate="header">
-        <tr>
-          <th>{{ "user_data.mese" | translate }}</th>
-          <th>{{ "user_data.nota" | translate }}</th>
-          <th>{{ "user_data.costo_noeuro" | translate }}</th>
-          <th>{{ "user_data.azioni" | translate }}</th>
-        </tr>
-      </ng-template>
-      <ng-template pTemplate="body" let-spesaFissa>
-        <tr [pSelectableRowDblClick]="spesaFissa">
-          <td>{{ spesaFissa.meseSpesaFissa }}</td>
-          <td>{{ spesaFissa.notaSpesaFissa }}</td>
-          <td>{{ spesaFissa.costoSpesaFissa }} €</td>
-          <td>
-            <p-button
-              pTooltip="Cancella Spesa Fissa"
-              tooltipPosition="bottom"
-              type="button"
-              icon="pi pi-times-circle"
-              (click)="
-                confirmDeleteSpesaFissa(
-                  spesaFissa.id,
-                  spesaFissa.meseSpesaFissa
-                )
-              "
-              styleClass="p-button-danger"
-            />
-          </td>
-        </tr>
-      </ng-template>
-    </p-table>
-  </p-dialog>
-
-  <p-toast></p-toast>
-
-  <p-overlayPanel #opStats>
-    <ng-template pTemplate="content">
-      <div *ngFor="let item of canaleComResults">
-        <span>{{ item.name }}: {{ item.value }}</span>
-      </div>
-    </ng-template>
-  </p-overlayPanel>
-
-  <!-- Modale Admin Tools -->
-  <p-dialog
-    [header]="'Admin Tools'"
-    [(visible)]="showAdminDialog"
-    aria-hidden="true"
-    [style]="{ width: '50vw' }"
-    [modal]="true"
-  >
-    <div class="grid grid-cols-4 p-3 place-items-center gap-2">
-      <p-button
-        label="Export DB"
-        (click)="exportFirebaseDatabaseToJSON()"
-        class="mr-2"
-        styleClass="p-button-secondary"
-      ></p-button>
-      <p-button
-        label="Import DB"
-        (click)="showUploadComponentMethod()"
-        class="mr-2"
-        styleClass="p-button-secondary"
-      ></p-button>
-      <p-button
-        label="Incassi"
-        (click)="modaleIncassi()"
-        class="mr-2"
-        styleClass="p-button-secondary"
-      ></p-button>
-      <p-button
-        label="Statistiche"
-        (click)="opStats.toggle($event)"
-        styleClass="p-button-info"
-      ></p-button>
-      <p-button
-        [hidden]="true"
-        [label]="ambiente === 'test' ? 'Passa a Produzione' : 'Passa a Test'"
-        (click)="passaggioAmbiente()"
-        styleClass="p-button-info"
-      ></p-button>
-    </div>
-    <div *ngIf="showUploadComponent">
-      <p-fileUpload
-        *ngIf="showUploadComponent"
-        [showUploadButton]="false"
-        [showCancelButton]="false"
-        (onSelect)="onUploadFileJSON($event)"
-      >
-      </p-fileUpload>
-      <div class="grid grid-cols-4 p-3">
-        <p-button
-          label="Aggiorna"
-          [disabled]="!FileJSON"
-          (click)="confirmImportFirebaseDatabaseFromJSON()"
-          class="col-start-4 flex justify-end"
-          styleClass="p-button-info"
-        ></p-button>
-      </div>
-    </div>
-  </p-dialog>
+  <admin-tools-modal
+    *ngIf="showAdminModal"
+    [(showAdminModal)]="showAdminModal"
+    (showAdminModalChange)="handleShowAdminModalChange($event)"
+  />
 
   <app-confirm-dialog></app-confirm-dialog>
 </div>

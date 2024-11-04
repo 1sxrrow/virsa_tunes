@@ -179,7 +179,6 @@
     [(visible)]="showPrintModal"
     (onHide)="closeDialog()"
     [header]="'Stampa Scontrino Multipla'"
-    aria-hidden="true"
     [style]="{ width: '50vw' }"
   >
     <p-table [value]="selectedSpecificDataScontrino">
@@ -213,7 +212,6 @@
       [(visible)]="showModal"
       (onHide)="closeDialog()"
       [header]="modalTitle"
-      aria-hidden="true"
       [style]="{ width: '50vw' }"
     >
       <form [formGroup]="specificDataForm">
@@ -618,7 +616,23 @@
             </span>
           </div>
 
-          <div class="col-start-1 col-end-2">
+          <div class="mb-3 col-span-2" *ngIf="showFieldsRiparazione">
+            <label for="note" class="label">
+              {{ "user_data.note" | translate }}
+            </label>
+            <textarea
+              rows="5"
+              cols="30"
+              pInputTextarea
+              formControlName="note"
+              name="note"
+              id="note"
+              class="fields"
+            >
+            </textarea>
+          </div>
+
+          <div class="col-span-2">
             <label for="prodotti_aggiuntivi" class="mr-2">{{
               "user_data.prodotti_aggiuntivi" | translate
             }}</label>
@@ -775,7 +789,9 @@
           Utente ultima modifica: {{ utenteUltimaModifica }}
         </p>
       </div> -->
-        <div class="flex flex-col items-end justify-end col-start-5 col-end-5">
+        <div
+          class="flex flex-row items-end justify-end col-start-5 col-end-5 gap-2"
+        >
           <p-button
             styleClass="p-button-raised p-button-secondary"
             [hidden]="!isInfo"
@@ -799,7 +815,7 @@
       </form>
     </p-dialog>
   </div>
-  <p-toast [baseZIndex]="3"></p-toast>
+
 </div>
 
 <!-- prettier-ignore -->

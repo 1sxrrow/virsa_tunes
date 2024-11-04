@@ -9,7 +9,6 @@ import {
   MessageService,
 } from 'primeng/api';
 import { Table } from 'primeng/table';
-import { Incasso } from 'src/app/shared/models/incasso.model';
 import { SpesaFissa } from 'src/app/shared/models/spesaFissa.model';
 import { UserModel } from 'src/app/shared/models/user-data.model';
 import { FirebaseStoreService } from 'src/app/shared/services/firebase/firebase-store.service';
@@ -18,8 +17,6 @@ import { canaleComunicazione } from 'src/app/shared/utils/common-enums';
 import {
   callModalToast,
   getBreadcrumbHome,
-  getMonthNumber,
-  UploadEvent,
 } from 'src/app/shared/utils/common-utils';
 import { AuthService } from '../../login/auth.service';
 import { UserDataService } from '../user-data.service';
@@ -35,25 +32,19 @@ export class UserListComponent implements OnInit {
   items: MenuItem[] | undefined = [{ label: 'Database', routerLink: '/users' }];
   home: MenuItem | undefined = getBreadcrumbHome();
   selectedUser!: UserModel;
-  selectedSpesaFissa: SpesaFissa;
-  selectedSpesaFissaId: string;
-  selectedNegozio: string = '';
-  filterNegozio: string[] = [];
+
   filteredIncassi: any = [];
   canaleComResults: { name: string; value: number }[] = [];
 
   userInfoForm: FormGroup;
-  spesaFissaForm: FormGroup;
   modalTitle: string;
   loading = true;
   showModal = false;
-  showModalIncassi = false;
-  showModalSpesaFissa = false;
-  showModalListaSpeseFisse = false;
-  showAdminDialog = false;
+  showIncassiModal = false;
+  showAdminModal = false;
+
   showUploadComponent = false;
-  spesaFissaMode: string;
-  listaSpeseFisse: SpesaFissa[] = [];
+
   FileJSON: File;
 
   isInfo = false;
@@ -61,9 +52,8 @@ export class UserListComponent implements OnInit {
   savedUserId: number;
   checkedFattura: boolean = false;
 
-  incassi: Incasso[] = [];
   canaleComunicazioni: string[];
-  mesiSpesaFissa: string[] = [];
+
   users: UserModel[] = [];
 
   utenteUltimaModifica: string;
@@ -79,46 +69,27 @@ export class UserListComponent implements OnInit {
     private messageService: MessageService
   ) {
     this.ambiente = this.firebaseApp.name;
+
+    // Valorizzazione elementi x DropDown Canale_com
+    this.canaleComunicazioni = Object.keys(
+      this.userDataService.canaleComunicazione
+    ).filter((key) => isNaN(+key));
   }
 
   showDialog() {
     this.visible = !this.visible;
   }
 
+  showAdminToolsModal() {
+    this.showAdminModal = !this.showAdminModal;
+  }
+
+  handleShowAdminModalChange(show: boolean) {
+    this.showAdminModal = show;
+  }
+
   ngOnInit(): void {
     let s = this.firebaseStoreService.GetUserList();
-    if (this.authService.getIsAdmin()) {
-      this.firebaseStoreService
-        .GetIncassi()
-        .snapshotChanges()
-        .subscribe((data) => {
-          this.incassi = [];
-          data.map((item) => {
-            let spesaFissa = item.payload
-              .child('spesaFissa')
-              .val() as SpesaFissa[];
-            let incasso = item.payload.val() as Incasso;
-            incasso.spesaFissa = spesaFissa;
-            this.incassi.push(incasso);
-          });
-
-          this.incassi.map((incasso) => {
-            this.mesiSpesaFissa.push(incasso.mese);
-          });
-          // Ordinamento incassi da più recente a meno recente per mese
-          this.incassi.sort((a, b) => {
-            let stringA = `01/${getMonthNumber(a.mese.split('-')[0])}/${
-              a.mese.split('-')[1]
-            }`;
-            let stringB = `01/${getMonthNumber(b.mese.split('-')[0])}/${
-              b.mese.split('-')[1]
-            }`;
-            let dataA = new Date(stringA);
-            let dataB = new Date(stringB);
-            return dataB.getTime() - dataA.getTime();
-          });
-        });
-    }
     s.snapshotChanges().subscribe((data) => {
       this.users = [];
       data.forEach((item) => {
@@ -136,15 +107,6 @@ export class UserListComponent implements OnInit {
       this.loading = false;
     });
 
-    // Valorizzazione elementi x DropDown Canale_com
-    this.canaleComunicazioni = Object.keys(
-      this.userDataService.canaleComunicazione
-    ).filter((key) => isNaN(+key));
-
-    this.filterNegozio = Object.keys(this.userDataService.negozio).filter(
-      (key) => key !== 'Magazzino' && isNaN(+key)
-    );
-
     // Seleziona la stampante
     if (!this.printService.getDevice()) {
       if (!this.printService.isDeviceChosen()) {
@@ -154,38 +116,6 @@ export class UserListComponent implements OnInit {
     }
 
     this.initForm();
-  }
-
-  modaleIncassi() {
-    this.showModalIncassi = !this.showModalIncassi;
-  }
-
-  modaleSpesaFissa() {
-    this.spesaFissaMode = 'Aggiungi';
-    this.showModalSpesaFissa = !this.showModalSpesaFissa;
-    this.selectedSpesaFissaId = '';
-    this.spesaFissaForm = new FormGroup({
-      meseSpesaFissa: new FormControl('', Validators.required),
-      notaSpesaFissa: new FormControl('', Validators.required),
-      costoSpesaFissa: new FormControl('', Validators.required),
-    });
-  }
-
-  modaleListaSpeseFisse(mese: string) {
-    this.firebaseStoreService
-      .GetIncassi()
-      .snapshotChanges()
-      .subscribe((data) => {
-        data.map((item) => {
-          if (item.payload.child('mese').val() === mese) {
-            let spesaFissa = item.payload
-              .child('spesaFissa')
-              .val() as SpesaFissa[];
-            this.listaSpeseFisse = spesaFissa;
-          }
-        });
-      });
-    this.showModalListaSpeseFisse = !this.showModalListaSpeseFisse;
   }
 
   addUser() {
@@ -358,12 +288,6 @@ export class UserListComponent implements OnInit {
     });
     this.utenteInserimento = undefined;
     this.utenteUltimaModifica = undefined;
-
-    this.spesaFissaForm = new FormGroup({
-      meseSpesaFissa: new FormControl('', Validators.required),
-      notaSpesaFissa: new FormControl('', Validators.required),
-      costoSpesaFissa: new FormControl('', Validators.required),
-    });
   }
   confirmDeleteUser(user_id: number) {
     this.confirmationService.confirm({
@@ -423,133 +347,4 @@ export class UserListComponent implements OnInit {
   }
 
   myModelChanged(event) {}
-
-  editSpesaFissa() {
-    let meseSpesaFissa = this.spesaFissaForm.value['meseSpesaFissa'];
-    if (this.spesaFissaMode === 'Aggiungi') {
-      this.firebaseStoreService.AddSpesaFissa(
-        meseSpesaFissa,
-        this.spesaFissaForm.value as SpesaFissa
-      );
-    } else if (this.spesaFissaMode === 'Modifica') {
-      this.firebaseStoreService.UpdateSpesaFissa(
-        this.selectedSpesaFissaId,
-        meseSpesaFissa,
-        this.spesaFissaForm.value as SpesaFissa
-      );
-    }
-    callModalToast(
-      this.messageService,
-      this.spesaFissaMode === 'Aggiungi' ? 'Aggiunto' : 'Modificato',
-      'Incasso fisso aggiunto',
-      this.spesaFissaMode === 'Aggiungi' ? 'success' : 'info'
-    );
-
-    this.modaleSpesaFissa();
-  }
-
-  onRowSelectSpesaFissa(event) {
-    this.spesaFissaMode = 'Modifica';
-    this.showModalSpesaFissa = true;
-    this.selectedSpesaFissaId = event.data.id;
-    this.spesaFissaForm = new FormGroup({
-      meseSpesaFissa: new FormControl(
-        event.data.meseSpesaFissa,
-        Validators.required
-      ),
-      notaSpesaFissa: new FormControl(
-        event.data.notaSpesaFissa,
-        Validators.required
-      ),
-      costoSpesaFissa: new FormControl(
-        event.data.costoSpesaFissa,
-        Validators.required
-      ),
-    });
-  }
-
-  confirmDeleteSpesaFissa(id: string, mese: string) {
-    this.firebaseStoreService.DeleteSpesaFissa(id, mese);
-  }
-
-  retrieveValueNegozioForTableView() {
-    this.filteredIncassi = [];
-    this.incassi.forEach((incasso) => {
-      if (incasso.negozi) {
-        return incasso.negozi.forEach((negozio) => {
-          if (negozio.negozio === this.selectedNegozio) {
-            this.filteredIncassi.push({
-              mese: incasso.mese,
-              negozio: negozio,
-              spesaFissa: incasso.spesaFissa,
-            });
-          }
-        });
-      }
-    });
-    console.log(this.filteredIncassi);
-  }
-
-  clearSelectedNegozio() {
-    this.selectedNegozio = '';
-    console.log(this.selectedNegozio);
-  }
-
-  showAdminDialogModal() {
-    this.showAdminDialog = !this.showAdminDialog;
-  }
-  showUploadComponentMethod() {
-    this.showUploadComponent = !this.showUploadComponent;
-  }
-
-  async exportFirebaseDatabaseToJSON() {
-    this.firebaseStoreService.exportDatabaseToJSON();
-  }
-
-  confirmImportFirebaseDatabaseFromJSON() {
-    this.confirmationService.confirm({
-      message: `Sei sicuro di voler procedere?
-    Questa operazione sovrascriverà il database attuale`,
-      header: 'Conferma',
-      icon: 'pi pi-exclamation-triangle',
-      accept: () => {
-        this.importFirebaseDatabaseFromJSON();
-      },
-      reject: (type: ConfirmEventType) => {
-        callModalToast(
-          this.messageService,
-          'Interrotto',
-          'Importazione database interrotta',
-          'warn'
-        );
-      },
-    });
-  }
-  async importFirebaseDatabaseFromJSON() {
-    this.firebaseStoreService.importDatabaseFromJSON(this.FileJSON).then(
-      () => {
-        callModalToast(
-          this.messageService,
-          'Importato',
-          'Database importato con successo'
-        );
-        this.showUploadComponentMethod();
-      },
-      (error) => {
-        console.log(error);
-        callModalToast(
-          this.messageService,
-          'Errore',
-          'Errore import database',
-          'error'
-        );
-      }
-    );
-  }
-
-  onUploadFileJSON(event: UploadEvent) {
-    this.FileJSON = event.files[0];
-  }
-
-  passaggioAmbiente() {}
 }

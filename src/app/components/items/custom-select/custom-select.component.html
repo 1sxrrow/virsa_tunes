@@ -1,0 +1,21 @@
+<label class="label">
+  {{ label }}
+</label>
+<span class="p-input-icon-right w-full">
+  <i class="pi pi-angle-down" *ngIf="!selectElement"></i>
+  <i
+    class="pi pi-times"
+    *ngIf="selectElement"
+    (click)="clearSelectElement()"
+  ></i>
+  <select
+    class="fields"
+    (change)="onSelectionChange($event)"
+    [(ngModel)]="selectElement"
+  >
+    <option [ngValue]="null" disabled>Seleziona {{ label }}</option>
+    <option *ngFor="let option of options" [value]="option.value">
+      {{ option.label }}
+    </option>
+  </select>
+</span>

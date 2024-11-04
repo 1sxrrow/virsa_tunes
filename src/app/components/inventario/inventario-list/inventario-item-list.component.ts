@@ -315,7 +315,6 @@ export class InventarioItemListComponent implements OnInit, OnDestroy {
 
   checkFilterNegozio(dt1: Table) {
     const hasFilters = dt1.hasFilter();
-    console.log(hasFilters);
     if (hasFilters) {
       const filters = dt1.filters;
       let values = Object.values(filters['global']);

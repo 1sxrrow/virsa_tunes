@@ -1,0 +1,72 @@
+<p-dialog
+  [header]="'Admin Tools'"
+  [style]="{ width: '50vw' }"
+  [modal]="true"
+  [(visible)]="showAdminModal"
+  (onHide)="handleClose()"
+>
+  <div class="grid grid-cols-4 p-3 place-items-center gap-2">
+    <p-button
+      label="Export DB"
+      (click)="exportFirebaseDatabaseToJSON()"
+      class="mr-2 truncate-text"
+      styleClass="p-button-secondary"
+    ></p-button>
+    <p-button
+      label="Import DB"
+      (click)="showUploadComponentMethod()"
+      class="mr-2 truncate-text"
+      styleClass="p-button-secondary"
+    ></p-button>
+    <p-button
+      label="Incassi"
+      (click)="showIncassiModalMethod()"
+      class="mr-2 truncate-text"
+      styleClass="p-button-secondary"
+    ></p-button>
+    <p-button
+      label="Statistiche"
+      (click)="opStats.toggle($event)"
+      styleClass="p-button-info"
+    ></p-button>
+    <p-button
+      [hidden]="true"
+      [label]="ambiente === 'test' ? 'Passa a Produzione' : 'Passa a Test'"
+      class="truncate-text"
+      (click)="passaggioAmbiente()"
+      styleClass="p-button-info"
+    ></p-button>
+  </div>
+  <div *ngIf="showUploadComponent">
+    <p-fileUpload
+      *ngIf="showUploadComponent"
+      [showUploadButton]="false"
+      [showCancelButton]="false"
+      (onSelect)="onUploadFileJSON($event)"
+    >
+    </p-fileUpload>
+    <div class="grid grid-cols-4 p-3">
+      <p-button
+        label="Aggiorna"
+        [disabled]="!FileJSON"
+        (click)="confirmImportFirebaseDatabaseFromJSON()"
+        class="col-start-4 flex justify-end"
+        styleClass="p-button-info"
+      ></p-button>
+    </div>
+  </div>
+</p-dialog>
+
+<p-overlayPanel #opStats>
+  <ng-template pTemplate="content">
+    <div *ngFor="let item of canaleComResults">
+      <span>{{ item.name }}: {{ item.value }}</span>
+    </div>
+  </ng-template>
+</p-overlayPanel>
+
+<incassi-modal
+  *ngIf="showIncassiModal"
+  [(showIncassiModal)]="showIncassiModal"
+  (showIncassiModalChange)="handleShowIncassiModalChange($event)"
+/>

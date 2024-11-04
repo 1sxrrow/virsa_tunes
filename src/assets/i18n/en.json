@@ -54,7 +54,8 @@
     "data_rest_dispositivo_cliente": "Customer Device Return Date",
     "costoCambio": "Replacement Cost (€)",
     "aggiungi": "Add",
-    "modifica": "Update"
+    "modifica": "Update",
+    "note": "Notes"
   },
   "primeng": {
     "dayNames": [

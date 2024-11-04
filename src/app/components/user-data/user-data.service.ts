@@ -1,9 +1,9 @@
 import { Injectable } from '@angular/core';
 import { map, Subject } from 'rxjs';
-import { Incasso } from 'src/app/shared/models/incasso.model';
+import { Incassov2 } from 'src/app/shared/models/incassov2.model';
 import { InventarioItemModel } from 'src/app/shared/models/inventarioItem.model';
 import {
-  calculateIncassoIntervento,
+  calculateIncassoInterventov2,
   calculateMese,
   FileUpload,
 } from 'src/app/shared/utils/common-utils';
@@ -25,7 +25,6 @@ import { AuthService } from '../login/auth.service';
 export class UserDataService {
   usersChanged = new Subject<UserModel[]>();
   specificDataChanged = new Subject<SpecificDataModel[]>();
-  thisUser;
   users: UserModel[] = [];
   constructor(
     private firebaseStoreService: FirebaseStoreService,
@@ -177,18 +176,19 @@ export class UserDataService {
       ? (specific_data.prodottiAggiuntivi = prodottiAggiuntivi)
       : null;
     // Aggiunta Incasso dato che ho aggiunto un intervento
-    let incassoIntervento = await calculateIncassoIntervento(
+    let incassoIntervento = await calculateIncassoInterventov2(
       specific_data,
       this.firebaseStoreService
     );
-    specific_data.incasso = incassoIntervento;
-    // Aggiornamento Incasso
-    this.firebaseStoreService.AddIncasso(
-      specific_data.incasso,
-      calculateMese(new Date(specific_data.data_intervento)),
-      specific_data.negozio
-    );
 
+    // Generazione ID univoco
+    specific_data.idDbIncasso = this.firebaseStoreService.generateId();
+    specific_data.incassov2 = incassoIntervento;
+    // Nuovo sistema incasso
+    this.firebaseStoreService.AddIncassov2(
+      specific_data.idDbIncasso,
+      specific_data.incassov2
+    );
     let t: SpecificDataModel[] = Object.values(user_work.specific_data);
     t.push(specific_data);
     user_work.specific_data = t;
@@ -199,7 +199,7 @@ export class UserDataService {
     return true;
   }
 
-  modifyIntervento(
+  async modifyIntervento(
     id_intervento: number,
     specific_data_input: SpecificDataModel,
     prodotti_aggiuntivi_input: prodottiAggiuntivi[],
@@ -211,37 +211,34 @@ export class UserDataService {
     let spec_retrieved: SpecificDataModel[] = Object.values(
       user_input.specific_data
     );
-    spec_retrieved.forEach((specific_data, i) => {
+    for (let i = 0; i < spec_retrieved.length; i++) {
+      let specific_data = spec_retrieved[i];
       if (specific_data.id === id_intervento) {
-        // update Incasso dato che ho modificato un intervento
-        if (specific_data.costo !== specific_data_input.costo) {
-          let differenza: number =
-            Number(specific_data_input.costo) - Number(specific_data.costo);
-          if (differenza !== 0) {
+        // Aggiorno Incasso v2
+        try {
+          const incassov2 = await calculateIncassoInterventov2(
+            specific_data_input,
             this.firebaseStoreService
-              .GetIncassi()
-              .query.orderByChild('mese')
-              .equalTo(calculateMese(new Date(specific_data.data_intervento)))
-              .once('value', (snapshot) => {
-                if (snapshot.exists()) {
-                  let incassoObject = snapshot.val();
-                  let incasso: Incasso = Object.values(
-                    incassoObject
-                  )[0] as Incasso;
-                  incasso.incassoTotale += differenza;
-                  this.firebaseStoreService.UpdateIncasso(incasso);
-                }
-              });
+          );
+
+          specific_data_input.idDbIncasso = specific_data.idDbIncasso;
+
+          await this.firebaseStoreService.UpdateIncassov2(
+            specific_data.idDbIncasso,
+            incassov2
+          );
+
+          specific_data_input.data_intervento = specific_data.data_intervento;
+          if (specific_data_input.files === undefined) {
+            specific_data_input.files = [];
           }
+          specific_data_input.files = uploadedFiles;
+          spec_retrieved[i] = new SpecificDataModel(specific_data_input);
+        } catch (error) {
+          console.error('Error updating incasso v2:', error);
         }
-        specific_data_input.data_intervento = specific_data.data_intervento;
-        if (specific_data_input.files === undefined) {
-          specific_data_input.files = [];
-        }
-        specific_data_input.files = uploadedFiles;
-        spec_retrieved[i] = new SpecificDataModel(specific_data_input);
       }
-    });
+    }
     user_input.specific_data = spec_retrieved;
     this.firebaseStoreService.UpdateUser(user_input);
   }
@@ -254,34 +251,13 @@ export class UserDataService {
       return data.id === id_intervento;
     });
 
-    // Update Incasso dato che ho cancellato un intervento
+    // Recupero dait per Incasso e lo cancello
     let single = spec_retrieved[spec_retrieved.indexOf(i[0])];
-    let negozioIncasso = single.negozio;
-    let incassoIntervento: Incasso = single.incasso;
     let calculatedMese = calculateMese(
       new Date(spec_retrieved[spec_retrieved.indexOf(i[0])].data_intervento)
     );
-    this.firebaseStoreService
-      .GetIncassi()
-      .query.orderByChild('mese')
-      .equalTo(calculatedMese)
-      .once('value', (snapshot) => {
-        if (snapshot.exists()) {
-          let incassoObject = snapshot.val();
-          let incasso: Incasso = Object.values(incassoObject)[0] as Incasso;
-          incasso.incassoTotale -= incassoIntervento.incassoTotale;
-          incasso.speseTotale -= incassoIntervento.speseTotale;
-          incasso.nettoTotale = incasso.incassoTotale - incasso.speseTotale;
-          incasso.negozi.forEach((negozio) => {
-            if (negozio.negozio === negozioIncasso) {
-              negozio.incasso -= incassoIntervento.incassoTotale;
-              negozio.spese -= incassoIntervento.speseTotale;
-              negozio.netto = negozio.incasso - negozio.spese;
-            }
-          });
-          this.firebaseStoreService.UpdateIncasso(incasso);
-        }
-      });
+    // Rimuovo Incasso v2
+    this.firebaseStoreService.deleteIncassov2(single.idDbIncasso);
     // update User dato che ho cancellato un intervento
     spec_retrieved.splice(spec_retrieved.indexOf(i[0]), 1);
     user_input.specific_data = spec_retrieved;
@@ -290,7 +266,6 @@ export class UserDataService {
 
   getLastIdSpecificData(specific_data: SpecificDataModel[]): number {
     let spec = Object.values(specific_data);
-    console.log(spec[spec.length - 1].id);
     return spec[spec.length - 1].id;
   }
 

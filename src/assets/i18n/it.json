@@ -54,7 +54,8 @@
     "dati_fattura": "Dati Fattura",
     "costoCambio": "Costo Cambio(€)",
     "aggiungi": "Aggiungi",
-    "modifica": "Modifica"
+    "modifica": "Modifica",
+    "note": "Note"
   },
   "primeng": {
     "dayNames": [

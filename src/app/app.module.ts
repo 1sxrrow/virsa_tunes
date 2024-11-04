@@ -7,7 +7,7 @@ import { HttpClient, HttpClientModule } from '@angular/common/http';
 import localeIt from '@angular/common/locales/it';
 import { isDevMode, LOCALE_ID, NgModule } from '@angular/core';
 import { initializeApp, provideFirebaseApp } from '@angular/fire/app';
-import { AngularFireModule, FIREBASE_OPTIONS } from '@angular/fire/compat';
+import { FIREBASE_OPTIONS } from '@angular/fire/compat';
 import { getDatabase, provideDatabase } from '@angular/fire/database';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { BrowserModule } from '@angular/platform-browser';
@@ -28,6 +28,7 @@ import { DropdownModule } from 'primeng/dropdown';
 import { FileUploadModule } from 'primeng/fileupload';
 import { InputNumberModule } from 'primeng/inputnumber';
 import { InputTextModule } from 'primeng/inputtext';
+import { InputTextareaModule } from 'primeng/inputtextarea';
 import { KeyFilterModule } from 'primeng/keyfilter';
 import { MenuModule } from 'primeng/menu';
 import { OverlayPanelModule } from 'primeng/overlaypanel';
@@ -38,14 +39,19 @@ import { ToastModule } from 'primeng/toast';
 import { ToolbarModule } from 'primeng/toolbar';
 import { TooltipModule } from 'primeng/tooltip';
 import {
-  prodFirebaseConfig,
   devFirebaseConfig,
+  prodFirebaseConfig,
 } from 'src/environments/environment';
 import { AppComponent } from './app.component';
 import { routes } from './app.routes';
 import { FooterComponent } from './components/footer/footer.component';
 import { HeaderComponent } from './components/header/header.component';
 import { InventarioItemListComponent } from './components/inventario/inventario-list/inventario-item-list.component';
+import { CustomSelectComponent } from './components/items/custom-select/custom-select.component';
+import { AdminToolsModalComponent } from './components/modals/admin-tools-modal/admin-tools-modal.component';
+import { IncassiModalComponent } from './components/modals/incassi-modal/incassi-modal.component';
+import { SpesaFissaModalComponent } from './components/modals/spesa-fissa-modal/spesa-fissa-modal.component';
+import { SpeseFisseModalComponent } from './components/modals/spese-fisse-modal/spese-fisse-modal.component';
 import { UserDataComponent } from './components/user-data/user-data.component';
 import { UserListComponent } from './components/user-data/user-list/user-list.component';
 import { PersonalConfirmDialogModule } from './shared/components/confirm-dialog/confirm.dialog.module';
@@ -61,6 +67,11 @@ const dbname = isDevMode() ? 'dev' : 'prod';
   declarations: [
     AppComponent,
     UserDataComponent,
+    CustomSelectComponent,
+    IncassiModalComponent,
+    AdminToolsModalComponent,
+    SpesaFissaModalComponent,
+    SpeseFisseModalComponent,
     HeaderComponent,
     FooterComponent,
     UserListComponent,
@@ -96,6 +107,7 @@ const dbname = isDevMode() ? 'dev' : 'prod';
     ProgressBarModule,
     MenuModule,
     OverlayPanelModule,
+    InputTextareaModule,
     TranslateModule.forRoot({
       loader: {
         provide: TranslateLoader,

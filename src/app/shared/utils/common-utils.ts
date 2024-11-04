@@ -9,6 +9,7 @@ import { SpecificDataModel } from '../models/specific-data.model';
 import { UserModel } from '../models/user-data.model';
 import { FirebaseStoreService } from '../services/firebase/firebase-store.service';
 import { InventarioItemModel } from '../models/inventarioItem.model';
+import { Incassov2 } from '../models/incassov2.model';
 
 export type FileUpload = {
   file: { filename: string; filetype: string; filesize: number; addDate: Date };
@@ -112,6 +113,52 @@ export async function calculateIncassoIntervento(
         netto: (incassoInterventoValue - speseValue) as number,
       },
     ],
+  };
+  return incasso;
+}
+
+export async function calculateIncassoInterventov2(
+  specificData: SpecificDataModel,
+  firebaseStoreService: FirebaseStoreService
+): Promise<Incassov2> {
+  let incassoInterventoValue: number = 0;
+  if (specificData.costo_sconto) {
+    incassoInterventoValue = specificData.costo - specificData.costo_sconto;
+  } else {
+    incassoInterventoValue = specificData.costo;
+  }
+  let speseValue: number = 0;
+  // Verifico presenza dato costoCambio e se presente aggiungo alla spesa
+  if (specificData.costoCambio) {
+    speseValue += Number(specificData.costoCambio);
+  }
+  // Se intervento vendita recupero da imei articolo e aggiungo alla spesa
+  if (specificData.imei && specificData.tipo_intervento === 'Vendita') {
+    let data = await firebaseStoreService.imeiArticolo(specificData.imei);
+    if (data) {
+      let articolo: InventarioItemModel = Object.values(
+        data
+      )[0] as InventarioItemModel;
+      if (speseValue === 0) {
+        speseValue = Number(articolo.prezzo_acquisto);
+      } else {
+        speseValue += Number(articolo.prezzo_acquisto);
+      }
+    }
+  }
+  // Verifica presenza prodotti aggiuntivi
+  if (specificData.prodottiAggiuntivi.length > 0) {
+    specificData.prodottiAggiuntivi.forEach((x: prodottiAggiuntivi) => {
+      incassoInterventoValue += Number(x.quantita) * Number(x.costo);
+    });
+  }
+  let incasso: Incassov2 = {
+    incasso: incassoInterventoValue,
+    mese: calculateMese(new Date(specificData.data_intervento)),
+    spese: speseValue,
+    netto: (incassoInterventoValue - speseValue) as number,
+    negozio: specificData.negozio,
+    tipo_intervento: specificData.tipo_intervento,
   };
   return incasso;
 }

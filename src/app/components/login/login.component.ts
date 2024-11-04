@@ -65,7 +65,6 @@ export class LoginComponent {
   }
 
   checkError(error) {
-    console.log(error.message);
     //TODO controllare che se presente 1 errore non faccio rivedre errore (forse meglio usare un booleano)
     switch (error.message) {
       case 'Firebase: Error (auth/missing-email).':

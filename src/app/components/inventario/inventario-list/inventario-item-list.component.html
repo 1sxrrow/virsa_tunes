@@ -167,7 +167,6 @@
     [header]="modalTitle"
     [(visible)]="showModal"
     (onHide)="closeDialog()"
-    aria-hidden="true"
     [style]="{ width: '50vw' }"
     [modal]="true"
   >
@@ -370,29 +369,33 @@
       </form>
     </div>
     <div class="grid justify-center">
-      <p-button *ngIf="devmode" (onClick)="findInvalidControls()">
-        check values
-      </p-button>
-      <div *ngIf="isAdmin">
+      <div class="flex flex-row">
         <p-button
-          styleClass="p-button-raised p-button-secondary"
-          label="Aggiungi"
-          [hidden]="isInfo"
-          (onClick)="addNewItem()"
-          [disabled]="!itemForm.valid"
-        ></p-button>
-        <p-button
-          styleClass="p-button-raised p-button-secondary"
-          label="Modifica"
-          [hidden]="!isInfo"
-          (onClick)="editItem()"
-          [disabled]="!(itemForm.valid && itemForm.dirty)"
-        ></p-button>
+          *ngIf="devmode"
+          (onClick)="findInvalidControls()"
+          class="mr-3"
+        >
+          check values
+        </p-button>
+        <div *ngIf="isAdmin">
+          <p-button
+            styleClass="p-button-raised p-button-secondary"
+            label="Aggiungi"
+            [hidden]="isInfo"
+            (onClick)="addNewItem()"
+            [disabled]="!itemForm.valid"
+          ></p-button>
+          <p-button
+            styleClass="p-button-raised p-button-secondary"
+            label="Modifica"
+            [hidden]="!isInfo"
+            (onClick)="editItem()"
+            [disabled]="!(itemForm.valid && itemForm.dirty)"
+          ></p-button>
+        </div>
       </div>
     </div>
   </p-dialog>
-  <!-- Toast per messaggi -->
-  <p-toast></p-toast>
   <!-- Dialog di conferma per rimozione elemento -->
   <app-confirm-dialog></app-confirm-dialog>
   <!-- OverlayPanel per statistiche -->

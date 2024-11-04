@@ -15,6 +15,7 @@ import {
   prodFirebaseConfig,
 } from 'src/environments/environment';
 import { Incasso } from '../../models/incasso.model';
+import { Incassov2 } from '../../models/incassov2.model';
 import { InventarioItemModel } from '../../models/inventarioItem.model';
 import { SpesaFissa } from '../../models/spesaFissa.model';
 import { UserModel } from '../../models/user-data.model';
@@ -24,12 +25,14 @@ import { createIncasso } from '../../utils/common-utils';
 export class FirebaseStoreService {
   UsersRef: AngularFireList<any>;
   IncassiRef: AngularFireList<any>;
+  IncassiRefv2: AngularFireList<any>;
   StatsUsersRef: AngularFireList<any>;
   StatsCanaleComRef: AngularFireList<any>;
   InventarioListRef: AngularFireList<any>;
 
   UserRef: AngularFireObject<any>;
   IncassoRef: AngularFireObject<any>;
+  IncassoRefv2: AngularFireObject<any>;
   InventarioRef: AngularFireObject<any>;
 
   private currentApp: firebase.app.App;
@@ -87,10 +90,6 @@ export class FirebaseStoreService {
     };
   }
 
-  GetIncassi() {
-    return this.IncassiRef;
-  }
-
   getInventario() {
     return this.InventarioListRef;
   }
@@ -107,7 +106,6 @@ export class FirebaseStoreService {
   }
 
   AddIncasso(incasso_intervento: Incasso, mese: string, negozio: string) {
-    this.GetIncassi();
     let incasso: Incasso;
     this.IncassiRef.query
       .orderByChild('mese')
@@ -126,7 +124,8 @@ export class FirebaseStoreService {
             if (foundNegozio) {
               foundNegozio.incasso += +negozioIntervento.incasso;
               foundNegozio.spese += +negozioIntervento.spese;
-              foundNegozio.netto = (foundNegozio.incasso - foundNegozio.spese) as Number;
+              foundNegozio.netto = (foundNegozio.incasso -
+                foundNegozio.spese) as Number;
             } else {
               if (incasso.negozi.length > 0) {
                 incasso.negozi.push(negozioIntervento);
@@ -154,26 +153,47 @@ export class FirebaseStoreService {
       });
   }
 
-  getSpeseFisse(mese: string): Observable<any> {
-    return from(
-      this.IncassiRef.query.orderByChild('mese').equalTo(mese).once('value')
-    );
+  AddIncassov2(idDbIncasso: string, incassoObject: Incassov2) {
+    const IncassoRefv2 = this.db.object(`/incassi/${idDbIncasso}`);
+    IncassoRefv2.set(incassoObject);
+  }
+
+  GetIncassiv2() {
+    const IncassiRefv2 = this.db.list<Incassov2>(`/incassi`);
+    return IncassiRefv2;
+  }
+
+  GetIncassov2(idDbIncasso: string) {
+    const IncassoRefv2 = this.db.object(`/incassi/${idDbIncasso}`);
+    return IncassoRefv2.valueChanges();
+  }
+
+  UpdateIncassov2(idDbIncasso: string, incassoObject: Incassov2) {
+    const IncassoRefv2 = this.db.object(`/incassi/${idDbIncasso}`);
+    IncassoRefv2.update(incassoObject);
+  }
+
+  deleteIncassov2(idDbIncasso: string) {
+    const InventarioRef = this.db.object(`/incassi/${idDbIncasso}`);
+    InventarioRef.remove();
+  }
+
+  getSpeseFisseMese(mese: string) {
+    const spesaFissaList = this.db.list<SpesaFissa>(`/speseFisse/${mese}`);
+    return spesaFissaList;
+  }
+
+  getSpeseFisse() {
+    const spesaFissaList = this.db.list<SpesaFissa>(`/speseFisse/`);
+    return spesaFissaList;
   }
 
   AddSpesaFissa(meseIncassoFisso: string, spesaFissa: SpesaFissa) {
     spesaFissa.id = this.db.createPushId();
-    this.IncassiRef.query
-      .orderByChild('mese')
-      .equalTo(meseIncassoFisso)
-      .once('value', (snapshot) => {
-        if (snapshot.exists()) {
-          let incassoObject = snapshot.val();
-          let incasso: Incasso = Object.values(incassoObject)[0] as Incasso;
-          incasso.spesaFissa = incasso.spesaFissa || [];
-          incasso.spesaFissa.push(spesaFissa);
-          this.UpdateIncasso(incasso);
-        }
-      });
+    const spesaFissaList = this.db.object(
+      `/speseFisse/${meseIncassoFisso}/${spesaFissa.id}`
+    );
+    spesaFissaList.set(spesaFissa);
   }
 
   UpdateSpesaFissa(
@@ -181,44 +201,17 @@ export class FirebaseStoreService {
     meseIncassoFisso: string,
     spesaFissa: SpesaFissa
   ) {
-    this.IncassiRef.query
-      .orderByChild('mese')
-      .equalTo(meseIncassoFisso)
-      .once('value', (snapshot) => {
-        if (snapshot.exists()) {
-          let incassoObject = snapshot.val();
-          let incasso: Incasso = Object.values(incassoObject)[0] as Incasso;
-          let retrievedSpesaFissa: SpesaFissa[] = incasso.spesaFissa;
-
-          retrievedSpesaFissa.forEach((spesa: SpesaFissa, index: number) => {
-            if (spesa.id === id) {
-              retrievedSpesaFissa[index] = spesaFissa;
-            }
-          });
-
-          incasso.spesaFissa = retrievedSpesaFissa;
-          this.UpdateIncasso(incasso);
-        }
-      });
+    const spesaFissaList = this.db.object(
+      `/speseFisse/${meseIncassoFisso}/${id}`
+    );
+    spesaFissaList.update(spesaFissa);
   }
 
   DeleteSpesaFissa(id: string, meseIncassoFisso: string) {
-    this.IncassiRef.query
-      .orderByChild('mese')
-      .equalTo(meseIncassoFisso)
-      .once('value', (snapshot) => {
-        if (snapshot.exists()) {
-          let incassoObject = snapshot.val();
-          let incasso: Incasso = Object.values(incassoObject)[0] as Incasso;
-          incasso.spesaFissa = incasso.spesaFissa || [];
-          incasso.spesaFissa.forEach((spesa: SpesaFissa, index: number) => {
-            if (spesa.id === id) {
-              incasso.spesaFissa.splice(index, 1);
-            }
-          });
-          this.UpdateIncasso(incasso);
-        }
-      });
+    const spesaFissaList = this.db.object(
+      `/speseFisse/${meseIncassoFisso}/${id}`
+    );
+    spesaFissaList.remove();
   }
 
   UpdateIncasso(incasso: Incasso) {
@@ -296,5 +289,9 @@ export class FirebaseStoreService {
           this.InventarioListRef.update(key, item);
         }
       });
+  }
+
+  generateId() {
+    return this.db.createPushId(); // Generate a unique ID
   }
 }

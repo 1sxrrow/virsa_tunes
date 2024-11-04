@@ -92,6 +92,10 @@ input::-webkit-inner-spin-button {
   border-radius: 6px;
   gap: 0.5rem;
   width: 600px;
+  @media screen and (max-width: 1023px) {
+    transition: width 1 ease-in-out;
+    width: 300px;
+  }
 }
 
 ::ng-deep .p-calendar {
