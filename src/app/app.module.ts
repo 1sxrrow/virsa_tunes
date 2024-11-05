@@ -9,35 +9,14 @@ import { isDevMode, LOCALE_ID, NgModule } from '@angular/core';
 import { initializeApp, provideFirebaseApp } from '@angular/fire/app';
 import { FIREBASE_OPTIONS } from '@angular/fire/compat';
 import { getDatabase, provideDatabase } from '@angular/fire/database';
-import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { RouterModule } from '@angular/router';
-import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
-import { NgSelectModule } from '@ng-select/ng-select';
 import { TranslateLoader, TranslateModule } from '@ngx-translate/core';
 import { TranslateHttpLoader } from '@ngx-translate/http-loader';
 import { MessageService } from 'primeng/api';
-import { BreadcrumbModule } from 'primeng/breadcrumb';
-import { ButtonModule } from 'primeng/button';
-import { CalendarModule } from 'primeng/calendar';
-import { CardModule } from 'primeng/card';
-import { CheckboxModule } from 'primeng/checkbox';
-import { DialogModule } from 'primeng/dialog';
-import { DropdownModule } from 'primeng/dropdown';
-import { FileUploadModule } from 'primeng/fileupload';
-import { InputNumberModule } from 'primeng/inputnumber';
-import { InputTextModule } from 'primeng/inputtext';
-import { InputTextareaModule } from 'primeng/inputtextarea';
-import { KeyFilterModule } from 'primeng/keyfilter';
 import { MenuModule } from 'primeng/menu';
-import { OverlayPanelModule } from 'primeng/overlaypanel';
-import { ProgressBarModule } from 'primeng/progressbar';
-import { SelectButtonModule } from 'primeng/selectbutton';
-import { TableModule } from 'primeng/table';
 import { ToastModule } from 'primeng/toast';
-import { ToolbarModule } from 'primeng/toolbar';
-import { TooltipModule } from 'primeng/tooltip';
 import {
   devFirebaseConfig,
   prodFirebaseConfig,
@@ -46,16 +25,7 @@ import { AppComponent } from './app.component';
 import { routes } from './app.routes';
 import { FooterComponent } from './components/footer/footer.component';
 import { HeaderComponent } from './components/header/header.component';
-import { InventarioItemListComponent } from './components/inventario/inventario-list/inventario-item-list.component';
-import { CustomSelectComponent } from './components/items/custom-select/custom-select.component';
-import { AdminToolsModalComponent } from './components/modals/admin-tools-modal/admin-tools-modal.component';
-import { IncassiModalComponent } from './components/modals/incassi-modal/incassi-modal.component';
-import { SpesaFissaModalComponent } from './components/modals/spesa-fissa-modal/spesa-fissa-modal.component';
-import { SpeseFisseModalComponent } from './components/modals/spese-fisse-modal/spese-fisse-modal.component';
-import { UserDataComponent } from './components/user-data/user-data.component';
-import { UserListComponent } from './components/user-data/user-list/user-list.component';
-import { PersonalConfirmDialogModule } from './shared/components/confirm-dialog/confirm.dialog.module';
-import { UppercaseFirstLetterPipe } from './shared/pipes/uppercase.pipe';
+import { SharedModule } from './shared/shared.module';
 registerLocaleData(localeIt);
 
 export function HttpLoaderFactory(httpClient: HttpClient) {
@@ -64,50 +34,15 @@ export function HttpLoaderFactory(httpClient: HttpClient) {
 const firebaseConfig = isDevMode() ? devFirebaseConfig : prodFirebaseConfig;
 const dbname = isDevMode() ? 'dev' : 'prod';
 @NgModule({
-  declarations: [
-    AppComponent,
-    UserDataComponent,
-    CustomSelectComponent,
-    IncassiModalComponent,
-    AdminToolsModalComponent,
-    SpesaFissaModalComponent,
-    SpeseFisseModalComponent,
-    HeaderComponent,
-    FooterComponent,
-    UserListComponent,
-    InventarioItemListComponent,
-    UppercaseFirstLetterPipe,
-  ],
+  declarations: [AppComponent, HeaderComponent, FooterComponent],
   imports: [
     CommonModule,
     BrowserModule,
     BrowserAnimationsModule,
-    FormsModule,
-    ReactiveFormsModule,
-    RouterModule.forRoot(routes),
-    NgbModule,
-    ButtonModule,
-    TableModule,
-    CardModule,
-    InputTextModule,
-    DropdownModule,
-    InputNumberModule,
-    KeyFilterModule,
-    DialogModule,
-    PersonalConfirmDialogModule,
     ToastModule,
-    TooltipModule,
-    NgSelectModule,
-    CheckboxModule,
-    SelectButtonModule,
-    CalendarModule,
-    ToolbarModule,
-    BreadcrumbModule,
-    FileUploadModule,
-    ProgressBarModule,
     MenuModule,
-    OverlayPanelModule,
-    InputTextareaModule,
+    SharedModule,
+    RouterModule.forRoot(routes),
     TranslateModule.forRoot({
       loader: {
         provide: TranslateLoader,

@@ -267,7 +267,6 @@
             </label>
             <p-checkbox
               formControlName="datiFattura"
-              [(ngModel)]="checkedFattura"
               [binary]="true"
               id="datiFattura"
               class="mr-2"
@@ -402,11 +401,10 @@
     </div>
   </p-dialog>
 
-
   <admin-tools-modal
     *ngIf="showAdminModal"
     [(showAdminModal)]="showAdminModal"
-    (showAdminModalChange)="handleShowAdminModalChange($event)"
+    (showAdminModalChange)="handleShowModalChange($event)"
   />
 
   <app-confirm-dialog></app-confirm-dialog>

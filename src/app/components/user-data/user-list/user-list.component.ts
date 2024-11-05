@@ -1,6 +1,11 @@
 import { Component, OnInit } from '@angular/core';
 import { FirebaseApp } from '@angular/fire/app';
-import { FormControl, FormGroup, Validators } from '@angular/forms';
+import {
+  FormControl,
+  FormGroup,
+  Validators,
+  FormBuilder,
+} from '@angular/forms';
 import { Router } from '@angular/router';
 import {
   ConfirmationService,
@@ -66,7 +71,8 @@ export class UserListComponent implements OnInit {
     private authService: AuthService,
     private firebaseApp: FirebaseApp,
     private router: Router,
-    private messageService: MessageService
+    private messageService: MessageService,
+    private fb: FormBuilder
   ) {
     this.ambiente = this.firebaseApp.name;
 
@@ -84,7 +90,7 @@ export class UserListComponent implements OnInit {
     this.showAdminModal = !this.showAdminModal;
   }
 
-  handleShowAdminModalChange(show: boolean) {
+  handleShowModalChange(show: boolean) {
     this.showAdminModal = show;
   }
 
@@ -150,6 +156,11 @@ export class UserListComponent implements OnInit {
     if (this.isInfo) {
       this.savedUserId = id;
     }
+    // Synchronize checkedFattura with the form control value
+    this.checkedFattura = this.userInfoForm.get('datiFattura').value;
+    this.userInfoForm.get('datiFattura').valueChanges.subscribe((value) => {
+      this.checkedFattura = value;
+    });
   }
 
   /**

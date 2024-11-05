@@ -1,9 +1,7 @@
 import { Routes } from '@angular/router';
+import { InventarioItemListComponent } from './components/inventario/inventario-list/inventario-item-list.component';
 import { AuthGuard } from './components/login/auth.guard';
 import { NotFoundComponent } from './components/not-found/not-found.component';
-import { UserDataComponent } from './components/user-data/user-data.component';
-import { UserListComponent } from './components/user-data/user-list/user-list.component';
-import { InventarioItemListComponent } from './components/inventario/inventario-list/inventario-item-list.component';
 
 export const routes: Routes = [
   {
@@ -13,29 +11,18 @@ export const routes: Routes = [
   },
   {
     path: 'users',
-    children: [
-      {
-        path: '',
-        component: UserListComponent,
-        data: { animation: 'UserListPage' },
-      },
-      {
-        path: ':id',
-        component: UserDataComponent,
-        data: { animation: 'UserDataPage' },
-      },
-    ],
+    loadChildren: () =>
+      import('./components/user/users.module').then(
+        (m) => m.UsersComponentsModule
+      ),
     canActivate: [AuthGuard],
   },
   {
     path: 'inventario',
-    children: [
-      {
-        path: '',
-        component: InventarioItemListComponent,
-        data: { animation: 'InventarioPage' },
-      },
-    ],
+    loadChildren: () =>
+      import('./components/inventario/inventario.module').then(
+        (m) => m.InventarioModule
+      ),
     canActivate: [AuthGuard],
   },
   {
