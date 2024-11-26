@@ -1,5 +1,5 @@
-<ng-container *ngIf="usersWithInterventi$ | async as users">
-  <ng-container *ngIf="users.length > 0; else loadingTemplate">
+<ng-container *ngIf="usersWithInterventi$ | async as users; else loadingTemplate">
+  <ng-container *ngIf="users && users.length > 0; else emptyTemplate">
     <div class="flex flex-col max-h-screen mb-2">
       <div class="card flex justify-content-center mb-3">
         <p-breadcrumb
@@ -169,4 +169,10 @@
 
 <ng-template #loadingTemplate>
   <app-circle-spinner></app-circle-spinner>
+</ng-template>
+
+<ng-template #emptyTemplate>
+  <div class="empty-state">
+    <p>Nessun cliente trovato.</p>
+  </div>
 </ng-template>

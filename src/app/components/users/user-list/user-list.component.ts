@@ -4,7 +4,7 @@ import {
   OnInit,
   ViewEncapsulation,
 } from '@angular/core';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import {
   ConfirmationService,
   ConfirmEventType,
@@ -12,7 +12,8 @@ import {
   MessageService,
 } from 'primeng/api';
 import { Table } from 'primeng/table';
-import { Observable } from 'rxjs';
+import { map, Observable, of } from 'rxjs';
+import { catchError } from 'rxjs/operators';
 import { UserModel } from 'src/app/shared/models/user-data.model';
 import { FirebaseStoreService } from 'src/app/shared/services/firebase/firebase-store.service';
 import { PrintService } from 'src/app/shared/services/print/recipe-print.service';
@@ -42,8 +43,7 @@ export class UserListComponent implements OnInit {
   home: MenuItem | undefined = getBreadcrumbHome();
 
   interventiCounts: { [userId: number]: number } = {};
-  usersWithInterventi$: Observable<UserModelWithInterventi[]> =
-    this.userDataService.getUsersWithInterventiObservable();
+  usersWithInterventi$: Observable<UserModelWithInterventi[]>;
 
   showModal = false;
   showAdminModal = false;
@@ -55,6 +55,7 @@ export class UserListComponent implements OnInit {
 
   constructor(
     private router: Router,
+    private route: ActivatedRoute,
     private authService: AuthService,
     private printService: PrintService,
     private messageService: MessageService,
@@ -68,6 +69,15 @@ export class UserListComponent implements OnInit {
   ngOnInit(): void {
     // Inizializza il servizio di stampa
     this.initializePrintService();
+    this.usersWithInterventi$ = this.route.data.pipe(
+      map((data) => {
+        return data['usersWithInterventi'];
+      }),
+      catchError((error) => {
+        console.log('Error in component:', error);
+        return of([]);
+      })
+    );
   }
 
   initializePrintService() {

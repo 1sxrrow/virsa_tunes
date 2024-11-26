@@ -1,5 +1,12 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, combineLatest, map, Observable, Subject } from 'rxjs';
+import {
+  BehaviorSubject,
+  combineLatest,
+  map,
+  Observable,
+  Subject,
+  tap,
+} from 'rxjs';
 import { costoStorico } from 'src/app/shared/models/costoStorico.model';
 import { InventarioItemModel } from 'src/app/shared/models/inventarioItem.model';
 import {
@@ -32,29 +39,23 @@ export class UserDataService {
   // prettier-ignore
   specificDataSubject: BehaviorSubject<SpecificDataModel[]> = new BehaviorSubject<SpecificDataModel[]>([]);
   // prettier-ignore
-  private usersSubject: BehaviorSubject<UserModel[]> = new BehaviorSubject<UserModel[]>([]);
+  public usersSubject: BehaviorSubject<UserModel[]> = new BehaviorSubject<UserModel[]>([]);
   // prettier-ignore
-  private interventiCountsSubject: BehaviorSubject<{ [userId: number]: number; }> = new BehaviorSubject<{ [userId: number]: number }>({});
+  public interventiCountsSubject: BehaviorSubject<{ [userId: number]: number; }> = new BehaviorSubject<{ [userId: number]: number }>({});
 
   // Combinazione degli Observables
-  usersWithInterventi$ = combineLatest([
-    this.usersSubject.asObservable(),
-    this.interventiCountsSubject.asObservable(),
-  ]).pipe(
-    map(([users, interventiCounts]) =>
-      users.map((user) => ({
-        ...user,
-        interventiCount: interventiCounts[user.id] || 0,
-      }))
-    )
-  );
   users: UserModel[] = [];
 
   constructor(
     private firebaseStoreService: FirebaseStoreService,
     private authService: AuthService
-  ) {
-    this.firebaseStoreService
+  ) {}
+
+  fetchUsersWithInterventi(): Observable<{
+    users: UserModel[];
+    interventiCounts: { [userId: number]: number };
+  }> {
+    return this.firebaseStoreService
       .GetUserList()
       .snapshotChanges()
       .pipe(
@@ -69,21 +70,29 @@ export class UserDataService {
               b.specific_data = [];
             }
             users.push(b);
-
-            // 3. Calcola il numero di interventi per ogni utente
             interventiCounts[b.id] = this.getTotalInterventi(b);
           });
           return { users, interventiCounts };
+        }),
+        tap(({ users, interventiCounts }) => {
+          this.usersSubject.next(users);
+          this.interventiCountsSubject.next(interventiCounts);
         })
-      )
-      .subscribe(({ users, interventiCounts }) => {
-        this.usersSubject.next(users);
-        this.interventiCountsSubject.next(interventiCounts);
-      });
+      );
   }
 
   getUsersWithInterventiObservable(): Observable<UserModelWithInterventi[]> {
-    return this.usersWithInterventi$;
+    return combineLatest([
+      this.usersSubject.asObservable(),
+      this.interventiCountsSubject.asObservable(),
+    ]).pipe(
+      map(([users, interventiCounts]) =>
+        users.map((user) => ({
+          ...user,
+          interventiCount: interventiCounts[user.id] || 0,
+        }))
+      )
+    );
   }
 
   setStandardUsers() {

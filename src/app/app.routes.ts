@@ -1,6 +1,7 @@
 import { Routes } from '@angular/router';
 import { AuthGuard } from './components/login/auth.guard';
 import { NotFoundComponent } from './components/not-found/not-found.component';
+import { usersWithInterventiResolver } from './components/users/user-list.resolver';
 
 export const routes: Routes = [
   {
@@ -15,6 +16,7 @@ export const routes: Routes = [
         (m) => m.UsersComponentsModule
       ),
     canActivate: [AuthGuard],
+    resolve: { usersWithInterventi: usersWithInterventiResolver },
   },
   {
     path: 'inventario',
