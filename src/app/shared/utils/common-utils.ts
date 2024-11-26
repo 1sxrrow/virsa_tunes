@@ -1105,6 +1105,9 @@ export function createForm(
       baseFormStructure.costoPermuta = new FormControl('');
     }
   } else if (tipo_intervento === 'Riparazione') {
+    if (!item.hasOwnProperty('negozio')) {
+      baseFormStructure.negozio = new FormControl('');
+    }
     if (!item.hasOwnProperty('note')) {
       baseFormStructure.note = new FormControl('');
     }
