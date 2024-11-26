@@ -1,20 +1,24 @@
-<label class="label">
+<label class="label" [for]="specificName">
   {{ label }}
 </label>
 <span class="p-input-icon-right w-full">
   <i class="pi pi-angle-down" *ngIf="!selectElement"></i>
   <i
     class="pi pi-times"
-    *ngIf="selectElement"
+    *ngIf="selectElement && !isDisabled"
     (click)="clearSelectElement()"
   ></i>
   <select
     class="fields"
+    [ngClass]="{ fieldsDisabled: isDisabled }"
+    [name]="specificName"
+    [id]="specificName"
     (change)="onSelectionChange($event)"
-    [(ngModel)]="selectElement"
+    [(ngModel)]="formControlName ? selectElement : internalValue"
+    [disabled]="isDisabled"
   >
     <option [ngValue]="null" disabled>Seleziona {{ label }}</option>
-    <option *ngFor="let option of options" [value]="option.value">
+    <option *ngFor="let option of dataSet" [value]="option.value">
       {{ option.label }}
     </option>
   </select>

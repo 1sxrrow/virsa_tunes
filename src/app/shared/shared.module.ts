@@ -1,34 +1,40 @@
-import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { TableModule } from 'primeng/table';
-import { CardModule } from 'primeng/card';
-import { InputTextModule } from 'primeng/inputtext';
-import { DropdownModule } from 'primeng/dropdown';
-import { InputNumberModule } from 'primeng/inputnumber';
-import { KeyFilterModule } from 'primeng/keyfilter';
-import { DialogModule } from 'primeng/dialog';
-import { TooltipModule } from 'primeng/tooltip';
-import { NgSelectModule } from '@ng-select/ng-select';
-import { CheckboxModule } from 'primeng/checkbox';
-import { SelectButtonModule } from 'primeng/selectbutton';
-import { CalendarModule } from 'primeng/calendar';
-import { ToolbarModule } from 'primeng/toolbar';
-import { BreadcrumbModule } from 'primeng/breadcrumb';
-import { FileUploadModule } from 'primeng/fileupload';
-import { ProgressBarModule } from 'primeng/progressbar';
-import { InputTextareaModule } from 'primeng/inputtextarea';
-import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
-import { ButtonModule } from 'primeng/button';
-import { TranslateModule } from '@ngx-translate/core';
+import { NgModule } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
+import { NgSelectModule } from '@ng-select/ng-select';
+import { TranslateModule } from '@ngx-translate/core';
+import { BreadcrumbModule } from 'primeng/breadcrumb';
+import { ButtonModule } from 'primeng/button';
+import { CalendarModule } from 'primeng/calendar';
+import { CardModule } from 'primeng/card';
+import { CheckboxModule } from 'primeng/checkbox';
+import { DialogModule } from 'primeng/dialog';
+import { DropdownModule } from 'primeng/dropdown';
+import { FileUploadModule } from 'primeng/fileupload';
+import { InputNumberModule } from 'primeng/inputnumber';
+import { InputTextModule } from 'primeng/inputtext';
+import { InputTextareaModule } from 'primeng/inputtextarea';
+import { KeyFilterModule } from 'primeng/keyfilter';
 import { OverlayPanelModule } from 'primeng/overlaypanel';
+import { ProgressBarModule } from 'primeng/progressbar';
+import { SelectButtonModule } from 'primeng/selectbutton';
+import { TableModule } from 'primeng/table';
+import { ToolbarModule } from 'primeng/toolbar';
+import { TooltipModule } from 'primeng/tooltip';
 import { PersonalConfirmDialogModule } from 'src/app/shared/components/confirm-dialog/confirm.dialog.module';
 import { CustomSelectComponent } from '../components/items/custom-select/custom-select.component';
 import { UppercaseFirstLetterPipe } from './pipes/uppercase.pipe';
+import { CircleSpinnerComponent } from './components/circle-spinner/circle-spinner.component';
 
 @NgModule({
-  declarations: [CustomSelectComponent, UppercaseFirstLetterPipe],
+  declarations: [
+    CustomSelectComponent,
+    UppercaseFirstLetterPipe,
+    CircleSpinnerComponent,
+  ],
   imports: [
+    ReactiveFormsModule,
     CommonModule,
     TableModule,
     CardModule,
@@ -84,6 +90,7 @@ import { UppercaseFirstLetterPipe } from './pipes/uppercase.pipe';
     PersonalConfirmDialogModule,
     CustomSelectComponent,
     UppercaseFirstLetterPipe,
+    CircleSpinnerComponent
   ],
 })
 export class SharedModule {}

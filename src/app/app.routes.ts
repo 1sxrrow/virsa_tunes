@@ -1,5 +1,4 @@
 import { Routes } from '@angular/router';
-import { InventarioItemListComponent } from './components/inventario/inventario-list/inventario-item-list.component';
 import { AuthGuard } from './components/login/auth.guard';
 import { NotFoundComponent } from './components/not-found/not-found.component';
 
@@ -7,12 +6,12 @@ export const routes: Routes = [
   {
     path: '',
     redirectTo: 'users',
-    pathMatch: 'full',
+    pathMatch: 'full', 
   },
   {
     path: 'users',
     loadChildren: () =>
-      import('./components/user/users.module').then(
+      import('./components/users/users.module').then(
         (m) => m.UsersComponentsModule
       ),
     canActivate: [AuthGuard],

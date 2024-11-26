@@ -1,4 +1,5 @@
 import { FileUpload } from '../utils/common-utils';
+import { costoStorico } from './costoStorico.model';
 import { Incasso } from './incasso.model';
 import { Incassov2 } from './incassov2.model';
 import { prodottiAggiuntivi } from './prodotti-aggiuntivi.model';
@@ -33,6 +34,7 @@ export class SpecificDataModel {
   public files?: FileUpload[];
   public idDbIncasso?: string;
   public incassov2?: Incassov2;
+  public listaStorico?: costoStorico[];
 
   public constructor(init?: Partial<SpecificDataModel>) {
     Object.assign(this, init);

@@ -1,4 +1,11 @@
-import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import {
+  Component,
+  EventEmitter,
+  Input,
+  OnInit,
+  Output,
+  ViewEncapsulation,
+} from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { MessageService } from 'primeng/api';
 import { SpesaFissa } from 'src/app/shared/models/spesaFissa.model';
@@ -8,7 +15,7 @@ import { callModalToast } from 'src/app/shared/utils/common-utils';
 @Component({
   selector: 'spesa-fissa-modal',
   templateUrl: './spesa-fissa-modal.component.html',
-  styleUrls: ['./spesa-fissa-modal.component.scss'],
+  encapsulation: ViewEncapsulation.None,
 })
 export class SpesaFissaModalComponent implements OnInit {
   @Input() mesiSpesaFissa: string[];

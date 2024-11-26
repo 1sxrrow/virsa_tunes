@@ -5,7 +5,7 @@ import {
 } from '@angular/common';
 import { HttpClient, HttpClientModule } from '@angular/common/http';
 import localeIt from '@angular/common/locales/it';
-import { isDevMode, LOCALE_ID, NgModule } from '@angular/core';
+import { APP_INITIALIZER, isDevMode, LOCALE_ID, NgModule } from '@angular/core';
 import { initializeApp, provideFirebaseApp } from '@angular/fire/app';
 import { FIREBASE_OPTIONS } from '@angular/fire/compat';
 import { getDatabase, provideDatabase } from '@angular/fire/database';
@@ -26,13 +26,18 @@ import { routes } from './app.routes';
 import { FooterComponent } from './components/footer/footer.component';
 import { HeaderComponent } from './components/header/header.component';
 import { SharedModule } from './shared/shared.module';
+import { ThemeService } from './shared/services/theme/theme.service';
 registerLocaleData(localeIt);
 
 export function HttpLoaderFactory(httpClient: HttpClient) {
   return new TranslateHttpLoader(httpClient);
 }
-const firebaseConfig = isDevMode() ? devFirebaseConfig : prodFirebaseConfig;
-const dbname = isDevMode() ? 'dev' : 'prod';
+
+export function initializeThemeApp(themeService: ThemeService) {
+  return () => themeService.initializeTheme();
+}
+const firebaseConfig = prodFirebaseConfig;
+const dbname = 'prod';
 @NgModule({
   declarations: [AppComponent, HeaderComponent, FooterComponent],
   imports: [
@@ -57,8 +62,14 @@ const dbname = isDevMode() ? 'dev' : 'prod';
   providers: [
     { provide: FIREBASE_OPTIONS, useValue: firebaseConfig },
     CurrencyPipe,
-    { provide: LOCALE_ID, useValue: 'fr-FR' },
+    { provide: LOCALE_ID, useValue: 'it-IT' },
     MessageService,
+    {
+      provide: APP_INITIALIZER,
+      useFactory: initializeThemeApp,
+      deps: [ThemeService],
+      multi: true,
+    },
   ],
   bootstrap: [AppComponent],
 })

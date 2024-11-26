@@ -3,7 +3,7 @@ import { InventarioItemListComponent } from './inventario-list/inventario-item-l
 import { InventarioModalComponent } from './inventario-modal/inventario-modal.component';
 import { SharedModule } from 'src/app/shared/shared.module';
 import { CommonModule } from '@angular/common';
-import { InventarioModalStorage } from './inventario-modal/inventario-modal.service';
+import { InventarioModalStorage } from './inventario-modal/inventario-modal-storage.service';
 import { InventarioRoutingModule } from './inventario.routing.module';
 
 @NgModule({

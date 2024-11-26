@@ -1,36 +1,39 @@
 <app-circle-spinner *ngIf="loading"></app-circle-spinner>
 <div *ngIf="!loading" class="p-10">
   <div class="grid place-items-center w-auto">
-    <div class="block border border-gray-600 p-8 rounded-lg bg-slate-900">
-      <div class="grid place-items-center" (keyup.enter)="CheckLogin()">
-        <h1 class="font-extrabold text-xl mb-2 text-white place-items-start">
-          Login
-        </h1>
-        <span class="p-float-label">
+    <div class="loginContainer" (keyup.enter)="CheckLogin()">
+      <h1 class="loginLabel">Login</h1>
+      <div class="fieldsContainer">
+        <div class="mb-2">
+          <label for="email_login" class="label"> Email</label>
           <input
             pInputText
-            id="email"
+            label="email"
+            id="email_login"
+            name="email_login"
             [(ngModel)]="emailValue"
-            class="w-96"
+            class="fields"
             [class.error]="emailError"
             [class.ng-invalid]="emailError"
             [class.ng-dirty]="emailError"
           />
-          <label htmlFor="email">E-mail</label>
-        </span>
-        <span class="p-float-label mt-4 mb-2">
+        </div>
+        <div class="mb-2">
+          <label for="password_login" class="label"> Password</label>
           <input
             pInputText
+            label="Password"
             type="password"
-            id="password"
+            id="password_login"
+            name="password_login"
             [(ngModel)]="passwordValue"
-            class="w-96"
+            class="fields"
             [class.error]="passwordError"
             [class.ng-invalid]="passwordError"
             [class.ng-dirty]="passwordError"
           />
-          <label htmlFor="password">Password</label>
-        </span>
+        </div>
+
         <span>
           <small
             [hidden]="!passwordError && !emailError"
@@ -40,14 +43,15 @@
             {{ errorMessage }}</small
           >
         </span>
-        <p-button
-          class="grid place-items-end mt-2"
-          label="Login"
-          ajax="false"
-          styleClass="p-button-secondary"
-          (click)="CheckLogin()"
-        ></p-button>
       </div>
+
+      <p-button
+        class="grid place-items-end mt-2"
+        label="Login"
+        ajax="false"
+        styleClass="p-button-secondary"
+        (click)="CheckLogin()"
+      ></p-button>
     </div>
   </div>
 </div>

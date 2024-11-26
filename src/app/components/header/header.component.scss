@@ -1,10 +1,124 @@
-@import "tailwindcss/base";
+.header-center-section {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+}
+.header-left-section {
+  // empty because no nead
+  margin: 0;
+}
+.header-right-section {
+  margin: 0;
+}
 
-@import "tailwindcss/components";
+.header-nav {
+  --tw-bg-opacity: 1;
+  background-color: var(--header-background-color);
+  border-color: var(--header-border-color);
+}
 
-@import "tailwindcss/utilities";
+.header-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
 
-
-::ng-deep .p-button:enabled:hover {
+.buttonStyleGeneral {
+  padding: 1rem;
+  font-size: 1.5rem /* 24px */;
+  line-height: 2rem /* 32px */;
+  outline: none;
+  border: none;
+  border-radius: 0px;
+  border-style: none;
   border-color: transparent;
+  box-shadow: none;
+
+  &:focus {
+    outline: none;
+    border: none;
+    box-shadow: none;
+  }
+
+  &:hover {
+    outline: none;
+    border: none;
+    box-shadow: none;
+  }
+
+  &:active {
+    outline: none;
+    border: none;
+    box-shadow: none;
+  }
+}
+
+body.theme-light {
+  .header-menu-button {
+    transition: background-color 0.2s ease, color 0.2s ease, opacity 0.2s ease;
+    @extend .buttonStyleGeneral;
+    background: #0f172a;
+    color: white;
+    &:hover {
+      background: #0f172a;
+      color: white;
+    }
+  }
+
+  .theme-toggle-button {
+    @extend .buttonStyleGeneral;
+    @extend .header-menu-button;
+    position: relative;
+
+    .pi {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      transition: opacity 0.2s ease;
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .pi.active {
+      opacity: 1;
+    }
+  }
+}
+
+body.theme-dark {
+  .center-section {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+  }
+  .header-menu-button {
+    transition: background-color 0.2s ease, color 0.2s ease, opacity 0.2s ease;
+    @extend .buttonStyleGeneral;
+    background: #1c1917;
+    color: white;
+    &:hover {
+      background: #1c1917;
+      color: white;
+    }
+  }
+  .theme-toggle-button {
+    @extend .buttonStyleGeneral;
+    @extend .header-menu-button;
+    position: relative;
+
+    .pi {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      transition: opacity 0.2s ease;
+      opacity: 0;
+      pointer-events: none; /* Assicura che solo il pulsante risponda ai clic */
+    }
+
+    .pi.active {
+      opacity: 1;
+    }
+  }
 }

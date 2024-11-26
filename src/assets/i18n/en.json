@@ -1,5 +1,9 @@
 {
   "user_data": {
+    "title": {
+      "USER_DATA_MODAL_ADD_TITLE": "Add Operation",
+      "USER_DATA_MODAL_EDIT_TITLE": "Edit Operation"
+    },
     "totale": "Total",
     "modello_telefono_table": "Item",
     "data_intervento": "Operation Date",
@@ -12,6 +16,7 @@
     "costo_permuta": "Barter Price (€)",
     "costo_cambio": "Sparepart Price (€)",
     "costo_spesa_fissa": "Costo Incasso",
+    "costo_storico": "History Prices",
     "canale_com": "Canale Comunicazione",
     "negozio": "Shop",
     "prodotti_aggiuntivi": "Additional Products",
@@ -56,6 +61,12 @@
     "aggiungi": "Add",
     "modifica": "Update",
     "note": "Notes"
+  },
+  "inventario": {
+    "marca": "Brand",
+    "grado": "Grade",
+    "negozio": "Shop",
+    "garanzia": "Warranty"
   },
   "primeng": {
     "dayNames": [

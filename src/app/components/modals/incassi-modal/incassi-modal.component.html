@@ -22,16 +22,18 @@
     </div>
   </ng-template>
   <div class="grid grid-cols-2 gap-2 mb-3">
-    <app-custom-select
+    <virsa-select
       [label]="'user_data.negozio' | translate"
-      [options]="filterNegozio"
+      [dataSet]="filterNegozio"
+      specificName="negozio_incassi_modal"
       (selectionChange)="onNegozioOptionSelected($event)"
-    ></app-custom-select>
-    <app-custom-select
+    ></virsa-select>
+    <virsa-select
       [label]="'user_data.tipo_intervento' | translate"
-      [options]="filterTipoIntervento"
+      [dataSet]="filterTipoIntervento"
+      specificName="tipo_intervento_incassi_modal"
       (selectionChange)="onTipoInterventoOptionSelected($event)"
-    ></app-custom-select>
+    ></virsa-select>
   </div>
   <!-- Table per incassi non filtrati -->
   <p-table [value]="incassiShow" [loading]="loadingTable">

@@ -9,30 +9,31 @@
     <p-button
       label="Export DB"
       (click)="exportFirebaseDatabaseToJSON()"
-      class="mr-2 truncate-text"
+      class="mr-2 truncate"
       styleClass="p-button-secondary"
     ></p-button>
     <p-button
       label="Import DB"
       (click)="showUploadComponentMethod()"
-      class="mr-2 truncate-text"
+      class="mr-2 truncate"
       styleClass="p-button-secondary"
     ></p-button>
     <p-button
       label="Incassi"
       (click)="showIncassiModalMethod()"
-      class="mr-2 truncate-text"
+      class="mr-2 truncate"
       styleClass="p-button-secondary"
     ></p-button>
     <p-button
       label="Statistiche"
+      class="truncate"
       (click)="opStats.toggle($event)"
       styleClass="p-button-info"
     ></p-button>
     <p-button
       [hidden]="true"
       [label]="ambiente === 'test' ? 'Passa a Produzione' : 'Passa a Test'"
-      class="truncate-text"
+      class="truncate"
       (click)="passaggioAmbiente()"
       styleClass="p-button-info"
     ></p-button>

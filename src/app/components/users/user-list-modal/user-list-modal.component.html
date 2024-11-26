@@ -1,0 +1,248 @@
+<p-dialog
+  [header]="modalTitle"
+  [(visible)]="showModal"
+  [style]="{ width: '50vw' }"
+  [modal]="true"
+  (onHide)="handleClose()"
+>
+  <div class="grid items-center" (keyup.enter)="enterCheck()">
+    <form [formGroup]="formData">
+      <div class="grid grid-cols-2 mb-2">
+        <div class="mb-1 mr-2">
+          <label for="nome_user_list_modal" class="label">
+            {{ "user_data.nome" | translate }}
+          </label>
+          <input
+            id="nome_user_list_modal"
+            name="nome_user_list_modal"
+            pInputText
+            type="text"
+            formControlName="nome"
+            class="w-11/12 fields"
+            required
+          />
+        </div>
+        <div class="mb-1">
+          <label class="label" for="cognome_user_list_modal">
+            {{ "user_data.cognome" | translate }}
+          </label>
+          <input
+            id="cognome_user_list_modal"
+            name="cognome_user_list_modal"
+            pInputText
+            type="text"
+            class="ml-2"
+            formControlName="cognome"
+            class="w-11/12 fields"
+            required
+          />
+        </div>
+      </div>
+      <div class="grid grid-cols-2 mb-2">
+        <div class="mb-1 mr-2">
+          <label class="label" for="numero_telefono">
+            {{ "user_data.telefono" | translate }}
+          </label>
+          <input
+            id="numero_telefono"
+            pInputText
+            formControlName="numero_telefono"
+            class="w-11/12 fields"
+            required
+          />
+        </div>
+        <div class="mb-1">
+          <label class="label" for="indirizzo">
+            {{ "user_data.indirizzo" | translate }}
+          </label>
+          <input
+            id="indirizzo"
+            pInputText
+            type="text"
+            class="ml-2"
+            formControlName="indirizzo"
+            class="w-11/12 fields"
+            required
+          />
+        </div>
+      </div>
+      <div class="grid grid-cols-2 mb-2">
+        <div class="mb-1 mr-2">
+          <label class="label" for="citta">
+            {{ "user_data.citta" | translate }}
+          </label>
+          <input
+            id="citta"
+            pInputText
+            type="text"
+            formControlName="citta"
+            class="w-11/12 fields"
+            required
+          />
+        </div>
+        <div class="mb-1">
+          <label class="label" for="cap_user_list_modal">
+            {{ "user_data.cap" | translate }}
+          </label>
+          <input
+            id="cap_user_list_modal"
+            name="cap_user_list_modal"
+            pInputText
+            pKeyFilter="int"
+            class="w-11/12 fields"
+            formControlName="cap"
+            required
+          />
+        </div>
+      </div>
+      <div class="grid grid-cols-2 mb-2">
+        <div class="mb-1 mr-2">
+          <virsa-select
+            [label]="'user_data.canale_com' | translate"
+            [dataSet]="canaleComunicazioniDataSet"
+            specificName="canale_com_inventario_modal"
+            formControlName="canale_com"
+            [group]="formData"
+            [externalValue]="formData.get('canale_com').value"
+          ></virsa-select>
+        </div>
+        <div class="mb-1 mt-4 flex items-center">
+          <label for="dati_fattura_user_list_modal" class="mr-2">
+            {{ "user_data.dati_fattura" | translate }}
+          </label>
+          <p-checkbox
+            formControlName="datiFattura"
+            [binary]="true"
+            [(ngModel)]="checkedFattura"
+            inputId="dati_fattura_user_list_modal"
+            name="dati_fattura_user_list_modal"
+            class="mr-2"
+          ></p-checkbox>
+        </div>
+      </div>
+      <div class="datiFatturaContainer" *ngIf="checkedFattura">
+        <div class="grid grid-cols-2 mb-2">
+          <div class="mb-1 mr-2">
+            <label for="codice_fiscale_user_list_modal" class="label">
+              {{ "user_data.codice_fiscale" | translate }}
+            </label>
+            <input
+              type="text"
+              name="codice_fiscale_user_list_modal"
+              id="codice_fiscale_user_list_modal"
+              class="fields"
+              formControlName="codiceFiscale"
+            />
+          </div>
+          <div class="mb-1">
+            <label for="partita_iva_user_list_modal" class="label">
+              {{ "user_data.partita_iva" | translate }}
+            </label>
+            <input
+              type="text"
+              name="partita_iva_user_list_modal"
+              id="partita_iva_user_list_modal"
+              class="fields"
+              formControlName="partitaIva"
+            />
+          </div>
+        </div>
+        <div class="grid grid-cols-2 mb-2">
+          <div class="mb-1 mr-2">
+            <label for="pec_user_list_modal" class="label">
+              {{ "user_data.pec" | translate }}
+            </label>
+            <input
+              type="text"
+              name="pec_user_list_modal"
+              id="pec_user_list_modal"
+              class="fields"
+              formControlName="pec"
+            />
+          </div>
+          <div class="mb-1">
+            <label for="codice_univoco_user_list_modal" class="label">
+              {{ "user_data.codice_univoco" | translate }}
+            </label>
+            <input
+              type="text"
+              name="codice_univoco_user_list_modal"
+              id="codice_univoco_user_list_modal"
+              class="fields"
+              formControlName="codiceUnivoco"
+            />
+          </div>
+          <div class="mb-1 mr-2 col-span-2">
+            <label for="denominazione_user_list_modal" class="label">
+              {{ "user_data.denominazione" | translate }}
+            </label>
+            <input
+              type="text"
+              name="denominazione_user_list_modal"
+              id="denominazione_user_list_modal"
+              class="fields"
+              formControlName="denominazione"
+            />
+          </div>
+          <div class="mb-1 mr-2">
+            <label for="indirizzo_fatturazione_user_list_modal" class="label">
+              {{ "user_data.indirizzo_fatturazione" | translate }}
+            </label>
+            <input
+              type="text"
+              name="indirizzo_fatturazione_user_list_modal"
+              id="indirizzo_fatturazione_user_list_modal"
+              class="fields"
+              formControlName="indirizzoFatturazione"
+            />
+          </div>
+          <div class="mb-1">
+            <label for="citta_fatturazione_user_list_modal" class="label">
+              {{ "user_data.citta_fatturazione" | translate }}
+            </label>
+            <input
+              type="text"
+              name="citta_fatturazione_user_list_modal"
+              id="citta_fatturazione_user_list_modal"
+              class="fields"
+              formControlName="cittaFatturazione"
+            />
+          </div>
+        </div>
+      </div>
+      <!-- <div class="row mb-2">
+          <p
+            [hidden]="!isInfo || !utenteInserimento"
+            class="text-gray-500 text-sm italic"
+          >
+            Utente di inserimento: {{ utenteInserimento }}
+          </p>
+          <p
+            [hidden]="!isInfo || !utenteUltimaModifica"
+            [value]="utenteUltimaModifica"
+            class="text-gray-500 text-sm italic"
+          >
+            Utente ultima modifica: {{ utenteUltimaModifica }}
+          </p>
+        </div> -->
+    </form>
+  </div>
+  <div class="grid justify-center">
+    <p-button
+      styleClass="p-button-raised p-button-secondary"
+      *ngIf="mode === 'Add'"
+      (onClick)="addNewUser()"
+      [disabled]="!formData.valid"
+    >
+      {{ "user_data.aggiungi" | translate }}
+    </p-button>
+    <p-button
+      styleClass="p-button-raised p-button-secondary"
+      *ngIf="mode === 'Edit'"
+      (onClick)="editUser()"
+      [disabled]="formData.valid && formData.dirty"
+    >
+      {{ "user_data.modifica" | translate }}
+    </p-button>
+  </div>
+</p-dialog>

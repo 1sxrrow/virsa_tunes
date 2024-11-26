@@ -1,0 +1,11 @@
+<label class="label">
+  {{ label }}
+</label>
+<input
+  type="text"
+  class="fields"
+  (input)="onChange($event.target.value)"
+  (blur)="onTouched()"
+  [required]="required"
+  [formControl]="formControl"
+/>

@@ -1,15 +1,10 @@
 import { NgModule } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { TranslateModule } from '@ngx-translate/core';
-import { DialogModule } from 'primeng/dialog';
-import { ButtonModule } from 'primeng/button';
-import { UppercaseFirstLetterPipe } from 'src/app/shared/pipes/uppercase.pipe';
+import { SharedModule } from 'src/app/shared/shared.module';
 import { AdminToolsModalComponent } from './admin-tools-modal/admin-tools-modal.component';
 import { IncassiModalComponent } from './incassi-modal/incassi-modal.component';
 import { SpesaFissaModalComponent } from './spesa-fissa-modal/spesa-fissa-modal.component';
 import { SpeseFisseModalComponent } from './spese-fisse-modal/spese-fisse-modal.component';
-import { SharedModule } from 'src/app/shared/shared.module';
+import { CommonModule } from '@angular/common';
 
 @NgModule({
   declarations: [
@@ -17,9 +12,13 @@ import { SharedModule } from 'src/app/shared/shared.module';
     SpeseFisseModalComponent,
     IncassiModalComponent,
     AdminToolsModalComponent,
-    UppercaseFirstLetterPipe,
   ],
-  imports: [SharedModule],
-  exports: [UppercaseFirstLetterPipe],
+  imports: [CommonModule, SharedModule],
+  exports: [
+    SpesaFissaModalComponent,
+    SpeseFisseModalComponent,
+    IncassiModalComponent,
+    AdminToolsModalComponent,
+  ],
 })
 export class ModalComponentsModule {}

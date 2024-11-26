@@ -1,64 +1,162 @@
 // Enable nesting
-@use 'sass:meta';
+@use "sass:meta";
 
 /* You can add global styles to this file, and also import other style files */
 @import "tailwindcss/base";
-
 @import "tailwindcss/components";
-
 @import "tailwindcss/utilities";
-
+// DARK BASE COLOR 4 HEADER CARD TABLE  rgb(28 25 23);
 /* PrimeNG */
-@import "primeng/resources/themes/lara-dark-indigo/theme.css";
+@import "src/assets/themes/lara-light-blue.css";
+@import "app/shared-styles.scss";
+
+body.theme-light {
+  --header-background-color: #0f172a;
+  --header-border-color: #0f172a;
+  --primary-color: #1976d2;
+  --background-color: #ffffff;
+  --field-border-color: #ced4da;
+  --fieldSearchBgcolor: white;
+  --text-color: #000000;
+  --text-label-color: #6c757d;
+  --input-field-color: #6c757d;
+  .p-button {
+    border: none;
+    outline: none;
+    border-color: var(--checkbox-border-color);
+  }
+}
+
+/* Dark Theme */
+body.theme-dark {
+  --header-background-color: #1c1917;
+  --header-border-color: #1c1917;
+  --primary-color: #90caf9;
+  --background-color: #121212;
+  --modal-background-color: #1c1917;
+  --modal-border-color: #373737;
+  --table-header-background-color: #363230;
+  --table-header-border-color: #4b4948;
+  --fieldSearchBgcolor: #2a2624;
+  --field-background-color: #3c3b3b;
+  --field-border-color: #3c3b3b;
+  --checkbox-background-color: #2a2624;
+  --checkbox-border-color: #3c3b3b;
+  --button-info-background-color: #3c3b3b;
+  --text-color: #ffffff;
+  --inverse-text-color: ;
+  --text-label-color: #ffffff;
+  --input-field-color: #ffffff;
+  .p-button {
+    border: none;
+    outline: none;
+    border-color: transparent;
+  }
+}
+
 @import "primeng/resources/primeng.css";
 @import "primeicons/primeicons.css";
 
 @import "~@ng-select/ng-select/themes/default.theme.css";
 
-.ng-dropdown-panel .ng-dropdown-panel-items .ng-optgroup{
-    appearance: none;
-    -moz-appearance: none;
-    background-color: #374151;
-    color: rgb(17 24 39 / var(--tw-text-opacity));
-    font-size: 0.875rem;
-    line-height: 1.25rem;
-    --tw-ring-opacity: 1;
-    --tw-ring-color: rgb(59 130 246 / var(--tw-ring-opacity));
-    --tw-border-opacity: 1;
-    border-color: rgb(59 130 246 / var(--tw-border-opacity));
-    display: block;
-    width: 100%;
-    padding: 0.625rem;
-    color: #fff;
-    --tw-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
-    --tw-shadow-colored: 0 4px 6px -1px var(--tw-shadow-color),
-      0 2px 4px -2px var(--tw-shadow-color);
-    box-shadow: var(--tw-ring-offset-shadow, 0 0 #0000),
-      var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow);
-    border-radius: 0.5rem;
+@layer base {
+  input[type="number"]::-webkit-inner-spin-button,
+  input[type="number"]::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
   }
-  .ng-option-label{
-    appearance: none;
-    -moz-appearance: none;
-    background-color: #374151;
-    color: rgb(17 24 39 / var(--tw-text-opacity));
-    font-size: 0.875rem;
-    line-height: 1.25rem;
-    --tw-ring-opacity: 1;
-    --tw-ring-color: rgb(59 130 246 / var(--tw-ring-opacity));
-    --tw-border-opacity: 1;
-    border-color: rgb(59 130 246 / var(--tw-border-opacity));
-    display: block;
-    width: 100%;
-    padding: 0.625rem;
-    color: #fff;
-    --tw-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
-    --tw-shadow-colored: 0 4px 6px -1px var(--tw-shadow-color),
-      0 2px 4px -2px var(--tw-shadow-color);
-    box-shadow: var(--tw-ring-offset-shadow, 0 0 #0000),
-      var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow);
-    border-radius: 0.5rem;
+}
+
+.ng-dropdown-panel .ng-dropdown-panel-items .ng-optgroup {
+  appearance: none;
+  -moz-appearance: none;
+  background-color: #374151;
+  color: rgb(17 24 39 / var(--tw-text-opacity));
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+  --tw-ring-opacity: 1;
+  --tw-ring-color: rgb(59 130 246 / var(--tw-ring-opacity));
+  --tw-border-opacity: 1;
+  border-color: rgb(59 130 246 / var(--tw-border-opacity));
+  display: block;
+  width: 100%;
+  padding: 0.625rem;
+  color: #fff;
+  --tw-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+  --tw-shadow-colored: 0 4px 6px -1px var(--tw-shadow-color),
+    0 2px 4px -2px var(--tw-shadow-color);
+  box-shadow: var(--tw-ring-offset-shadow, 0 0 #0000),
+    var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow);
+  border-radius: 0.5rem;
+}
+.ng-option-label {
+  appearance: none;
+  -moz-appearance: none;
+  background-color: #374151;
+  color: rgb(17 24 39 / var(--tw-text-opacity));
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+  --tw-ring-opacity: 1;
+  --tw-ring-color: rgb(59 130 246 / var(--tw-ring-opacity));
+  --tw-border-opacity: 1;
+  border-color: rgb(59 130 246 / var(--tw-border-opacity));
+  display: block;
+  width: 100%;
+  padding: 0.625rem;
+  color: #fff;
+  --tw-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+  --tw-shadow-colored: 0 4px 6px -1px var(--tw-shadow-color),
+    0 2px 4px -2px var(--tw-shadow-color);
+  box-shadow: var(--tw-ring-offset-shadow, 0 0 #0000),
+    var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow);
+  border-radius: 0.5rem;
+}
+
+:root {
+  --primary-color: #1976d2;
+  --background-color: #ffffff;
+  --text-color: #3b3b3b;
+  transition: background-color 0.3s, color 0.3s, border-color 0.3s;
+}
+
+html,
+body {
+  background-color: var(--background-color);
+  color: var(--text-color);
+  transition: background-color 0.3s, color 0.3s;
+  margin: 0;
+  font-family: Roboto, "Helvetica Neue", sans-serif;
+  height: 100vh;
+}
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+.flex-container {
+  display: flex;
+  justify-content: center; /* Centra l'input orizzontalmente */
+  width: 50%;
+}
+.responsive-input {
+  flex: 1; /* Permette all'input di crescere per riempire lo spazio disponibile */
+  max-width: 600px; /* Larghezza massima iniziale */
+  transition: max-width 0.25s; /* Transizione fluida */
+
+  @media (max-width: 1200px) {
+    max-width: 500px; /* Riduci la larghezza massima per schermi più piccoli */
   }
-  
-html, body { height: 100%; }
-body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
+
+  @media (max-width: 992px) {
+    max-width: 400px; /* Riduci ulteriormente la larghezza massima */
+  }
+
+  @media (max-width: 768px) {
+    max-width: 300px; /* Riduci ulteriormente la larghezza massima */
+  }
+
+  @media (max-width: 576px) {
+    max-width: 200px; /* Riduci ulteriormente la larghezza massima */
+  }
+}

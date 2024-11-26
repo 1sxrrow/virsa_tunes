@@ -1,4 +1,10 @@
-import { Component, isDevMode, OnDestroy, OnInit } from '@angular/core';
+import {
+  Component,
+  isDevMode,
+  OnDestroy,
+  OnInit,
+  ViewEncapsulation,
+} from '@angular/core';
 import {
   ConfirmationService,
   ConfirmEventType,
@@ -14,13 +20,13 @@ import {
   getBreadcrumbHome,
 } from 'src/app/shared/utils/common-utils';
 import { AuthService } from '../../login/auth.service';
-import { InventarioModalStorage } from '../inventario-modal/inventario-modal.service';
+import { InventarioModalStorage } from '../inventario-modal/inventario-modal-storage.service';
 
 @Component({
   selector: 'app-inventario-item-list',
   templateUrl: './inventario-item-list.component.html',
-  styleUrls: ['./inventario-item-list.component.scss'],
   providers: [ConfirmationService],
+  encapsulation: ViewEncapsulation.None,
 })
 export class InventarioItemListComponent implements OnInit, OnDestroy {
   items: MenuItem[] | undefined = [
@@ -88,7 +94,6 @@ export class InventarioItemListComponent implements OnInit, OnDestroy {
    * Mostra modale in modalità di inserimento
    **/
   addItemModal() {
-    debugger;
     this.inventarioModalStorage.reset();
     this.inventarioModalStorage.input.mode = 'Add';
     this.showModal = !this.showModal;

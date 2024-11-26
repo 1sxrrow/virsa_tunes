@@ -1,16 +1,16 @@
 import { Injectable } from '@angular/core';
-import { map, Subject } from 'rxjs';
-import { Incassov2 } from 'src/app/shared/models/incassov2.model';
+import { BehaviorSubject, combineLatest, map, Observable, Subject } from 'rxjs';
+import { costoStorico } from 'src/app/shared/models/costoStorico.model';
 import { InventarioItemModel } from 'src/app/shared/models/inventarioItem.model';
 import {
   calculateIncassoInterventov2,
   calculateMese,
   FileUpload,
 } from 'src/app/shared/utils/common-utils';
-import { prodottiAggiuntivi } from '../../shared/models/prodotti-aggiuntivi.model';
-import { SpecificDataModel } from '../../shared/models/specific-data.model';
-import { UserModel } from '../../shared/models/user-data.model';
-import { FirebaseStoreService } from '../../shared/services/firebase/firebase-store.service';
+import { prodottiAggiuntivi } from '../../../shared/models/prodotti-aggiuntivi.model';
+import { SpecificDataModel } from '../../../shared/models/specific-data.model';
+import { UserModel } from '../../../shared/models/user-data.model';
+import { FirebaseStoreService } from '../../../shared/services/firebase/firebase-store.service';
 import {
   canaleComunicazione,
   condizioniProdotto,
@@ -19,28 +19,75 @@ import {
   tipoIntervento,
   tipoPagamento,
   tipoParte,
-} from '../../shared/utils/common-enums';
-import { AuthService } from '../login/auth.service';
+} from '../../../shared/utils/common-enums';
+import { AuthService } from '../../login/auth.service';
+
+interface UserModelWithInterventi extends UserModel {
+  interventiCount: number;
+}
+
 @Injectable({ providedIn: 'root' })
 export class UserDataService {
-  usersChanged = new Subject<UserModel[]>();
-  specificDataChanged = new Subject<SpecificDataModel[]>();
+  locale = 'it-IT';
+  // prettier-ignore
+  specificDataSubject: BehaviorSubject<SpecificDataModel[]> = new BehaviorSubject<SpecificDataModel[]>([]);
+  // prettier-ignore
+  private usersSubject: BehaviorSubject<UserModel[]> = new BehaviorSubject<UserModel[]>([]);
+  // prettier-ignore
+  private interventiCountsSubject: BehaviorSubject<{ [userId: number]: number; }> = new BehaviorSubject<{ [userId: number]: number }>({});
+
+  // Combinazione degli Observables
+  usersWithInterventi$ = combineLatest([
+    this.usersSubject.asObservable(),
+    this.interventiCountsSubject.asObservable(),
+  ]).pipe(
+    map(([users, interventiCounts]) =>
+      users.map((user) => ({
+        ...user,
+        interventiCount: interventiCounts[user.id] || 0,
+      }))
+    )
+  );
   users: UserModel[] = [];
+
   constructor(
     private firebaseStoreService: FirebaseStoreService,
     private authService: AuthService
-  ) {}
+  ) {
+    this.firebaseStoreService
+      .GetUserList()
+      .snapshotChanges()
+      .pipe(
+        map((data) => {
+          const users: UserModel[] = [];
+          const interventiCounts: { [userId: number]: number } = {};
+          data.forEach((item) => {
+            let a = item.payload.toJSON();
+            a['$key'] = item.key;
+            let b = a as UserModel;
+            if (!b.specific_data) {
+              b.specific_data = [];
+            }
+            users.push(b);
 
-  public tipoIntervento = tipoIntervento;
-  public canaleComunicazione = canaleComunicazione;
-  public tipoPagamento = tipoPagamento;
-  public condizioniProdotto = condizioniProdotto;
-  public mesiGaranzia = garanzia;
-  public tipoParte = tipoParte;
-  public negozio = negozioInventario;
+            // 3. Calcola il numero di interventi per ogni utente
+            interventiCounts[b.id] = this.getTotalInterventi(b);
+          });
+          return { users, interventiCounts };
+        })
+      )
+      .subscribe(({ users, interventiCounts }) => {
+        this.usersSubject.next(users);
+        this.interventiCountsSubject.next(interventiCounts);
+      });
+  }
+
+  getUsersWithInterventiObservable(): Observable<UserModelWithInterventi[]> {
+    return this.usersWithInterventi$;
+  }
 
   setStandardUsers() {
-    this.usersChanged.next(this.users.slice());
+    this.usersSubject.next(this.users.slice());
   }
 
   getUserDatas() {
@@ -64,27 +111,18 @@ export class UserDataService {
       return user[0];
     }
   }
-
-  getTotalInterventi(id: number) {
-    let user: UserModel[] = this.users.filter(function (user) {
-      return user.id === id;
-    });
-    let s = user[0].specific_data;
-    if (typeof s === null || s === undefined) {
-      return 0;
-    } else {
-      return Object.keys(s).length;
-    }
+  getTotalInterventi(user: UserModel): number {
+    return Object.keys(user.specific_data).length || 0;
   }
 
   addUser(userModel: UserModel) {
     userModel.id = this.getLastId() + 1;
     userModel.utenteInserimento = this.authService.getUserState().displayName;
-    userModel.dataInserimento = new Date().toLocaleDateString();
+    userModel.dataInserimento = new Date().toLocaleDateString(this.locale);
     let u = new UserModel(userModel);
     this.users.push(u);
     let idReturned = this.firebaseStoreService.AddUser(u);
-    this.usersChanged.next(this.users.slice());
+    this.usersSubject.next(this.users.slice());
     return idReturned;
   }
 
@@ -93,51 +131,31 @@ export class UserDataService {
       return user.id !== id;
     });
     this.firebaseStoreService.DeleteUser(id.toString());
-    this.usersChanged.next(this.users.slice());
+    this.usersSubject.next(this.users.slice());
   }
 
-  editUser(
-    id_input: number,
-    userModel: UserModel,
-    specific_data_i?: SpecificDataModel[]
-  ) {
-    let specific_data_tmp = specific_data_i;
-    this.users.map((userItem) => {
-      if (userItem.id === id_input) {
-        userItem.cognome = userModel.cognome;
-        userItem.nome = userModel.nome;
-        userItem.indirizzo = userModel.indirizzo;
-        userItem.numero_telefono = userModel.numero_telefono;
-        userItem.citta = userModel.citta;
-        userItem.cap = userModel.cap;
-        userItem.canale_com = userModel.canale_com;
-        // userItem.specific_data = specific_data;
-        if (!specific_data_i) {
-          specific_data_tmp = userItem.specific_data;
-        }
-        userItem.ultimoUtenteModifica =
-          this.authService.getUserState().displayName;
-      }
-    });
-    let u: UserModel = {
-      ...userModel,
-      ['id']: id_input,
-      ['specific_data']: specific_data_tmp,
-      ['ultimoUtenteModifica']: this.authService.getUserState().displayName,
-    };
-    this.firebaseStoreService.UpdateUser(u);
-    this.usersChanged.next(this.users.slice());
+  editUser(userModel: UserModel) {
+    if (userModel['interventiCount']) {
+      delete userModel['interventiCount'];
+    }
+    userModel.ultimoUtenteModifica =
+      this.authService.getUserState().displayName;
+    this.firebaseStoreService.UpdateUser(userModel);
+    this.usersSubject.next(this.users.slice());
   }
 
   async addNewIntervento(
     specific_data: SpecificDataModel,
     user_input?: UserModel,
     prodottiAggiuntivi?: prodottiAggiuntivi[],
-    uploadedFiles?: FileUpload[]
+    uploadedFiles?: FileUpload[],
+    listaStorico?: costoStorico[]
   ): Promise<boolean> {
-    let id = 0;
     if (uploadedFiles.length) {
       specific_data.files = [...uploadedFiles];
+    }
+    if (listaStorico.length) {
+      specific_data.listaStorico = [...listaStorico];
     }
     // verifica se ho modello UserInput in input uso quello altrimenti recupero da users
     let user_work: UserModel = user_input;
@@ -204,7 +222,8 @@ export class UserDataService {
     specific_data_input: SpecificDataModel,
     prodotti_aggiuntivi_input: prodottiAggiuntivi[],
     user_input?: UserModel,
-    uploadedFiles?: FileUpload[]
+    uploadedFiles?: FileUpload[],
+    listaStorico?: costoStorico[]
   ) {
     specific_data_input.id = id_intervento;
     specific_data_input.prodottiAggiuntivi = prodotti_aggiuntivi_input;
@@ -233,6 +252,7 @@ export class UserDataService {
             specific_data_input.files = [];
           }
           specific_data_input.files = uploadedFiles;
+          specific_data_input.listaStorico = listaStorico;
           spec_retrieved[i] = new SpecificDataModel(specific_data_input);
         } catch (error) {
           console.error('Error updating incasso v2:', error);
@@ -275,7 +295,6 @@ export class UserDataService {
     });
 
     //check if specificData is empty
-    console.log(user[0]);
     if (Object.keys(user[0].specific_data).length === 0) {
       return null;
     } else {
@@ -290,7 +309,7 @@ export class UserDataService {
       return intervento.id !== id_intervento;
     });
 
-    this.specificDataChanged.next(this.users[id_user].specific_data.slice());
+    this.specificDataSubject.next(this.users[id_user].specific_data.slice());
   }
 
   getLastId() {

@@ -1,19 +1,40 @@
-<nav class="bg-slate-900 border-gray-200">
-  <div class="flex p-3 w-full justify-center">
-    <div class="card flex justify-content-center text-2">
-      <p-menu #menu [model]="items" [popup]="true" appendTo="body" />
-      <button
-        pButton
-        type="button"
-        (click)="menu.toggle($event)"
-        icon="pi pi-bars"
-        label="Virsa Tunes"
-        class="p-1 text-2xl hover:bg-[#1755e8] text-white outline-none"
-        [ngStyle]="{
-          borderRadius: '0px',
-          background: '#0f172a',
-        }"
-      ></button>
+<ng-container *ngIf="currentTheme$ | async as currentTheme">
+  <nav class="header-nav">
+    <div class="header-container">
+      <div class="header-left-section">
+        <!-- Altri elementi del lato sinistro -->
+      </div>
+      <div
+        class="header-center-section card flex justify-content-center text-2"
+      >
+        <p-menu #menu [model]="items" [popup]="true" appendTo="body"></p-menu>
+        <button
+          class="header-menu-button"
+          type="button"
+          (click)="menu.toggle($event)"
+          icon="pi pi-bars"
+          label="Virsa Tunes"
+          pButton
+        ></button>
+      </div>
+      <div class="header-right-section">
+        <button
+          class="theme-toggle-button mr-2"
+          (click)="toggleTheme()"
+          pButton
+        >
+          <i
+            class="pi pi-sun"
+            [ngClass]="{ active: currentTheme === 'theme-light' }"
+          >
+          </i>
+          <i
+            class="pi pi-moon"
+            [ngClass]="{ active: currentTheme === 'theme-dark' }"
+          >
+          </i>
+        </button>
+      </div>
     </div>
-  </div>
-</nav>
+  </nav>
+</ng-container>

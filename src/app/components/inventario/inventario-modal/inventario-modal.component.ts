@@ -5,27 +5,33 @@ import {
   isDevMode,
   OnInit,
   Output,
+  ViewEncapsulation,
 } from '@angular/core';
-import { FormControl, FormGroup, Validators } from '@angular/forms';
-import { FirebaseStoreService } from 'src/app/shared/services/firebase/firebase-store.service';
-import { callModalToast } from 'src/app/shared/utils/common-utils';
-import { AuthService } from '../../login/auth.service';
-import { InventarioItemModel } from 'src/app/shared/models/inventarioItem.model';
-import { MessageService } from 'primeng/api';
-import { InventarioModalStorage } from './inventario-modal.service';
 import {
-  garanzia,
-  gradoInventario,
-  marcaInventario,
-  negozioInventario,
-} from 'src/app/shared/utils/common-enums';
+  FormBuilder,
+  FormControl,
+  FormGroup,
+  Validators,
+} from '@angular/forms';
+import { MessageService } from 'primeng/api';
+import { InventarioItemModel } from 'src/app/shared/models/inventarioItem.model';
+import { FirebaseStoreService } from 'src/app/shared/services/firebase/firebase-store.service';
+import {
+  callModalToast,
+  createForm,
+  findInvalidControls,
+} from 'src/app/shared/utils/common-utils';
+import { AuthService } from '../../login/auth.service';
+import { InventarioModalStorage } from './inventario-modal-storage.service';
+import { InventarioModalService } from './inventario-modal.service';
 
 @Component({
   selector: 'inventario-modal',
   templateUrl: './inventario-modal.component.html',
-  styleUrls: ['./inventario-modal.component.scss'],
+  encapsulation: ViewEncapsulation.None,
 })
 export class InventarioModalComponent implements OnInit {
+  @Input() formData: FormGroup = undefined;
   @Input() showModal: boolean = false;
   @Output() showModalChange = new EventEmitter();
 
@@ -33,38 +39,31 @@ export class InventarioModalComponent implements OnInit {
   isAdmin: boolean = false;
   loading: boolean = false;
 
-  itemForm: FormGroup = new FormGroup({});
-
   modalTitle: string;
   mode: string;
 
-  selectNegozio: string[];
-  selectMarca: string[];
-  selectGrado: string[];
-  selectGaranzia: string[];
-
   constructor(
+    private fb: FormBuilder,
     private storage: InventarioModalStorage,
+    private inventarioModalService: InventarioModalService,
     private firebaseStoreService: FirebaseStoreService,
     private authService: AuthService,
     private messageService: MessageService
   ) {}
 
   ngOnInit(): void {
+    this.inventarioModalService.valDataSet();
     this.devmode = isDevMode();
     this.isAdmin = this.authService.getIsAdmin();
     this.mode = this.storage.input.mode;
-    // prettier-ignore
-    {
-      this.selectNegozio = Object.keys(negozioInventario).filter((key) => isNaN(+key));
-      this.selectMarca = Object.keys(marcaInventario).filter((key) => isNaN(+key));
-      this.selectGrado = Object.keys(gradoInventario).filter((key) => isNaN(+key));
-      this.selectGaranzia = Object.keys(garanzia).filter((key) => isNaN(+key));
-    }
 
     if (this.mode === 'Edit') {
       if (this.storage.input.key && this.storage.input.selectedItem) {
-        this.createForm(this.storage.input.selectedItem);
+        this.formData = createForm(
+          this.fb,
+          this.storage.input.selectedItem,
+          undefined
+        );
         this.modalTitle = this.isAdmin
           ? 'Modifica Articolo'
           : 'Visualizza Articolo';
@@ -73,6 +72,21 @@ export class InventarioModalComponent implements OnInit {
       this.initForm();
       this.modalTitle = 'Aggiungi Articolo';
     }
+  }
+  get garanziaDataSet() {
+    return this.inventarioModalService.getGaranziaDataSet();
+  }
+
+  get gradoDataSet() {
+    return this.inventarioModalService.getGradoDataSet();
+  }
+
+  get marcaDataSet() {
+    return this.inventarioModalService.getMarcaDataSet();
+  }
+
+  get negozioDataSet() {
+    return this.inventarioModalService.getNegozioDataSet();
   }
 
   handleClose() {
@@ -85,7 +99,7 @@ export class InventarioModalComponent implements OnInit {
    **/
   initForm() {
     // prettier-ignore
-    this.itemForm = new FormGroup({
+    this.formData = this.fb.group({
       nome: new FormControl({ value: '', disabled: !this.isAdmin }, Validators.required),
       colore: new FormControl({ value: '', disabled: !this.isAdmin }, Validators.required),
       memoria: new FormControl({ value: '', disabled: !this.isAdmin }, Validators.required),
@@ -106,26 +120,13 @@ export class InventarioModalComponent implements OnInit {
   }
 
   /**
-   * Metodo per creare il form dinamicamente
-   **/
-  createForm(item: any) {
-    const formGroup: any = {};
-    for (const key in item) {
-      if (item.hasOwnProperty(key)) {
-        formGroup[key] = new FormControl(item[key], Validators.required);
-      }
-    }
-    this.itemForm = new FormGroup(formGroup);
-  }
-
-  /**
    * Metodo per aggiungere a database oggetto
    * @returns {any}
    **/
   addNewItem(): any {
     this.loading = true;
     this.firebaseStoreService
-      .imeiArticolo(this.itemForm.value['imei'])
+      .imeiArticolo(this.formData.value['imei'])
       .then((data) => {
         if (data) {
           callModalToast(
@@ -136,8 +137,8 @@ export class InventarioModalComponent implements OnInit {
           );
           this.loading = false;
         } else {
-          this.itemForm.patchValue({ data: new Date().toISOString() });
-          let item = new InventarioItemModel(this.itemForm.value);
+          this.formData.patchValue({ data: new Date().toISOString() });
+          let item = new InventarioItemModel(this.formData.value);
           this.firebaseStoreService.addArticoloInventario(item);
           this.showModal = !this.showModal;
           callModalToast(
@@ -149,7 +150,7 @@ export class InventarioModalComponent implements OnInit {
       });
   }
   editItem() {
-    let updatedItem = new InventarioItemModel(this.itemForm.value);
+    let updatedItem = new InventarioItemModel(this.formData.value);
     this.firebaseStoreService.editArticoloInventario(
       updatedItem,
       this.storage.input.key
@@ -164,23 +165,15 @@ export class InventarioModalComponent implements OnInit {
   }
 
   enterCheck() {
-    if (this.mode === 'Edit' && this.itemForm.valid && this.itemForm.dirty) {
+    if (this.mode === 'Edit' && this.formData.valid && this.formData.dirty) {
       // this.editUser();
     }
-    if (this.mode === 'Add' && this.itemForm.valid) {
+    if (this.mode === 'Add' && this.formData.valid) {
       this.addNewItem();
     }
   }
 
-  // metodo per verificare quale dato nel form non funziona
   public findInvalidControls() {
-    const invalid = [];
-    const controls = this.itemForm.controls;
-    for (const name in controls) {
-      if (controls[name].invalid) {
-        invalid.push(name);
-      }
-    }
-    console.log(invalid);
+    findInvalidControls(this.formData);
   }
 }

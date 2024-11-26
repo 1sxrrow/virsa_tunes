@@ -9,6 +9,8 @@
   <p-card>
     <p-table
       #dt1
+      [scrollable]="true"
+      scrollHeight="400px"
       [value]="itemsInventario"
       responsiveLayout="stack"
       [loading]="loading"
@@ -48,8 +50,8 @@
               {{ this.negozioSwitch ? "Negozio B" : "Negozio I" }}
             </span>
           </div>
-          <div class="p-toolbar-group-center">
-            <span class="p-input-icon-left">
+          <div class="p-toolbar-group-center flex-container">
+            <span class="p-input-icon-left responsive-input">
               <i class="pi pi-search"></i>
               <input
                 type="text"

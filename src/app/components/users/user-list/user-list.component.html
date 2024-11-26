@@ -1,0 +1,172 @@
+<ng-container *ngIf="usersWithInterventi$ | async as users">
+  <ng-container *ngIf="users.length > 0; else loadingTemplate">
+    <div class="flex flex-col max-h-screen mb-2">
+      <div class="card flex justify-content-center mb-3">
+        <p-breadcrumb
+          class="max-w-full"
+          [model]="items"
+          [home]="home"
+        ></p-breadcrumb>
+      </div>
+      <p-card>
+        <p-table
+          #dt1
+          [scrollable]="true"
+          scrollHeight="400px"
+          [value]="users"
+          responsiveLayout="stack"
+          [loading]="false"
+          [paginator]="true"
+          [rows]="5"
+          [showCurrentPageReport]="true"
+          [rowsPerPageOptions]="[5, 10, 25, 50]"
+          selectionMode="single"
+          dataKey="id"
+          (onRowSelect)="onRowSelect($event)"
+          [globalFilterFields]="[
+            'nome',
+            'cognome',
+            'canale_com',
+            'numero_telefono',
+            'dataInserimento'
+          ]"
+          [styleClass]="'p-datatable-sm'"
+        >
+          <ng-template pTemplate="caption" class="p-0">
+            <p-toolbar>
+              <div class="p-toolbar-group-start">
+                <p-button
+                  icon="pi pi-user-plus"
+                  pTooltip="Aggiungi Utente"
+                  tooltipPosition="top"
+                  (click)="addUser()"
+                  styleClass="p-button-success"
+                ></p-button>
+              </div>
+              <div class="p-toolbar-group-center flex-container">
+                <span class="p-input-icon-left responsive-input">
+                  <i class="pi pi-search"></i>
+                  <input
+                    type="text"
+                    pInputText
+                    (input)="dt1.filterGlobal($event.target.value, 'contains')"
+                    placeholder="Ricerca Cliente"
+                    class="fields fieldsSearch"
+                    id="search_field_user_list"
+                  />
+                </span>
+              </div>
+              <div class="p-toolbar-group-end">
+                <p-button
+                  *ngIf="this.authService.getIsAdmin()"
+                  icon="pi pi-wrench"
+                  pTooltip="Admin Tools"
+                  tooltipPosition="top"
+                  (click)="showAdminToolsModal()"
+                  styleClass="p-button-info"
+                ></p-button>
+              </div>
+            </p-toolbar>
+          </ng-template>
+          <ng-template pTemplate="header">
+            <tr>
+              <th pSortableColumn="nome" style="width: 20%">
+                {{ "user_data.nome" | translate }}
+                <p-sortIcon field="nome"></p-sortIcon>
+              </th>
+              <th pSortableColumn="cognome" style="width: 20%">
+                {{ "user_data.cognome" | translate }}
+                <p-sortIcon field="cognome"></p-sortIcon>
+              </th>
+              <th style="width: 20%">
+                {{ "user_data.interventi" | translate }}
+              </th>
+              <th pSortableColumn="dataInserimento" style="width: 20%">
+                {{ "user_data.data_ins" | translate }}
+                <p-sortIcon field="dataInserimento"></p-sortIcon>
+              </th>
+              <th style="width: 20%">
+                {{ "user_data.azioni" | translate }}
+              </th>
+            </tr>
+          </ng-template>
+          <ng-template pTemplate="body" let-user *ngIf="!showModal">
+            <tr [pSelectableRowDblClick]="user">
+              <td>
+                <span class="p-column-title">
+                  {{ "user_data.nome" | translate }}
+                </span>
+                {{ user.nome | uppercaseFirstLetter }}
+              </td>
+              <td class="flex-auto items-center">
+                <span class="p-column-title">
+                  {{ "user_data.cognome" | translate }}
+                </span>
+                {{ user.cognome | uppercaseFirstLetter }}
+              </td>
+              <td>
+                <span class="p-column-title">
+                  {{ "user_data.interventi" | translate }}
+                </span>
+                {{ user.interventiCount }}
+              </td>
+              <td>
+                <span class="p-column-title">
+                  {{ "user_data.data_ins" | translate }}
+                </span>
+                {{
+                  user.dataInserimento
+                    ? user.dataInserimento
+                    : "Nessuna data presente"
+                }}
+              </td>
+              <td>
+                <p-button
+                  pTooltip="Info"
+                  tooltipPosition="bottom"
+                  type="button"
+                  icon="pi pi-info-circle"
+                  class="mr-2"
+                  (click)="editUser(user)"
+                  styleClass="p-button-info"
+                />
+                <p-button
+                  pTooltip="Cancella Utente"
+                  tooltipPosition="bottom"
+                  type="button"
+                  icon="pi pi-times-circle"
+                  (click)="confirmDeleteUser(user.id)"
+                  styleClass="p-button-danger"
+                />
+              </td>
+            </tr>
+          </ng-template>
+          <!-- <ng-template pTemplate="emptymessage">
+            <tr>
+              <td colspan="7">Nessun cliente trovato.</td>
+            </tr>
+          </ng-template> -->
+        </p-table>
+      </p-card>
+
+      <user-list-modal
+        *ngIf="showModal"
+        [showModal]="showModal"
+        (showModalChange)="handleShowModalChange($event)"
+      >
+      </user-list-modal>
+
+      <admin-tools-modal
+        *ngIf="showAdminModal"
+        [(showAdminModal)]="showAdminModal"
+        (showAdminModalChange)="handleShowAdminModalChange($event)"
+      />
+
+      <app-confirm-dialog></app-confirm-dialog>
+    </div>
+  </ng-container>
+</ng-container>
+
+<ng-template #loadingTemplate>
+  <app-circle-spinner></app-circle-spinner>
+</ng-template>

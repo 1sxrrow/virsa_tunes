@@ -4,198 +4,151 @@
   [style]="{ width: '50vw' }"
   [modal]="true"
   (onHide)="handleClose()"
+  [style]="{ 'overflow-y': 'hidden' }"
 >
-  <div class="grid items-center" (keyup.enter)="enterCheck()">
-    <form [formGroup]="itemForm">
+  <div class="grid items-center overflow-y-hidden" (keyup.enter)="enterCheck()">
+    <form [formGroup]="formData">
       <div class="grid grid-cols-2 mb-2">
         <div class="mb-1 mr-2">
-          <label class="labelInput" for="imei">IMEI</label>
+          <label class="label" for="imei">IMEI</label>
           <input
-            id="imei"
-            pInputText
-            type="text"
             class="ml-2"
+            id="imei"
+            type="text"
             formControlName="imei"
             class="w-11/12 fields"
           />
         </div>
         <div class="mb-1">
-          <label class="labelInput" for="quantita">Quantità</label>
+          <label class="label" for="quantita">Quantità</label>
           <input
-            id="quantita"
-            pInputText
-            pKeyFilter="int"
-            class="ml-2"
-            formControlName="quantita"
             class="w-11/12 fields"
+            id="quantita"
+            pKeyFilter="int"
+            formControlName="quantita"
             required
           />
         </div>
 
         <div class="mb-1 mr-2">
-          <label for="negozio" class="labelInput">Negozio</label>
-          <span class="p-input-icon-right w-full">
-            <i class="pi pi-angle-down"></i>
-            <select
-              name="negozio"
-              id="negozio"
-              class="fields"
-              formControlName="negozio"
-            >
-              <option [ngValue]="null" disabled>Seleziona Negozio</option>
-              <option [value]="negozio" *ngFor="let negozio of selectNegozio">
-                {{ negozio }}
-              </option>
-            </select>
-          </span>
+          <virsa-select
+            [label]="'inventario.negozio' | translate"
+            [dataSet]="negozioDataSet"
+            specificName="negozio_inventario_modal"
+            formControlName="negozio"
+            [group]="formData"
+            [externalValue]="formData.get('negozio').value"
+          ></virsa-select>
         </div>
         <div class="mb-1">
-          <label for="nome" class="labelInput">Nome</label>
+          <label for="nome" class="label">Nome</label>
           <input
+            class="w-11/12 fields"
             id="nome"
-            pInputText
             type="text"
             formControlName="nome"
-            class="w-11/12 fields"
             required
           />
         </div>
         <div class="mb-1 mr-2">
-          <label for="marca" class="labelInput">Marca</label>
-          <span class="p-input-icon-right w-full">
-            <i class="pi pi-angle-down"></i>
-            <select
-              name="marca"
-              id="marca"
-              class="fields"
-              formControlName="marca"
-            >
-              <option [ngValue]="null" disabled>Seleziona Marca</option>
-              <option [value]="marca" *ngFor="let marca of selectMarca">
-                {{ marca }}
-              </option>
-            </select>
-          </span>
+          <virsa-select
+            [label]="'inventario.marca' | translate"
+            [dataSet]="marcaDataSet"
+            specificName="marca_inventario_modal"
+            formControlName="marca"
+            [group]="formData"
+            [externalValue]="formData.get('marca').value"
+          ></virsa-select>
         </div>
         <div class="mb-1">
-          <label for="colore" class="labelInput">Colore</label>
+          <label for="colore" class="label">Colore</label>
           <input
+            class="w-11/12 fields"
             id="colore"
-            pInputText
             type="text"
             formControlName="colore"
-            class="w-11/12 fields"
             required
           />
         </div>
         <div class="mb-1 mr-2">
-          <label for="memoria" class="labelInput">Memoria (GB)</label>
+          <label for="memoria" class="label">Memoria (GB)</label>
           <input
+            class="w-11/12 fields"
             id="memoria"
-            pInputText
             type="text"
             formControlName="memoria"
-            class="w-11/12 fields"
             required
           />
         </div>
         <div class="mb-1">
-          <label for="grado" class="labelInput">Grado</label>
-          <span class="p-input-icon-right w-full">
-            <i class="pi pi-angle-down"></i>
-            <select
-              name="grado"
-              id="grado"
-              class="fields"
-              formControlName="grado"
-            >
-              <option [ngValue]="null" disabled>Seleziona Grado</option>
-              <option [value]="grado" *ngFor="let grado of selectGrado">
-                {{ grado }}
-              </option>
-            </select>
-          </span>
+          <virsa-select
+            [label]="'inventario.grado' | translate"
+            [dataSet]="gradoDataSet"
+            specificName="grado_inventario_modal"
+            formControlName="grado"
+            [group]="formData"
+            [externalValue]="formData.get('grado').value"
+          ></virsa-select>
         </div>
         <div class="mb-1 mr-2">
-          <label for="garanzia_mesi" class="labelInput">Garanzia Mesi</label>
-          <span class="p-input-icon-right w-full">
-            <i class="pi pi-angle-down"></i>
-            <select
-              name="garanzia_mesi"
-              id="garanzia_mesi"
-              class="fields"
-              formControlName="garanzia_mesi"
-            >
-              <option [ngValue]="null" disabled>Seleziona Garanzia</option>
-              <option
-                [value]="garanzia"
-                *ngFor="let garanzia of selectGaranzia"
-              >
-                {{ garanzia }}
-              </option>
-            </select>
-          </span>
+          <virsa-select
+            [label]="'inventario.garanzia' | translate"
+            [dataSet]="garanziaDataSet"
+            specificName="garanzia_mesi_inventario_modal"
+            formControlName="garanzia_mesi"
+            [group]="formData"
+            [externalValue]="formData.get('garanzia_mesi').value"
+          ></virsa-select>
         </div>
         <div class="mb-1">
-          <label class="labelInput" for="fornitore"> Fornitore </label>
+          <label class="label" for="fornitore"> Fornitore </label>
           <input
+            class="w-11/12 fields"
             id="fornitore"
-            pInputText
             type="text"
             formControlName="fornitore"
-            class="w-11/12 fields"
             required
           />
         </div>
         <div class="mb-1 mr-2">
-          <label class="labelInput" for="perc_batteria">
+          <label class="label" for="perc_batteria">
             Percentuale Batteria %
           </label>
           <input
+            class="w-11/12 fields"
             id="perc_batteria"
-            pInputText
             pKeyFilter="int"
             formControlName="perc_batteria"
-            class="w-11/12 fields"
             required
           />
         </div>
         <div class="mb-1">
-          <label class="labelInput" for="prezzo_negozio">
-            Prezzo Negozio €
-          </label>
+          <label class="label" for="prezzo_negozio"> Prezzo Negozio € </label>
           <input
+            class="w-11/12 fields"
             id="prezzo_negozio"
-            pInputText
             pKeyFilter="int"
             formControlName="prezzo_negozio"
-            class="w-11/12 fields"
             required
           />
         </div>
         <div class="mb-1 mr-2">
-          <label class="labelInput" for="prezzo_online">
-            Prezzo Online €
-          </label>
+          <label class="label" for="prezzo_online"> Prezzo Online € </label>
           <input
+            class="w-11/12 fields"
             id="prezzo_online"
-            pInputText
             pKeyFilter="int"
             formControlName="prezzo_online"
-            class="w-11/12 fields"
             required
           />
         </div>
         <div class="mb-1" [hidden]="!this.isAdmin">
-          <label class="labelInput" for="prezzo_acquisto">
-            Prezzo Acquisto €
-          </label>
+          <label class="label" for="prezzo_acquisto"> Prezzo Acquisto € </label>
           <input
+            class="w-11/12 fields"
             id="prezzo_acquisto"
-            pInputText
             pKeyFilter="int"
             formControlName="prezzo_acquisto"
-            class="w-11/12 fields"
             required
           />
         </div>
@@ -213,14 +166,14 @@
           styleClass="p-button-raised p-button-secondary"
           label="Aggiungi"
           (onClick)="addNewItem()"
-          [disabled]="!itemForm.valid"
+          [disabled]="!formData.valid"
         ></p-button>
         <p-button
           *ngIf="mode === 'Edit'"
           styleClass="p-button-raised p-button-secondary"
           label="Modifica"
           (onClick)="editItem()"
-          [disabled]="!(itemForm.valid && itemForm.dirty)"
+          [disabled]="!(formData.valid && formData.dirty)"
         ></p-button>
       </div>
     </div>

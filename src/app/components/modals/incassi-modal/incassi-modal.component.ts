@@ -2,20 +2,26 @@ import {
   Component,
   EventEmitter,
   Input,
+  OnDestroy,
   OnInit,
   Output,
-  OnDestroy,
+  ViewEncapsulation,
 } from '@angular/core';
-import { Incassov2 } from 'src/app/shared/models/incassov2.model';
-import { FirebaseStoreService } from 'src/app/shared/services/firebase/firebase-store.service';
-import { UserDataService } from '../../user-data/user-data.service';
-import { SpesaFissa } from 'src/app/shared/models/spesaFissa.model';
 import { Subscription } from 'rxjs';
+import { Incassov2 } from 'src/app/shared/models/incassov2.model';
+import { SpesaFissa } from 'src/app/shared/models/spesaFissa.model';
+import { FirebaseStoreService } from 'src/app/shared/services/firebase/firebase-store.service';
+import { selectDataSet } from 'src/app/shared/types/custom-types';
+import {
+  negozioInventario,
+  tipoIntervento,
+} from 'src/app/shared/utils/common-enums';
+import { UserDataService } from '../../users/user-data/user-data.service';
 
 @Component({
   selector: 'incassi-modal',
   templateUrl: './incassi-modal.component.html',
-  styleUrls: ['./incassi-modal.component.scss'],
+  encapsulation: ViewEncapsulation.None,
 })
 export class IncassiModalComponent implements OnInit, OnDestroy {
   @Input() showIncassiModal: boolean = false;
@@ -40,14 +46,14 @@ export class IncassiModalComponent implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit(): void {
-    this.filterNegozio = Object.keys(this.userDataService.negozio)
+    this.filterNegozio = Object.keys(negozioInventario)
       .filter((key) => key !== 'Magazzino' && isNaN(+key))
       .map((key) => ({
         value: key,
         label: key,
       }));
 
-    this.filterTipoIntervento = Object.keys(this.userDataService.tipoIntervento)
+    this.filterTipoIntervento = Object.keys(tipoIntervento)
       .filter((key) => isNaN(+key))
       .map((key) => ({
         value: key,
@@ -75,13 +81,21 @@ export class IncassiModalComponent implements OnInit, OnDestroy {
     this.showSpeseFisseModal = show;
   }
 
-  onNegozioOptionSelected(selectedNegozioValue: string) {
-    this.selectedNegozio = selectedNegozioValue;
+  onNegozioOptionSelected(selectedNegozioValue: selectDataSet) {
+    if (selectedNegozioValue.value) {
+      this.selectedNegozio = String(selectedNegozioValue.value);
+    } else {
+      this.selectedNegozio = undefined;
+    }
     this.filterIncassi(this.selectedNegozio, this.selectedTipoIntervento);
   }
 
-  onTipoInterventoOptionSelected(selectedTipoInterventoValue: string) {
-    this.selectedTipoIntervento = selectedTipoInterventoValue;
+  onTipoInterventoOptionSelected(selectedTipoInterventoValue: selectDataSet) {
+    if (selectedTipoInterventoValue.value) {
+      this.selectedTipoIntervento = String(selectedTipoInterventoValue.value);
+    } else {
+      this.selectedTipoIntervento = undefined;
+    }
     this.filterIncassi(this.selectedNegozio, this.selectedTipoIntervento);
   }
 

@@ -23,7 +23,7 @@ import { createIncasso } from '../../utils/common-utils';
 
 @Injectable({ providedIn: 'root' })
 export class FirebaseStoreService {
-  UsersRef: AngularFireList<any>;
+  UsersRef: AngularFireList<UserModel>;
   IncassiRef: AngularFireList<any>;
   IncassiRefv2: AngularFireList<any>;
   StatsUsersRef: AngularFireList<any>;
