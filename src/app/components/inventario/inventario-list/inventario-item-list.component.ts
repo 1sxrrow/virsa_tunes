@@ -109,7 +109,7 @@ export class InventarioItemListComponent implements OnInit, OnDestroy {
         callModalToast(
           this.messageService,
           'Eliminato',
-          'Intervento rimosso',
+          'Articolo rimosso',
           'info'
         );
       },

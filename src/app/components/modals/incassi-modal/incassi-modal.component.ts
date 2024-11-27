@@ -8,15 +8,13 @@ import {
   ViewEncapsulation,
 } from '@angular/core';
 import { Subscription } from 'rxjs';
-import { Incassov2 } from 'src/app/shared/models/incassov2.model';
-import { SpesaFissa } from 'src/app/shared/models/spesaFissa.model';
+import { Incassov2, SpesaFissa } from 'src/app/shared/models/custom-interfaces';
 import { FirebaseStoreService } from 'src/app/shared/services/firebase/firebase-store.service';
 import { selectDataSet } from 'src/app/shared/types/custom-types';
 import {
   negozioInventario,
   tipoIntervento,
 } from 'src/app/shared/utils/common-enums';
-import { UserDataService } from '../../users/user-data/user-data.service';
 
 @Component({
   selector: 'incassi-modal',
@@ -41,7 +39,6 @@ export class IncassiModalComponent implements OnInit, OnDestroy {
   private subscriptions: Subscription = new Subscription();
 
   constructor(
-    private userDataService: UserDataService,
     private firebaseStoreService: FirebaseStoreService
   ) {}
 

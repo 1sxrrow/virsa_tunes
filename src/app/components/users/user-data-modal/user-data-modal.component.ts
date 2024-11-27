@@ -25,7 +25,6 @@ import { MessageService } from 'primeng/api';
 import { FileRemoveEvent } from 'primeng/fileupload';
 import { finalize } from 'rxjs';
 import { IS_DEV_MODE } from 'src/app/app.module';
-import { costoStorico } from 'src/app/shared/models/costoStorico.model';
 import { prodottiAggiuntivi } from 'src/app/shared/models/prodotti-aggiuntivi.model';
 import { SpecificDataModel } from 'src/app/shared/models/specific-data.model';
 import { FirebaseStoreService } from 'src/app/shared/services/firebase/firebase-store.service';
@@ -41,6 +40,7 @@ import {
 import { UserDataService } from '../user-data/user-data.service';
 import { userDataModalStorage } from './user-data-modal-storage.service';
 import { UserDataModalService } from './user-data-modal.service';
+import { costoStorico } from 'src/app/shared/models/custom-interfaces';
 
 @Component({
   selector: 'user-data-modal',
@@ -72,7 +72,6 @@ export class UserDataModalComponent implements OnInit {
   isUploading = false;
 
   listaStorico: costoStorico[] = [];
-  // locale = 'it-IT';
   constructor(
     private fb: FormBuilder,
     private cdr: ChangeDetectorRef,

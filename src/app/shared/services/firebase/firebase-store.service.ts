@@ -9,15 +9,12 @@ import { FirebaseOperation } from '@angular/fire/compat/database/interfaces';
 import { AngularFireStorage } from '@angular/fire/compat/storage';
 import { saveAs } from 'file-saver';
 import firebase from 'firebase/compat/app';
-import { from, Observable } from 'rxjs';
 import {
   devFirebaseConfig,
   prodFirebaseConfig,
 } from 'src/environments/environment';
-import { Incasso } from '../../models/incasso.model';
-import { Incassov2 } from '../../models/incassov2.model';
+import { Incasso, Incassov2, SpesaFissa } from '../../models/custom-interfaces';
 import { InventarioItemModel } from '../../models/inventarioItem.model';
-import { SpesaFissa } from '../../models/spesaFissa.model';
 import { UserModel } from '../../models/user-data.model';
 import { createIncasso } from '../../utils/common-utils';
 

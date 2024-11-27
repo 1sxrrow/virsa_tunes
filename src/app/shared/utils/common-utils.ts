@@ -1,13 +1,12 @@
-import EscPosEncoder from 'esc-pos-encoder';
 import {
   FormBuilder,
   FormControl,
   FormGroup,
   Validators,
 } from '@angular/forms';
+import EscPosEncoder from 'esc-pos-encoder';
 import { MessageService } from 'primeng/api';
-import { Incasso } from '../models/incasso.model';
-import { Incassov2 } from '../models/incassov2.model';
+import { Incasso, Incassov2 } from '../models/custom-interfaces';
 import { InventarioItemModel } from '../models/inventarioItem.model';
 import { prodottiAggiuntivi } from '../models/prodotti-aggiuntivi.model';
 import { SpecificDataModel } from '../models/specific-data.model';
@@ -224,7 +223,12 @@ export function createScontrino(
     sconto.push(['Sconto:', '', specificData.costo_sconto + ',00 €']);
   }
   specificData.caparra ? (totale -= +specificData.caparra) : null;
-
+  let via =
+    specificData.negozio === 'NEGOZIO I'
+      ? 'VIA MIROLTE N. 54'
+      : 'VIA TRENTO 49A';
+  let posto =
+    specificData.negozio === 'NEGOZIO I' ? '25049 ISEO (BS)' : '25128 BRESCIA';
   switch (specificData.tipo_intervento) {
     case 'Riparazione':
       return encoder
@@ -236,9 +240,9 @@ export function createScontrino(
         .align('center')
         .width(1)
         .height(1)
-        .line('VIA TRENTO 49A')
-        .line('25128 BRESCIA')
-        .line('P. IVA 04222840987')
+        .line(via)
+        .line(posto)
+        .line('P. IVA 04548020983')
         .line('tel: +39  3313017069')
         .line('')
         .align('center')

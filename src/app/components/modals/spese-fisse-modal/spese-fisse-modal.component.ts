@@ -9,7 +9,7 @@ import {
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { MessageService } from 'primeng/api';
 import { Subscription } from 'rxjs';
-import { SpesaFissa } from 'src/app/shared/models/spesaFissa.model';
+import { SpesaFissa } from 'src/app/shared/models/custom-interfaces';
 import { FirebaseStoreService } from 'src/app/shared/services/firebase/firebase-store.service';
 import { callModalToast } from 'src/app/shared/utils/common-utils';
 

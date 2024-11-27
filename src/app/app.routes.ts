@@ -7,7 +7,7 @@ export const routes: Routes = [
   {
     path: '',
     redirectTo: 'users',
-    pathMatch: 'full', 
+    pathMatch: 'full',
   },
   {
     path: 'users',
@@ -17,6 +17,7 @@ export const routes: Routes = [
       ),
     canActivate: [AuthGuard],
     resolve: { usersWithInterventi: usersWithInterventiResolver },
+    runGuardsAndResolvers: 'always',
   },
   {
     path: 'inventario',

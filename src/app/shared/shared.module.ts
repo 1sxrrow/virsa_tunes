@@ -26,11 +26,13 @@ import { PersonalConfirmDialogModule } from 'src/app/shared/components/confirm-d
 import { CustomSelectComponent } from '../components/items/custom-select/custom-select.component';
 import { UppercaseFirstLetterPipe } from './pipes/uppercase.pipe';
 import { CircleSpinnerComponent } from './components/circle-spinner/circle-spinner.component';
+import { TruncatePipe } from './pipes/truncate.pipe';
 
 @NgModule({
   declarations: [
     CustomSelectComponent,
     UppercaseFirstLetterPipe,
+    TruncatePipe,
     CircleSpinnerComponent,
   ],
   imports: [
@@ -90,7 +92,8 @@ import { CircleSpinnerComponent } from './components/circle-spinner/circle-spinn
     PersonalConfirmDialogModule,
     CustomSelectComponent,
     UppercaseFirstLetterPipe,
-    CircleSpinnerComponent
+    TruncatePipe,
+    CircleSpinnerComponent,
   ],
 })
 export class SharedModule {}
