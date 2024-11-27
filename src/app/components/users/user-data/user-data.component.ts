@@ -63,7 +63,7 @@ export class UserDataComponent implements OnInit, OnDestroy {
   selectedSpecificData!: SpecificDataModel;
   selectedSpecificDataScontrino: SpecificDataModel[] = [];
   storedSub: Subscription;
-  storedSubSpecificData: Subscription;
+  storedSubSpecificData: Subscription = new Subscription();
   multipleSelection = false;
 
   id: number;
@@ -119,38 +119,52 @@ export class UserDataComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.loading = true;
-    this.interventiTotali = this.storage.input.interventiTotali;
     // recupero dati utente da database Firebase.
-    this.activatedRoute.params.subscribe((params) => {
-      this.id = +params['id'];
-      let s = this.firebaseStoreService.GetUser(this.id);
-      s.snapshotChanges().subscribe((data) => {
-        this.userData = data.payload.toJSON() as UserModel;
-        this.nome = this.userData.nome;
-        this.cognome = this.userData.cognome;
-        let specific_data = this.userData.specific_data;
-        let mapped: SpecificDataModel[];
-        mapped = specific_data ? Object.values(specific_data) : [];
-        this._specificData = mapped;
-        if (!this.breadCrumbSet) {
-          // Check the flag
-          this.setBreadCrumb();
-          this.breadCrumbSet = true; // Set the flag
-        }
-        this.loading = false;
-      });
-    });
-    this.storedSubSpecificData =
+    this.storedSubSpecificData.add(
+      this.activatedRoute.params.subscribe((params) => {
+        this.id = +params['id'];
+        // recupero numero interventi
+        this.storedSubSpecificData.add(
+          this.userDataService.interventiCountsSubject.subscribe((item) => {
+            this.interventiTotali = item[this.id];
+          })
+        );
+        this.storedSubSpecificData.add(
+          this.firebaseStoreService
+            .GetUser(this.id)
+            .snapshotChanges()
+            .subscribe((data) => {
+              this.userData = data.payload.toJSON() as UserModel;
+              this.nome = this.userData.nome;
+              this.cognome = this.userData.cognome;
+              let specific_data = this.userData.specific_data;
+              let mapped: SpecificDataModel[];
+              mapped = specific_data ? Object.values(specific_data) : [];
+              this._specificData = mapped;
+              if (!this.breadCrumbSet) {
+                // Check the flag
+                this.setBreadCrumb();
+                this.breadCrumbSet = true;
+              }
+              this.loading = false;
+            })
+        );
+      })
+    );
+    this.storedSubSpecificData.add(
       this.userDataService.specificDataSubject.subscribe(
         (specificData: SpecificDataModel[]) => {
           this._specificData = specificData;
         }
-      );
+      )
+    );
     this.showModal = false;
   }
 
   ngOnDestroy(): void {
-    this.storedSubSpecificData.unsubscribe();
+    if (this.storedSubSpecificData) {
+      this.storedSubSpecificData.unsubscribe();
+    }
     this.messageService.clear();
   }
 

@@ -1,7 +1,11 @@
 import { Inject, Injectable } from '@angular/core';
-import { BehaviorSubject, combineLatest, map, Observable, tap } from 'rxjs';
+import {
+  BehaviorSubject,
+  map,
+  Observable
+} from 'rxjs';
 import { IS_DEV_MODE } from 'src/app/app.module';
-import { costoStorico } from 'src/app/shared/models/costoStorico.model';
+import { costoStorico, UserModelWithInterventi } from 'src/app/shared/models/custom-interfaces';
 import { InventarioItemModel } from 'src/app/shared/models/inventarioItem.model';
 import { UserCacheService } from 'src/app/shared/services/user-cache.service';
 import {
@@ -15,19 +19,17 @@ import { UserModel } from '../../../shared/models/user-data.model';
 import { FirebaseStoreService } from '../../../shared/services/firebase/firebase-store.service';
 import { AuthService } from '../../login/auth.service';
 
-interface UserModelWithInterventi extends UserModel {
-  interventiCount: number;
-}
-
 @Injectable({ providedIn: 'root' })
 export class UserDataService {
   locale = 'it-IT';
   // prettier-ignore
   specificDataSubject: BehaviorSubject<SpecificDataModel[]> = new BehaviorSubject<SpecificDataModel[]>([]);
   // prettier-ignore
-  public usersSubject: BehaviorSubject<UserModel[]> = new BehaviorSubject<UserModel[]>([]);
+  private usersSubject: BehaviorSubject<UserModel[]> = new BehaviorSubject<UserModel[]>([]);
   // prettier-ignore
   public interventiCountsSubject: BehaviorSubject<{ [userId: number]: number; }> = new BehaviorSubject<{ [userId: number]: number }>({});
+  // prettier-ignore
+  public usersWithInterventiSubject: BehaviorSubject<UserModelWithInterventi[]> = new BehaviorSubject<UserModelWithInterventi[]>([]);
 
   // Combinazione degli Observables
   users: UserModel[] = [];
@@ -38,16 +40,14 @@ export class UserDataService {
     @Inject(IS_DEV_MODE) public isDevMode: boolean
   ) {}
 
-  fetchUsersWithInterventi(): Observable<{
-    users: UserModel[];
-    interventiCounts: { [userId: number]: number };
-  }> {
+  fetchUsersWithInterventi(): Observable<UserModelWithInterventi[]> {
     return this.firebaseStoreService
       .GetUserList()
       .snapshotChanges()
       .pipe(
         map((data) => {
-          const users: UserModel[] = [];
+          const userModel: UserModel[ ] = [];
+          const usersWithInterventi: UserModelWithInterventi[] = [];
           const interventiCounts: { [userId: number]: number } = {};
           data.forEach((item) => {
             let a = item.payload.toJSON();
@@ -56,41 +56,30 @@ export class UserDataService {
             if (!b.specific_data) {
               b.specific_data = [];
             }
-            users.push(b);
-            interventiCounts[b.id] = this.getTotalInterventi(b);
+            delete b['$key'];
+            userModel.push(b);
+            let interventiCount = this.getTotalInterventi(b);
+            interventiCounts[b.id] = interventiCount;
+            let _userWithIntervento = {
+              ...b,
+              interventiCount: interventiCount,
+            };
+            usersWithInterventi.push(_userWithIntervento);
           });
-          return { users, interventiCounts };
-        }),
-        tap(({ users, interventiCounts }) => {
-          let changed = this.userCacheService.hasDataChanged(users);
-          if (changed) {
-            if (this.isDevMode) {
-              console.log('User data has changed, updating cache.');
-            }
-            this.usersSubject.next(users);
-            this.interventiCountsSubject.next(interventiCounts);
-            this.userCacheService.cacheUsers(users);
-          } else {
-            if (this.isDevMode) {
-              console.log('User data has not changed, using cached data.');
-            }
-          }
+          this.users = userModel;
+          this.interventiCountsSubject.next(interventiCounts);
+          this.usersWithInterventiSubject.next(usersWithInterventi);
+          return usersWithInterventi;
         })
       );
   }
 
+  setUsersWithInterventi(data: UserModelWithInterventi[]): void {
+    this.usersWithInterventiSubject.next(data);
+  }
+
   getUsersWithInterventiObservable(): Observable<UserModelWithInterventi[]> {
-    return combineLatest([
-      this.usersSubject.asObservable(),
-      this.interventiCountsSubject.asObservable(),
-    ]).pipe(
-      map(([users, interventiCounts]) =>
-        users.map((user) => ({
-          ...user,
-          interventiCount: interventiCounts[user.id] || 0,
-        }))
-      )
-    );
+    return this.usersWithInterventiSubject.asObservable();
   }
 
   setStandardUsers() {
@@ -123,6 +112,10 @@ export class UserDataService {
   }
 
   addUser(userModel: UserModel) {
+    if (userModel['interventiCount']) {
+      delete userModel['interventiCount'];
+    }
+    debugger;
     userModel.id = this.getLastId() + 1;
     userModel.utenteInserimento = this.authService.getUserState().displayName;
     userModel.dataInserimento = new Date().toLocaleDateString(this.locale);
@@ -130,15 +123,16 @@ export class UserDataService {
     this.users.push(u);
     let idReturned = this.firebaseStoreService.AddUser(u);
     this.usersSubject.next(this.users.slice());
+    this.updateUsersWithInterventi();
     return idReturned;
   }
 
   deleteUser(id: number) {
-    this.users = this.users.filter(function (user) {
-      return user.id !== id;
-    });
+    debugger;
+    this.users = this.users.filter((user) => user.id !== id);
     this.firebaseStoreService.DeleteUser(id.toString());
     this.usersSubject.next(this.users.slice());
+    this.updateUsersWithInterventi();
   }
 
   editUser(userModel: UserModel) {
@@ -148,7 +142,21 @@ export class UserDataService {
     userModel.ultimoUtenteModifica =
       this.authService.getUserState().displayName;
     this.firebaseStoreService.UpdateUser(userModel);
+    const index = this.users.findIndex((item) => item.id === userModel.id);
+    if (index !== -1) {
+      this.users[index] = userModel;
+    }
     this.usersSubject.next(this.users.slice());
+    this.updateUsersWithInterventi();
+  }
+
+  private updateUsersWithInterventi() {
+    const usersWithInterventi = this.users.map((user) => ({
+      ...user,
+      interventiCount: this.getTotalInterventi(user),
+    }));
+    debugger;
+    this.usersWithInterventiSubject.next(usersWithInterventi);
   }
 
   async addNewIntervento(
@@ -220,6 +228,7 @@ export class UserDataService {
     user_work.ultimoUtenteModifica =
       this.authService.getUserState().displayName;
     user_work.utenteInserimento = this.authService.getUserState().displayName;
+    this.updateInterventiCounts(user_work.id, user_work.specific_data);
     this.firebaseStoreService.UpdateUser(user_work);
     return true;
   }
@@ -288,7 +297,15 @@ export class UserDataService {
     // update User dato che ho cancellato un intervento
     spec_retrieved.splice(spec_retrieved.indexOf(i[0]), 1);
     user_input.specific_data = spec_retrieved;
+    this.updateInterventiCounts(user_input.id, user_input.specific_data);
     this.firebaseStoreService.UpdateUser(user_input);
+  }
+
+  // Aggiornamento interventiCounts
+  updateInterventiCounts(id: number, specific_data: SpecificDataModel[]) {
+    let lastValueInterventiCounts = this.interventiCountsSubject.getValue();
+    lastValueInterventiCounts[id] = specific_data.length;
+    this.interventiCountsSubject.next(lastValueInterventiCounts);
   }
 
   getLastIdSpecificData(specific_data: SpecificDataModel[]): number {

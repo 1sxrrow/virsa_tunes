@@ -1,37 +1,39 @@
-<ng-container *ngIf="usersWithInterventi$ | async as users; else loadingTemplate">
-  <ng-container *ngIf="users && users.length > 0; else emptyTemplate">
-    <div class="flex flex-col max-h-screen mb-2">
-      <div class="card flex justify-content-center mb-3">
-        <p-breadcrumb
-          class="max-w-full"
-          [model]="items"
-          [home]="home"
-        ></p-breadcrumb>
-      </div>
-      <p-card>
-        <p-table
-          #dt1
-          [scrollable]="true"
-          scrollHeight="400px"
-          [value]="users"
-          responsiveLayout="stack"
-          [loading]="false"
-          [paginator]="true"
-          [rows]="5"
-          [showCurrentPageReport]="true"
-          [rowsPerPageOptions]="[5, 10, 25, 50]"
-          selectionMode="single"
-          dataKey="id"
-          (onRowSelect)="onRowSelect($event)"
-          [globalFilterFields]="[
-            'nome',
-            'cognome',
-            'canale_com',
-            'numero_telefono',
-            'dataInserimento'
-          ]"
-          [styleClass]="'p-datatable-sm'"
-        >
+<ng-container
+  *ngIf="usersWithInterventi$ | async as users; else loadingTemplate"
+>
+  <div class="flex flex-col max-h-screen mb-2">
+    <div class="card flex justify-content-center mb-3">
+      <p-breadcrumb
+        class="max-w-full"
+        [model]="items"
+        [home]="home"
+      ></p-breadcrumb>
+    </div>
+    <p-card>
+      <p-table
+        #dt1
+        [scrollable]="true"
+        scrollHeight="400px"
+        [value]="users"
+        responsiveLayout="stack"
+        [loading]="false"
+        [paginator]="true"
+        [rows]="5"
+        [showCurrentPageReport]="true"
+        [rowsPerPageOptions]="[5, 10, 25, 50]"
+        selectionMode="single"
+        dataKey="id"
+        (onRowSelect)="onRowSelect($event)"
+        [globalFilterFields]="[
+          'nome',
+          'cognome',
+          'canale_com',
+          'numero_telefono',
+          'dataInserimento'
+        ]"
+        [styleClass]="'p-datatable-sm'"
+      >
+        <ng-container *ngIf="users && users.length > 0">
           <ng-template pTemplate="caption" class="p-0">
             <p-toolbar>
               <div class="p-toolbar-group-start">
@@ -146,33 +148,27 @@
               <td colspan="7">Nessun cliente trovato.</td>
             </tr>
           </ng-template> -->
-        </p-table>
-      </p-card>
+        </ng-container>
+      </p-table>
+    </p-card>
 
-      <user-list-modal
-        *ngIf="showModal"
-        [showModal]="showModal"
-        (showModalChange)="handleShowModalChange($event)"
-      >
-      </user-list-modal>
+    <user-list-modal
+      *ngIf="showModal"
+      [showModal]="showModal"
+      (showModalChange)="handleShowModalChange($event)"
+    >
+    </user-list-modal>
 
-      <admin-tools-modal
-        *ngIf="showAdminModal"
-        [(showAdminModal)]="showAdminModal"
-        (showAdminModalChange)="handleShowAdminModalChange($event)"
-      />
+    <admin-tools-modal
+      *ngIf="showAdminModal"
+      [(showAdminModal)]="showAdminModal"
+      (showAdminModalChange)="handleShowAdminModalChange($event)"
+    />
 
-      <app-confirm-dialog></app-confirm-dialog>
-    </div>
-  </ng-container>
+    <app-confirm-dialog></app-confirm-dialog>
+  </div>
 </ng-container>
 
 <ng-template #loadingTemplate>
   <app-circle-spinner></app-circle-spinner>
-</ng-template>
-
-<ng-template #emptyTemplate>
-  <div class="empty-state">
-    <p>Nessun cliente trovato.</p>
-  </div>
 </ng-template>
