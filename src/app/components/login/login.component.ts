@@ -1,7 +1,7 @@
 import {
   Component,
   ElementRef,
-  isDevMode,
+  Inject,
   ViewChild,
   ViewEncapsulation,
 } from '@angular/core';
@@ -10,6 +10,7 @@ import { Router } from '@angular/router';
 import { updateProfile } from 'firebase/auth';
 import { environmentValues } from 'src/app/shared/utils/enviromentValues';
 import { AuthService } from './auth.service';
+import { IS_DEV_MODE } from 'src/app/app.module';
 
 @Component({
   selector: 'app-login',
@@ -33,9 +34,10 @@ export class LoginComponent {
   constructor(
     public afAuth: AngularFireAuth,
     private authService: AuthService,
-    private router: Router
+    private router: Router,
+    @Inject(IS_DEV_MODE) public isDevMode: boolean
   ) {
-    if (isDevMode()) {
+    if (this.isDevMode) {
       this.emailValue = environmentValues.emailValue;
       this.passwordValue = environmentValues.passwordValue;
       this.CheckLogin();

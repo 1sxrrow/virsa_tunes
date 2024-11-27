@@ -25,6 +25,7 @@ import { AuthService } from '../../login/auth.service';
 import { UserDataStorage } from '../user-data/user-data-storage.service';
 import { UserDataService } from '../user-data/user-data.service';
 import { UserListModalStorage } from '../user-list-modal/user-list-modal-storage.service';
+import { UserCacheService } from 'src/app/shared/services/user-cache.service';
 
 interface UserModelWithInterventi extends UserModel {
   interventiCount: number;
@@ -61,6 +62,7 @@ export class UserListComponent implements OnInit {
     private messageService: MessageService,
     private userDataStorage: UserDataStorage,
     private userDataService: UserDataService,
+    private userCacheService: UserCacheService,
     private userListModalStorage: UserListModalStorage,
     private confirmationService: ConfirmationService,
     private firebaseStoreService: FirebaseStoreService
@@ -69,13 +71,21 @@ export class UserListComponent implements OnInit {
   ngOnInit(): void {
     // Inizializza il servizio di stampa
     this.initializePrintService();
+    const cachedUsers = this.userCacheService.getCachedUsers();
     this.usersWithInterventi$ = this.route.data.pipe(
       map((data) => {
-        return data['usersWithInterventi'];
+        const usersWithInterventi = data['usersWithInterventi'];
+        if (this.userCacheService.hasDataChanged(usersWithInterventi)) {
+          console.log('User data has changed, updating cache.');
+          this.userCacheService.cacheUsers(usersWithInterventi);
+        } else {
+          console.log('User data has not changed, using cached data.');
+        }
+        return usersWithInterventi;
       }),
       catchError((error) => {
         console.log('Error in component:', error);
-        return of([]);
+        return of(cachedUsers);
       })
     );
   }

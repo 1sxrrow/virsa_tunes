@@ -157,7 +157,7 @@
   </div>
   <div class="grid justify-center">
     <div class="flex flex-row">
-      <p-button *ngIf="devmode" (onClick)="findInvalidControls()" class="mr-3">
+      <p-button *ngIf="isDevMode" (onClick)="findInvalidControls()" class="mr-3">
         check values
       </p-button>
       <div *ngIf="isAdmin">

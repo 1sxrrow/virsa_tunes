@@ -1,9 +1,8 @@
 import {
   Component,
-  isDevMode,
   OnDestroy,
   OnInit,
-  ViewEncapsulation,
+  ViewEncapsulation
 } from '@angular/core';
 import {
   ConfirmationService,
@@ -38,7 +37,6 @@ export class InventarioItemListComponent implements OnInit, OnDestroy {
 
   loading = false;
   isAdmin = false;
-  devmode: boolean = false;
 
   selectedItem: InventarioItemModel;
   showModal: boolean = false;
@@ -52,7 +50,7 @@ export class InventarioItemListComponent implements OnInit, OnDestroy {
     private authService: AuthService,
     private confirmationService: ConfirmationService,
     private messageService: MessageService,
-    private inventarioModalStorage: InventarioModalStorage
+    private inventarioModalStorage: InventarioModalStorage,
   ) {}
 
   ngOnInit(): void {
@@ -60,7 +58,6 @@ export class InventarioItemListComponent implements OnInit, OnDestroy {
     this.key = '';
     this.retrieveData();
     this.isAdmin = this.authService.getIsAdmin();
-    this.devmode = isDevMode();
   }
 
   ngOnDestroy(): void {

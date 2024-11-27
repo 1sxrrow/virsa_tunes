@@ -1,14 +1,9 @@
-import { Injectable } from '@angular/core';
-import {
-  BehaviorSubject,
-  combineLatest,
-  map,
-  Observable,
-  Subject,
-  tap,
-} from 'rxjs';
+import { Inject, Injectable } from '@angular/core';
+import { BehaviorSubject, combineLatest, map, Observable, tap } from 'rxjs';
+import { IS_DEV_MODE } from 'src/app/app.module';
 import { costoStorico } from 'src/app/shared/models/costoStorico.model';
 import { InventarioItemModel } from 'src/app/shared/models/inventarioItem.model';
+import { UserCacheService } from 'src/app/shared/services/user-cache.service';
 import {
   calculateIncassoInterventov2,
   calculateMese,
@@ -18,15 +13,6 @@ import { prodottiAggiuntivi } from '../../../shared/models/prodotti-aggiuntivi.m
 import { SpecificDataModel } from '../../../shared/models/specific-data.model';
 import { UserModel } from '../../../shared/models/user-data.model';
 import { FirebaseStoreService } from '../../../shared/services/firebase/firebase-store.service';
-import {
-  canaleComunicazione,
-  condizioniProdotto,
-  garanzia,
-  negozioInventario,
-  tipoIntervento,
-  tipoPagamento,
-  tipoParte,
-} from '../../../shared/utils/common-enums';
 import { AuthService } from '../../login/auth.service';
 
 interface UserModelWithInterventi extends UserModel {
@@ -45,10 +31,11 @@ export class UserDataService {
 
   // Combinazione degli Observables
   users: UserModel[] = [];
-
   constructor(
     private firebaseStoreService: FirebaseStoreService,
-    private authService: AuthService
+    private authService: AuthService,
+    private userCacheService: UserCacheService,
+    @Inject(IS_DEV_MODE) public isDevMode: boolean
   ) {}
 
   fetchUsersWithInterventi(): Observable<{
@@ -75,8 +62,19 @@ export class UserDataService {
           return { users, interventiCounts };
         }),
         tap(({ users, interventiCounts }) => {
-          this.usersSubject.next(users);
-          this.interventiCountsSubject.next(interventiCounts);
+          let changed = this.userCacheService.hasDataChanged(users);
+          if (changed) {
+            if (this.isDevMode) {
+              console.log('User data has changed, updating cache.');
+            }
+            this.usersSubject.next(users);
+            this.interventiCountsSubject.next(interventiCounts);
+            this.userCacheService.cacheUsers(users);
+          } else {
+            if (this.isDevMode) {
+              console.log('User data has not changed, using cached data.');
+            }
+          }
         })
       );
   }

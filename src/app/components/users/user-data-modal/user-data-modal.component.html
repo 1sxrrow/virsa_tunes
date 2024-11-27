@@ -541,7 +541,7 @@
     <div
       class="flex flex-row items-end justify-end col-start-5 col-end-5 gap-2"
     >
-      <p-button *ngIf="devmode" (onClick)="findInvalidControls()">
+      <p-button *ngIf="isDevMode" (onClick)="findInvalidControls()">
         check values
       </p-button>
       <p-button

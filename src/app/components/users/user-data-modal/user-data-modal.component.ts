@@ -6,7 +6,6 @@ import {
   EventEmitter,
   Inject,
   Input,
-  isDevMode,
   LOCALE_ID,
   OnInit,
   Output,
@@ -25,6 +24,7 @@ import { saveAs } from 'file-saver';
 import { MessageService } from 'primeng/api';
 import { FileRemoveEvent } from 'primeng/fileupload';
 import { finalize } from 'rxjs';
+import { IS_DEV_MODE } from 'src/app/app.module';
 import { costoStorico } from 'src/app/shared/models/costoStorico.model';
 import { prodottiAggiuntivi } from 'src/app/shared/models/prodotti-aggiuntivi.model';
 import { SpecificDataModel } from 'src/app/shared/models/specific-data.model';
@@ -71,8 +71,6 @@ export class UserDataModalComponent implements OnInit {
   percentage: number = 0;
   isUploading = false;
 
-  devmode = false;
-
   listaStorico: costoStorico[] = [];
   // locale = 'it-IT';
   constructor(
@@ -85,7 +83,8 @@ export class UserDataModalComponent implements OnInit {
     private messageService: MessageService,
     private firebaseStorage: AngularFireStorage,
     private firebaseStoreService: FirebaseStoreService,
-    @Inject(LOCALE_ID) public locale: string
+    @Inject(LOCALE_ID) public locale: string,
+    @Inject(IS_DEV_MODE) public isDevMode: boolean
   ) {}
 
   ngOnInit(): void {
@@ -118,8 +117,7 @@ export class UserDataModalComponent implements OnInit {
         break;
     }
 
-    this.devmode = isDevMode();
-    keylistener(this.devmode);
+    keylistener(this.isDevMode);
   }
 
   get tipoInterventoDataSet() {

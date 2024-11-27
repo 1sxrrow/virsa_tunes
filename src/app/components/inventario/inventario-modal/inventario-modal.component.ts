@@ -1,11 +1,11 @@
 import {
   Component,
   EventEmitter,
+  Inject,
   Input,
-  isDevMode,
   OnInit,
   Output,
-  ViewEncapsulation,
+  ViewEncapsulation
 } from '@angular/core';
 import {
   FormBuilder,
@@ -14,6 +14,7 @@ import {
   Validators,
 } from '@angular/forms';
 import { MessageService } from 'primeng/api';
+import { IS_DEV_MODE } from 'src/app/app.module';
 import { InventarioItemModel } from 'src/app/shared/models/inventarioItem.model';
 import { FirebaseStoreService } from 'src/app/shared/services/firebase/firebase-store.service';
 import {
@@ -35,7 +36,6 @@ export class InventarioModalComponent implements OnInit {
   @Input() showModal: boolean = false;
   @Output() showModalChange = new EventEmitter();
 
-  devmode: boolean = false;
   isAdmin: boolean = false;
   loading: boolean = false;
 
@@ -48,12 +48,12 @@ export class InventarioModalComponent implements OnInit {
     private inventarioModalService: InventarioModalService,
     private firebaseStoreService: FirebaseStoreService,
     private authService: AuthService,
-    private messageService: MessageService
+    private messageService: MessageService,
+    @Inject(IS_DEV_MODE) public isDevMode : boolean
   ) {}
 
   ngOnInit(): void {
     this.inventarioModalService.valDataSet();
-    this.devmode = isDevMode();
     this.isAdmin = this.authService.getIsAdmin();
     this.mode = this.storage.input.mode;
 
