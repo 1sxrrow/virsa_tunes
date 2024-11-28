@@ -434,10 +434,10 @@ export function createScontrino(
         .align('center')
         .width(1)
         .height(1)
-        .line('VIA TRENTO 49A')
-        .line('25128 BRESCIA')
-        .line('P. IVA 04222840987')
-        .line('tel: +39  3313017069')
+        .line(via)
+        .line(posto)
+        .line('P. IVA 04548020983')
+        .line(telefono)
         .line('')
         .align('center')
         .size('normal')
@@ -541,6 +541,9 @@ export function createMultiScontrino(
   let counter = 0;
   let caparra = 0;
   let scontoValue = 0;
+  let via: string;
+  let posto: string;
+  let telefono: string;
   allItems.forEach((specificData) => {
     // Recupero dati intervento da mostrare nella tabella scontrino
     interventi.push([
@@ -620,6 +623,16 @@ export function createMultiScontrino(
         ['Si', '', specificData.costoPermuta + ',00 €']
       );
     }
+
+    if (specificData.negozio === 'NEGOZIO I') {
+      via = 'VIA MIROLTE N. 54';
+      posto = '25049 ISEO (BS)';
+      telefono = 'tel: +39  3313017069';
+    } else {
+      via = 'VIA TRENTO 49A';
+      posto = '25128 BRESCIA';
+      telefono = 'tel: +39  3202258681';
+    }
   });
 
   if (scontoValue > 0) {
@@ -638,10 +651,10 @@ export function createMultiScontrino(
       .width(1)
       .height(1)
       .line('DI SHARIF FAHID')
-      .line('VIA TRENTO 49A')
-      .line('25128 BRESCIA')
-      .line('P. IVA 04222840987')
-      .line('tel: +39  3313017069')
+      .line(via)
+      .line(posto)
+      .line('P. IVA 04548020983')
+      .line(telefono)
       .line('')
       .align('center')
       .size('normal')
@@ -725,10 +738,10 @@ export function createMultiScontrino(
       .width(1)
       .height(1)
       .line('DI SHARIF FAHID')
-      .line('VIA TRENTO 49A')
-      .line('25128 BRESCIA')
-      .line('P. IVA 04222840987')
-      .line('tel: +39  3313017069')
+      .line(via)
+      .line(posto)
+      .line('P. IVA 04548020983')
+      .line(telefono)
       .line('')
       .align('center')
       .size('normal')
@@ -796,10 +809,10 @@ export function createMultiScontrino(
       .width(1)
       .height(1)
       .line('DI SHARIF FAHID')
-      .line('VIA TRENTO 49A')
-      .line('25128 BRESCIA')
-      .line('P. IVA 04222840987')
-      .line('tel: +39  3313017069')
+      .line(via)
+      .line(posto)
+      .line('P. IVA 04548020983')
+      .line(telefono)
       .line('')
       .align('center')
       .size('normal')
@@ -885,10 +898,10 @@ export function createMultiScontrino(
       .width(1)
       .height(1)
       .line('DI SHARIF FAHID')
-      .line('VIA TRENTO 49A')
-      .line('25128 BRESCIA')
-      .line('P. IVA 04222840987')
-      .line('tel: +39  3313017069')
+      .line(via)
+      .line(posto)
+      .line('P. IVA 04548020983')
+      .line(telefono)
       .line('')
       .align('center')
       .size('normal')
@@ -958,7 +971,7 @@ export function createMultiScontrino(
       .line('DI SHARIF FAHID')
       .line('VIA TRENTO 49A')
       .line('25128 BRESCIA')
-      .line('P. IVA 04222840987')
+      .line('P. IVA 04548020983')
       .line('tel: +39  3313017069')
       .line('')
       .align('center')
