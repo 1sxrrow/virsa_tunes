@@ -223,12 +223,18 @@ export function createScontrino(
     sconto.push(['Sconto:', '', specificData.costo_sconto + ',00 €']);
   }
   specificData.caparra ? (totale -= +specificData.caparra) : null;
-  let via =
-    specificData.negozio === 'NEGOZIO I'
-      ? 'VIA MIROLTE N. 54'
-      : 'VIA TRENTO 49A';
-  let posto =
-    specificData.negozio === 'NEGOZIO I' ? '25049 ISEO (BS)' : '25128 BRESCIA';
+  let via: string;
+  let posto: string;
+  let telefono: string;
+  if (specificData.negozio === 'NEGOZIO I') {
+    via = 'VIA MIROLTE N. 54';
+    posto = '25049 ISEO (BS)';
+    telefono = 'tel: +39  3313017069';
+  } else {
+    via = 'VIA TRENTO 49A';
+    posto = '25128 BRESCIA';
+    telefono = 'tel: +39  3202258681';
+  }
   switch (specificData.tipo_intervento) {
     case 'Riparazione':
       return encoder
@@ -243,7 +249,7 @@ export function createScontrino(
         .line(via)
         .line(posto)
         .line('P. IVA 04548020983')
-        .line('tel: +39  3313017069')
+        .line(telefono)
         .line('')
         .align('center')
         .size('normal')
