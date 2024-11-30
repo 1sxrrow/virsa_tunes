@@ -364,21 +364,21 @@ p-calendar.ng-dirty.ng-invalid > .p-calendar > .p-inputtext {
   border-radius: 6px;
 }
 .p-datepicker:not(.p-datepicker-inline) {
-  background: #071426;
-  border: 1px solid #0b213f;
+  background: var(--modal-background-color);
+  border: 1px solid var(--modal-border-color);
   box-shadow: 0 2px 4px -1px rgba(0, 0, 0, 0.2), 0 4px 5px 0 rgba(0, 0, 0, 0.14),
     0 1px 10px 0 rgba(0, 0, 0, 0.12);
 }
 .p-datepicker:not(.p-datepicker-inline) .p-datepicker-header {
-  background: #071426;
+  background: var(--modal-background-color);
 }
 .p-datepicker .p-datepicker-header {
   padding: 0.5rem;
   color: rgba(255, 255, 255, 0.87);
-  background: #071426;
+  background: var(--modal-background-color);
   font-weight: 700;
   margin: 0;
-  border-bottom: 1px solid #0b213f;
+  border-bottom: 1px solid var(--modal-border-color);
   border-top-right-radius: 6px;
   border-top-left-radius: 6px;
 }
@@ -442,15 +442,15 @@ p-calendar.ng-dirty.ng-invalid > .p-calendar > .p-inputtext {
   padding: 0.5rem;
 }
 .p-datepicker table td > span {
-  width: 2.5rem;
-  height: 2.5rem;
-  border-radius: 50%;
+  overflow: visible;
+  width: 50%;
+  height: 50%;
   transition: box-shadow 0.2s;
-  border: 1px solid transparent;
 }
 .p-datepicker table td > span.p-highlight {
-  color: rgba(255, 255, 255, 0.87);
-  background: rgba(147, 197, 253, 0.16);
+  color: var(--datepicker-date-highlight);
+  background: var(--datepicker-date-highlight-background);
+  overflow: visible;
 }
 .p-datepicker table td > span:focus {
   outline: 0 none;
@@ -458,8 +458,8 @@ p-calendar.ng-dirty.ng-invalid > .p-calendar > .p-inputtext {
   box-shadow: 0 0 0 0.2rem rgba(147, 197, 253, 0.5);
 }
 .p-datepicker table td.p-datepicker-today > span {
-  background: transparent;
-  color: #93c5fd;
+  background: var(--datepicker-date-highlight-background-today);
+  color: var(--datepicker-date-highlight-today);
   border-color: transparent;
 }
 .p-datepicker table td.p-datepicker-today > span.p-highlight {
@@ -468,7 +468,7 @@ p-calendar.ng-dirty.ng-invalid > .p-calendar > .p-inputtext {
 }
 .p-datepicker .p-datepicker-buttonbar {
   padding: 1rem 0;
-  border-top: 1px solid #0b213f;
+  border-top: 1px solid var(--modal-border-color);
 }
 .p-datepicker .p-datepicker-buttonbar .p-button {
   width: auto;

@@ -440,13 +440,13 @@ p-calendar.ng-dirty.ng-invalid > .p-calendar > .p-inputtext {
   padding: 0.5rem;
 }
 .p-datepicker table td > span {
-  width: 2.5rem;
-  height: 2.5rem;
-  border-radius: 50%;
+  overflow: visible;
+  width: 50%;
+  height: 50%;
   transition: box-shadow 0.2s;
-  border: 1px solid transparent;
 }
 .p-datepicker table td > span.p-highlight {
+  overflow: visible;
   color: #1d4ed8;
   background: #eff6ff;
 }

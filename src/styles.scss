@@ -9,6 +9,10 @@
 /* PrimeNG */
 @import "src/assets/themes/lara-light-blue.css";
 @import "app/shared-styles.scss";
+@import "primeng/resources/primeng.css";
+@import "primeicons/primeicons.css";
+
+@import "~@ng-select/ng-select/themes/default.theme.css";
 
 body.theme-light {
   --header-background-color: #0f172a;
@@ -47,6 +51,10 @@ body.theme-dark {
   --inverse-text-color: ;
   --text-label-color: #ffffff;
   --input-field-color: #ffffff;
+  --datepicker-date-highlight: #1976d2;
+  --datepicker-date-highlight-background: #ffffff;
+  --datepicker-date-highlight-today: ffffff;
+  --datepicker-date-highlight-background-today: rgba(147, 197, 253, 0.16);
   .p-button {
     border: none;
     outline: none;
@@ -54,11 +62,7 @@ body.theme-dark {
   }
 }
 
-@import "primeng/resources/primeng.css";
-@import "primeicons/primeicons.css";
-
-@import "~@ng-select/ng-select/themes/default.theme.css";
-
+// Rimozione pulsati incremento e decremento in capi input type number
 @layer base {
   input[type="number"]::-webkit-inner-spin-button,
   input[type="number"]::-webkit-outer-spin-button {
@@ -134,6 +138,7 @@ body {
   box-sizing: border-box;
 }
 
+// Responsive width Ricerca field in InvetarioList & UserList
 .flex-container {
   display: flex;
   justify-content: center; /* Centra l'input orizzontalmente */
@@ -158,5 +163,35 @@ body {
 
   @media (max-width: 576px) {
     max-width: 200px; /* Riduci ulteriormente la larghezza massima */
+  }
+}
+
+// Custom width dialog DatePicker Calendar in UserDataModal
+::ng-deep .p-calendar {
+  .p-datepicker table td {
+    /*adjust the padding*/
+    padding: 0.22rem;
+  }
+  .p-datepicker table td > span {
+    /*adjust the width and height*/
+    width: 50%;
+    height: 50%;
+  }
+  .p-inputtext {
+    appearance: none;
+    -moz-appearance: none;
+    background-color: #374151;
+    color: rgb(17 24 39 / var(--tw-text-opacity));
+    font-size: 0.875rem;
+    line-height: 1.25rem;
+    padding: 0.625rem;
+    color: #fff;
+    --tw-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1),
+      0 2px 4px -2px rgb(0 0 0 / 0.1);
+    --tw-shadow-colored: 0 4px 6px -1px var(--tw-shadow-color),
+      0 2px 4px -2px var(--tw-shadow-color);
+    box-shadow: var(--tw-ring-offset-shadow, 0 0 #0000),
+      var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow);
+    border-radius: 0.5rem;
   }
 }
