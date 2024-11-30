@@ -193,39 +193,13 @@
         <label for="costo_user_data_modal" class="label">
           {{ "user_data.costo" | translate }}</label
         >
-        <span class="p-input-icon-right w-full">
-          <i
-            class="pi pi-plus cursor-pointer"
-            (click)="addCostoStoricoList()"
-            *ngIf="showFieldsVendita"
-            pTooltip="Aggiungi storico"
-          ></i>
-          <input
-            type="number"
-            name="costo_user_data_modal"
-            id="costo_user_data_modal"
-            class="fields"
-            formControlName="costo"
-          />
-        </span>
-      </div>
-      <div
-        class="mb-1 col-span-2 border border-neutral-700 rounded-md"
-        *ngIf="listaStoricoLength > 0 && showFieldsVendita"
-      >
-        <div class="p-2">
-          <label for="costo_storico_list_user_data_modal" class="label">
-            {{ "user_data.costo_storico" | translate }}</label
-          >
-          <!-- lista costi storico precedenti -->
-          <ul
-            *ngFor="let costo of listaStorico"
-            id="costo_storico_list_user_data_modal"
-            name="costo_storico_list_user_data_modal"
-          >
-            <li>{{ costo.prezzo }} € | {{ costo.data }}</li>
-          </ul>
-        </div>
+        <input
+          type="number"
+          name="costo_user_data_modal"
+          id="costo_user_data_modal"
+          class="fields"
+          formControlName="costo"
+        />
       </div>
 
       <div class="mb-1" *ngIf="showFieldsVendita">
@@ -292,7 +266,7 @@
           {{ "user_data.data_consegna_riparazione" | translate }}
         </label>
         <p-calendar
-          [formControl]="formData.controls['data_consegna_riparazione']"
+          formControlName="data_consegna_riparazione"
           name="data_consegna_riparazione_user_data_modal"
           inputId="data_consegna_riparazione_user_data_modal"
           [style]="{ width: '100%' }"
@@ -308,7 +282,7 @@
           {{ "user_data.data_rest_dispositivo_cliente" | translate }}
         </label>
         <p-calendar
-          [formControl]="formData.controls['data_rest_dispositivo_cliente']"
+          formControlName="data_rest_dispositivo_cliente"
           name="data_rest_dispositivo_cliente_user_data_modal"
           inputId="data_rest_dispositivo_cliente_user_data_modal"
           [style]="{ width: '100%' }"

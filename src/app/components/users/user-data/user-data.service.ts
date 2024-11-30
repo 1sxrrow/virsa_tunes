@@ -164,13 +164,9 @@ export class UserDataService {
     user_input?: UserModel,
     prodottiAggiuntivi?: prodottiAggiuntivi[],
     uploadedFiles?: FileUpload[],
-    listaStorico?: costoStorico[]
   ): Promise<boolean> {
     if (uploadedFiles.length) {
       specific_data.files = [...uploadedFiles];
-    }
-    if (listaStorico.length) {
-      specific_data.listaStorico = [...listaStorico];
     }
     // verifica se ho modello UserInput in input uso quello altrimenti recupero da users
     let user_work: UserModel = user_input;
@@ -239,7 +235,6 @@ export class UserDataService {
     prodotti_aggiuntivi_input: prodottiAggiuntivi[],
     user_input?: UserModel,
     uploadedFiles?: FileUpload[],
-    listaStorico?: costoStorico[]
   ) {
     specific_data_input.id = id_intervento;
     specific_data_input.prodottiAggiuntivi = prodotti_aggiuntivi_input;
@@ -268,7 +263,6 @@ export class UserDataService {
             specific_data_input.files = [];
           }
           specific_data_input.files = uploadedFiles;
-          specific_data_input.listaStorico = listaStorico;
           spec_retrieved[i] = new SpecificDataModel(specific_data_input);
         } catch (error) {
           console.error('Error updating incasso v2:', error);

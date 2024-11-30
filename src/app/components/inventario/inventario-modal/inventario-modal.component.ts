@@ -3,9 +3,10 @@ import {
   EventEmitter,
   Inject,
   Input,
+  LOCALE_ID,
   OnInit,
   Output,
-  ViewEncapsulation
+  ViewEncapsulation,
 } from '@angular/core';
 import {
   FormBuilder,
@@ -25,6 +26,8 @@ import {
 import { AuthService } from '../../login/auth.service';
 import { InventarioModalStorage } from './inventario-modal-storage.service';
 import { InventarioModalService } from './inventario-modal.service';
+import { formatDate } from '@angular/common';
+import { costoStorico } from 'src/app/shared/models/custom-interfaces';
 
 @Component({
   selector: 'inventario-modal',
@@ -42,6 +45,8 @@ export class InventarioModalComponent implements OnInit {
   modalTitle: string;
   mode: string;
 
+  listaStorico: costoStorico[] = [];
+
   constructor(
     private fb: FormBuilder,
     private storage: InventarioModalStorage,
@@ -49,7 +54,8 @@ export class InventarioModalComponent implements OnInit {
     private firebaseStoreService: FirebaseStoreService,
     private authService: AuthService,
     private messageService: MessageService,
-    @Inject(IS_DEV_MODE) public isDevMode : boolean
+    @Inject(IS_DEV_MODE) public isDevMode: boolean,
+    @Inject(LOCALE_ID) public locale: string
   ) {}
 
   ngOnInit(): void {
@@ -67,6 +73,7 @@ export class InventarioModalComponent implements OnInit {
         this.modalTitle = this.isAdmin
           ? 'Modifica Articolo'
           : 'Visualizza Articolo';
+        this.setListaStorico();
       }
     } else {
       this.initForm();
@@ -138,7 +145,10 @@ export class InventarioModalComponent implements OnInit {
           this.loading = false;
         } else {
           this.formData.patchValue({ data: new Date().toISOString() });
-          let item = new InventarioItemModel(this.formData.value);
+          let item: InventarioItemModel = new InventarioItemModel(
+            this.formData.value
+          );
+          item.listaStorico = this.listaStorico;
           this.firebaseStoreService.addArticoloInventario(item);
           this.showModal = !this.showModal;
           callModalToast(
@@ -149,8 +159,12 @@ export class InventarioModalComponent implements OnInit {
         }
       });
   }
+
   editItem() {
-    let updatedItem = new InventarioItemModel(this.formData.value);
+    let updatedItem: InventarioItemModel = new InventarioItemModel(
+      this.formData.value
+    );
+    updatedItem.listaStorico = this.listaStorico;
     this.firebaseStoreService.editArticoloInventario(
       updatedItem,
       this.storage.input.key
@@ -171,6 +185,32 @@ export class InventarioModalComponent implements OnInit {
     if (this.mode === 'Add' && this.formData.valid) {
       this.addNewItem();
     }
+  }
+
+  private setListaStorico() {
+    if (this.storage.input.selectedItem.listaStorico) {
+      let array = Object.values(this.storage.input.selectedItem.listaStorico);
+      array.forEach((item) => {
+        if (!item.id) {
+          item.id = Math.random().toString(36).substr(2, 9);
+        }
+      });
+      this.listaStorico = array;
+    } else {
+      this.listaStorico = [];
+    }
+  }
+
+  addCostoStoricoList() {
+    this.listaStorico.push({
+      id: Math.random().toString(36).substr(2, 9),
+      prezzo: this.formData.get('prezzo_acquisto').value,
+      data: formatDate(new Date(), 'dd/MM/yyyy', this.locale),
+    });
+  }
+
+  get listaStoricoLength() {
+    return this.listaStorico.length;
   }
 
   public findInvalidControls() {

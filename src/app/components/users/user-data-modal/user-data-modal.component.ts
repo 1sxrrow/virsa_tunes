@@ -71,7 +71,6 @@ export class UserDataModalComponent implements OnInit {
   percentage: number = 0;
   isUploading = false;
 
-  listaStorico: costoStorico[] = [];
   constructor(
     private fb: FormBuilder,
     private cdr: ChangeDetectorRef,
@@ -94,6 +93,7 @@ export class UserDataModalComponent implements OnInit {
           this.storage.input.selectedItem.tipo_intervento
         )
       : undefined;
+    this.dateFieldsFix();
     this.mode = this.formData ? 'Edit' : 'Add';
     switch (this.mode) {
       case 'Add':
@@ -168,7 +168,6 @@ export class UserDataModalComponent implements OnInit {
 
   handleEditMode(type: string): void {
     this.setInterventiAggiuntivi();
-    this.setListaStorico();
     switch (type) {
       case 'Vendita':
         this.checkedPermuta = this.formData.get('checkedPermuta').value;
@@ -270,31 +269,7 @@ export class UserDataModalComponent implements OnInit {
     }
   }
 
-  private setListaStorico() {
-    if (this.storage.input.selectedItem.listaStorico) {
-      let array = Object.values(this.storage.input.selectedItem.listaStorico);
-      array.forEach((item) => {
-        if (!item.id) {
-          item.id = Math.random().toString(36).substr(2, 9);
-        }
-      });
-      this.listaStorico = array;
-    } else {
-      this.listaStorico = [];
-    }
-  }
 
-  get listaStoricoLength() {
-    return this.listaStorico.length;
-  }
-
-  addCostoStoricoList() {
-    this.listaStorico.push({
-      id: Math.random().toString(36).substr(2, 9),
-      prezzo: this.formData.get('costo').value,
-      data: formatDate(new Date(), 'dd/MM/yyyy', this.locale),
-    });
-  }
 
   async addNewInterventoModal() {
     await this.userDataService
@@ -303,7 +278,6 @@ export class UserDataModalComponent implements OnInit {
         this.storage.input.userData,
         this.prodottiAggiuntivi,
         this.uploadedFiles,
-        this.listaStorico
       )
       .then((result) => {
         if (result) {
@@ -332,7 +306,6 @@ export class UserDataModalComponent implements OnInit {
       this.prodottiAggiuntivi,
       this.storage.input.userData,
       this.uploadedFiles,
-      this.listaStorico
     );
 
     this.showModal = !this.showModal;
@@ -608,6 +581,25 @@ export class UserDataModalComponent implements OnInit {
 
   findInvalidControls() {
     findInvalidControls(this.formData);
+  }
+
+  dateFieldsFix() {
+    if (this.formData.value['data_consegna_riparazione']) {
+      let valueDataConsegnaRiparazione = new Date(
+        this.formData.value['data_consegna_riparazione']
+      );
+      this.formData.patchValue({
+        data_consegna_riparazione: valueDataConsegnaRiparazione,
+      });
+    }
+    if (this.formData.value['data_rest_dispositivo_cliente']) {
+      let valueDataRestDispositivoCliente = new Date(
+        this.formData.value['data_rest_dispositivo_cliente']
+      );
+      this.formData.patchValue({
+        data_rest_dispositivo_cliente: valueDataRestDispositivoCliente,
+      });
+    }
   }
 
   myModelChanged(event) {}

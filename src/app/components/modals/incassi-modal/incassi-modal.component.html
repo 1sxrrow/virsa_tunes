@@ -36,7 +36,7 @@
     ></virsa-select>
   </div>
   <!-- Table per incassi non filtrati -->
-  <p-table [value]="incassiShow" [loading]="loadingTable">
+  <p-table [value]="incassiShow$ | async" [loading]="loadingTable">
     <ng-template pTemplate="header">
       <tr>
         <th>{{ "user_data.mese" | translate }}</th>
@@ -51,7 +51,7 @@
           <span>
             {{ incasso.mese }}
             <i
-              *ngIf="mesiSpeseFisseList.includes(incasso.mese)"
+              *ngIf="incasso.hasSpeseFisse"
               class="pi pi-question-circle cursor-pointer"
               style="font-size: 0.75rem"
               pTooltip="Spese fisse"
@@ -62,6 +62,13 @@
         <td>{{ incasso.incasso }}€</td>
         <td>{{ incasso.spese }}€</td>
         <td>{{ incasso.netto }}€</td>
+      </tr>
+    </ng-template>
+    <ng-template pTemplate="emptymessage">
+      <tr>
+        <td colspan="4" class="text-center">
+          {{ "Nessun incasso disponibile" | translate }}
+        </td>
       </tr>
     </ng-template>
   </p-table>

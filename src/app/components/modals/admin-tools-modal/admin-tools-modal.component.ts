@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output, ViewEncapsulation } from '@angular/core';
 import {
   ConfirmationService,
   ConfirmEventType,
@@ -12,7 +12,7 @@ import { FirebaseApp } from '@angular/fire/app';
 @Component({
   selector: 'admin-tools-modal',
   templateUrl: './admin-tools-modal.component.html',
-  styleUrls: ['./admin-tools-modal.component.scss'],
+  encapsulation: ViewEncapsulation.None,
 })
 export class AdminToolsModalComponent implements OnInit {
   @Input() showAdminModal: boolean;

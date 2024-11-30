@@ -1,3 +1,5 @@
+import { costoStorico } from "./custom-interfaces";
+
 export class InventarioItemModel {
   public id: number;
   public quantita: number;
@@ -15,6 +17,8 @@ export class InventarioItemModel {
   public negozio: string;
   public IMEI: string;
   public data: Date;
+  public listaStorico?: costoStorico[];
+
   constructor(init?: Partial<InventarioItemModel>) {
     Object.assign(this, init);
   }

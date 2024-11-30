@@ -4,7 +4,8 @@ import {
   Input,
   OnDestroy,
   OnInit,
-  Output
+  Output,
+  ViewEncapsulation,
 } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { MessageService } from 'primeng/api';
@@ -16,7 +17,7 @@ import { callModalToast } from 'src/app/shared/utils/common-utils';
 @Component({
   selector: 'spese-fisse-modal',
   templateUrl: './spese-fisse-modal.component.html',
-  styleUrls: ['spese-fisse-modal.component.scss'],
+  encapsulation: ViewEncapsulation.None,
 })
 export class SpeseFisseModalComponent implements OnInit, OnDestroy {
   @Input() showListaSpeseFisseModal: boolean;
@@ -30,6 +31,7 @@ export class SpeseFisseModalComponent implements OnInit, OnDestroy {
   selectedSpesaFissa: SpesaFissa;
   mesiSpeseFisseList: string[] = [];
   private subscriptions: Subscription = new Subscription();
+  
   constructor(
     private firebaseStoreService: FirebaseStoreService,
     private messageService: MessageService
@@ -91,17 +93,18 @@ export class SpeseFisseModalComponent implements OnInit, OnDestroy {
   }
 
   getListaMesiSpesaFissa() {
-    const subscription = this.firebaseStoreService
-      .getSpeseFisse()
-      .snapshotChanges()
-      .subscribe((data) => {
-        this.mesiSpeseFisseList = [];
-        if (data.length > 0) {
-          data.forEach((item) => {
-            this.mesiSpeseFisseList.push(item.key);
-          });
-        }
-      });
-    this.subscriptions.add(subscription);
+    this.subscriptions.add(
+      this.firebaseStoreService
+        .getSpeseFisse()
+        .snapshotChanges()
+        .subscribe((data) => {
+          this.mesiSpeseFisseList = [];
+          if (data.length > 0) {
+            data.forEach((item) => {
+              this.mesiSpeseFisseList.push(item.key);
+            });
+          }
+        })
+    );
   }
 }

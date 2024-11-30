@@ -144,20 +144,49 @@
         </div>
         <div class="mb-1" [hidden]="!this.isAdmin">
           <label class="label" for="prezzo_acquisto"> Prezzo Acquisto € </label>
-          <input
-            class="w-11/12 fields"
-            id="prezzo_acquisto"
-            pKeyFilter="int"
-            formControlName="prezzo_acquisto"
-            required
-          />
+          <span class="p-input-icon-right w-full">
+            <i
+              class="pi pi-plus cursor-pointer"
+              (click)="addCostoStoricoList()"
+              pTooltip="Aggiungi storico"
+            ></i>
+            <input
+              class="w-11/12 fields"
+              id="prezzo_acquisto"
+              pKeyFilter="int"
+              formControlName="prezzo_acquisto"
+              required
+            />
+          </span>
+        </div>
+        <div
+          class="mb-1 col-span-2 border border-neutral-700 rounded-md"
+          *ngIf="listaStoricoLength > 0"
+        >
+          <div class="p-2">
+            <label for="costo_storico_list_user_data_modal" class="label">
+              {{ "user_data.costo_storico" | translate }}</label
+            >
+            <!-- lista costi storico precedenti -->
+            <ul
+              *ngFor="let costo of listaStorico"
+              id="costo_storico_list_user_data_modal"
+              name="costo_storico_list_user_data_modal"
+            >
+              <li>{{ costo.prezzo }} € | {{ costo.data }}</li>
+            </ul>
+          </div>
         </div>
       </div>
     </form>
   </div>
   <div class="grid justify-center">
     <div class="flex flex-row">
-      <p-button *ngIf="isDevMode" (onClick)="findInvalidControls()" class="mr-3">
+      <p-button
+        *ngIf="isDevMode"
+        (onClick)="findInvalidControls()"
+        class="mr-3"
+      >
         check values
       </p-button>
       <div *ngIf="isAdmin">

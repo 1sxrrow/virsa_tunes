@@ -32,7 +32,6 @@ export class SpecificDataModel {
   public files?: FileUpload[];
   public idDbIncasso?: string;
   public incassov2?: Incassov2;
-  public listaStorico?: costoStorico[];
 
   public constructor(init?: Partial<SpecificDataModel>) {
     Object.assign(this, init);

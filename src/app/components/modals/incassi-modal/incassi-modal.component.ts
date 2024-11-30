@@ -1,4 +1,5 @@
 import {
+  ChangeDetectionStrategy,
   Component,
   EventEmitter,
   Input,
@@ -7,7 +8,7 @@ import {
   Output,
   ViewEncapsulation,
 } from '@angular/core';
-import { Subscription } from 'rxjs';
+import { BehaviorSubject, Observable, Subscription } from 'rxjs';
 import { Incassov2, SpesaFissa } from 'src/app/shared/models/custom-interfaces';
 import { FirebaseStoreService } from 'src/app/shared/services/firebase/firebase-store.service';
 import { selectDataSet } from 'src/app/shared/types/custom-types';
@@ -20,6 +21,7 @@ import {
   selector: 'incassi-modal',
   templateUrl: './incassi-modal.component.html',
   encapsulation: ViewEncapsulation.None,
+  changeDetection: ChangeDetectionStrategy.Default,
 })
 export class IncassiModalComponent implements OnInit, OnDestroy {
   @Input() showIncassiModal: boolean = false;
@@ -36,28 +38,18 @@ export class IncassiModalComponent implements OnInit, OnDestroy {
   mesiSpesaFissa: string[] = [];
   mesiSpeseFisseList: string[] = [];
   listaSpeseFisseArray: SpesaFissa[] = [];
-  private subscriptions: Subscription = new Subscription();
 
-  constructor(
-    private firebaseStoreService: FirebaseStoreService
-  ) {}
+  private subscriptions: Subscription = new Subscription();
+  private incassiShowSubject = new BehaviorSubject<Incassov2[]>([]);
+  incassiShow$: Observable<Incassov2[]> =
+    this.incassiShowSubject.asObservable();
+
+  constructor(private firebaseStoreService: FirebaseStoreService) {}
 
   ngOnInit(): void {
-    this.filterNegozio = Object.keys(negozioInventario)
-      .filter((key) => key !== 'Magazzino' && isNaN(+key))
-      .map((key) => ({
-        value: key,
-        label: key,
-      }));
-
-    this.filterTipoIntervento = Object.keys(tipoIntervento)
-      .filter((key) => isNaN(+key))
-      .map((key) => ({
-        value: key,
-        label: key,
-      }));
-    this.filterIncassi();
+    this.evalSelectDataSet();
     this.getListaMesiSpesaFissa();
+    this.filterIncassi();
   }
 
   ngOnDestroy(): void {
@@ -70,11 +62,13 @@ export class IncassiModalComponent implements OnInit, OnDestroy {
   }
 
   handleShowSpesaFissaModalChange(show: boolean) {
+    this.filterIncassi(this.selectedNegozio, this.selectedTipoIntervento);
     this.showSpesaFissaModal = show;
   }
 
   handleShowSpeseFisseModalChange(show: boolean) {
     this.listaSpeseFisseArray = [];
+    this.filterIncassi(this.selectedNegozio, this.selectedTipoIntervento);
     this.showSpeseFisseModal = show;
   }
 
@@ -105,7 +99,9 @@ export class IncassiModalComponent implements OnInit, OnDestroy {
       .GetIncassiv2()
       .snapshotChanges()
       .subscribe((data) => {
-        const incassiMap: { [key: string]: Incassov2 } = {};
+        const incassiMap: {
+          [key: string]: Incassov2 & { hasSpeseFisse?: boolean };
+        } = {};
 
         data.forEach((item) => {
           let incasso = item.payload.val() as Incassov2;
@@ -119,7 +115,10 @@ export class IncassiModalComponent implements OnInit, OnDestroy {
 
           if (negozioMatch && tipoInterventoMatch) {
             if (!incassiMap[mese]) {
-              incassiMap[mese] = { ...incasso };
+              incassiMap[mese] = {
+                ...incasso,
+                hasSpeseFisse: this.mesiSpeseFisseList.includes(mese),
+              };
             } else {
               // Unisci i valori degli incassi dello stesso mese
               incassiMap[mese].incasso += incasso.incasso;
@@ -129,7 +128,7 @@ export class IncassiModalComponent implements OnInit, OnDestroy {
             }
           }
         });
-        this.incassiShow = Object.values(incassiMap);
+        this.incassiShowSubject.next(Object.values(incassiMap));
         this.loadingTable = false;
         this.mesiSpesaFissa = Object.keys(incassiMap);
       });
@@ -143,6 +142,22 @@ export class IncassiModalComponent implements OnInit, OnDestroy {
   modaleListaSpeseFisse(mese: string) {
     this.getListSpeseFisse(mese);
     this.showSpeseFisseModal = !this.showSpeseFisseModal;
+  }
+
+  evalSelectDataSet() {
+    this.filterNegozio = Object.keys(negozioInventario)
+      .filter((key) => key !== 'Magazzino' && isNaN(+key))
+      .map((key) => ({
+        value: key,
+        label: key,
+      }));
+
+    this.filterTipoIntervento = Object.keys(tipoIntervento)
+      .filter((key) => isNaN(+key))
+      .map((key) => ({
+        value: key,
+        label: key,
+      }));
   }
 
   getListSpeseFisse(mese: string) {
