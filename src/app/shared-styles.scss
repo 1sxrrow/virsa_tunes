@@ -1,0 +1,86 @@
+.fields {
+  appearance: none;
+  -moz-appearance: none;
+  background-color: var(--fieldSearchBgcolor);
+  color: var(--input-field-color);
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+  display: block;
+  width: 100%;
+  padding: 0.625rem;
+  border-radius: 0.5rem;
+  border: 2px solid;
+  border-color: var(--field-border-color);
+}
+
+body.theme-light {
+  .fieldsSearch {
+    @extend .fields;
+    background-color: var(--fieldSearchBgcolor);
+    color: var(--text-label-color);
+    padding-left: 2.5rem;
+  }
+  .fieldsDisabled {
+    color: #000000;
+  }
+}
+body.theme-dark {
+  .fieldsSearch {
+    @extend .fields;
+    background-color: var(--fieldSearchBgcolor);
+    color: var(--text-label-color);
+    border: 1px solid rgba(255, 255, 255, 0.6);
+    padding-left: 2.5rem;
+  }
+}
+
+.labelShort {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  display: block;
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+  font-weight: 500;
+  color: var(--text-label-color);
+}
+
+.label {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  display: block;
+  margin-bottom: 0.5rem;
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+  font-weight: 500;
+  color: var(--text-label-color);
+}
+
+.fieldsShort {
+  color: var(--text-label-color);
+  background-color: var(--fieldSearchBgcolor);
+
+  border: 2px solid;
+  border-radius: 0.5rem;
+  border-color: var(--field-border-color);
+
+  appearance: none;
+  -moz-appearance: none;
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+  width: 90%;
+  padding: 0.625rem;
+  --tw-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+  --tw-shadow-colored: 0 4px 6px -1px var(--tw-shadow-color),
+    0 2px 4px -2px var(--tw-shadow-color);
+  box-shadow: var(--tw-ring-offset-shadow, 0 0 #0000),
+    var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow);
+}
+
+.fieldsDisabled {
+  @extend .fields;
+  background-color: #6b7280;
+  cursor: not-allowed;
+  opacity: 0.5;
+}

@@ -1,5 +1,9 @@
 {
   "user_data": {
+    "title": {
+      "USER_DATA_MODAL_ADD_TITLE": "Aggiungi Intervento",
+      "USER_DATA_MODAL_EDIT_TITLE": "Modifica Intervento"
+    },
     "data_consegna_riparazione": "Data Consegna Riparazione",
     "caparra": "Caparra (€)",
     "citta": "Città",
@@ -13,6 +17,7 @@
     "costo_permuta": "Costo Permuta (€)",
     "costo_cambio": "Costo Ricambio (€)",
     "costo_spesa_fissa": "Costo Incasso",
+    "costo_storico": "Storico prezzi",
     "canale_com": "Canale Comunicazione",
     "negozio": "Negozio",
     "prodotti_aggiuntivi": "Prodotti Aggiuntivi",
@@ -54,7 +59,14 @@
     "dati_fattura": "Dati Fattura",
     "costoCambio": "Costo Cambio(€)",
     "aggiungi": "Aggiungi",
-    "modifica": "Modifica"
+    "modifica": "Modifica",
+    "note": "Note"
+  },
+  "inventario": {
+    "marca": "Marca",
+    "grado": "Grado",
+    "negozio": "Negozio",
+    "garanzia": "Garanzia"
   },
   "primeng": {
     "dayNames": [

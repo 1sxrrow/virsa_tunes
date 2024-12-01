@@ -1,0 +1,52 @@
+<p-dialog
+  header="Spese fisse"
+  [(visible)]="showListaSpeseFisseModal"
+  [style]="{ width: '40%' }"
+  [modal]="true"
+  (onHide)="handleClose()"
+>
+  <p-table
+    [(value)]="listaSpeseFisse"
+    selectionMode="single"
+    (onRowSelect)="onRowSelectSpesaFissa($event)"
+    [(selection)]="selectedSpesaFissa"
+  >
+    <ng-template pTemplate="header">
+      <tr>
+        <th>{{ "user_data.mese" | translate }}</th>
+        <th>{{ "user_data.nota" | translate }}</th>
+        <th>{{ "user_data.costo_noeuro" | translate }}</th>
+        <th>{{ "user_data.azioni" | translate }}</th>
+      </tr>
+    </ng-template>
+    <ng-template pTemplate="body" let-spesaFissa>
+      <tr [pSelectableRowDblClick]="spesaFissa">
+        <td>{{ spesaFissa.meseSpesaFissa }}</td>
+        <td>{{ spesaFissa.notaSpesaFissa }}</td>
+        <td>{{ spesaFissa.costoSpesaFissa }} €</td>
+        <td>
+          <p-button
+            pTooltip="Cancella Spesa Fissa"
+            tooltipPosition="bottom"
+            type="button"
+            icon="pi pi-times-circle"
+            (click)="
+              confirmDeleteSpesaFissa(spesaFissa.id, spesaFissa.meseSpesaFissa)
+            "
+            styleClass="p-button-danger"
+          />
+        </td>
+      </tr>
+    </ng-template>
+  </p-table>
+</p-dialog>
+
+<spesa-fissa-modal
+  *ngIf="showSpesaFissaModal"
+  [mesiSpesaFissa]="mesiSpeseFisseList"
+  [spesaFissaMode]="spesaFissaMode"
+  [selectedSpesaFissaId]="selectedSpesaFissaId"
+  [spesaFissaForm]="spesaFissaForm"
+  [showSpesaFissaModal]="showSpesaFissaModal"
+  (showSpesaFissaModalChange)="handleShowSpesaFissaModalChange($event)"
+/>

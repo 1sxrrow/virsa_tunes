@@ -1,5 +1,5 @@
 import { FileUpload } from '../utils/common-utils';
-import { Incasso } from './incasso.model';
+import { costoStorico, Incasso, Incassov2 } from './custom-interfaces';
 import { prodottiAggiuntivi } from './prodotti-aggiuntivi.model';
 
 export class SpecificDataModel {
@@ -28,7 +28,10 @@ export class SpecificDataModel {
   public checkedPermuta: boolean;
   public costoPermuta: number;
   public negozio: string;
+  public note: string;
   public files?: FileUpload[];
+  public idDbIncasso?: string;
+  public incassov2?: Incassov2;
 
   public constructor(init?: Partial<SpecificDataModel>) {
     Object.assign(this, init);

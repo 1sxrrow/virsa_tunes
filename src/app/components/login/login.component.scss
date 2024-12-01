@@ -1,9 +1,4 @@
 /* You can add global styles to this file, and also import other style files */
-@import "tailwindcss/base";
-
-@import "tailwindcss/components";
-
-@import "tailwindcss/utilities";
 
 .background {
   position: relative;
@@ -16,6 +11,40 @@
   margin: auto;
   width: 50%;
   padding: 10px;
+}
+
+.loginLabel {
+  font-weight: 800;
+  place-items: start;
+  font-size: 1.25rem /* 20px */;
+  line-height: 1.75rem /* 28px */;
+  margin-bottom: 0.5rem /* 8px */;
+  color: var(--text-label-color);
+}
+
+.fieldsContainer {
+  padding: 17px;
+}
+
+.loginContainer {
+  display: block;
+  border-width: 1px;
+  padding: 40px;
+  border-radius: 0.5rem;
+  background-color: rgb(28 25 23 / var(--tw-bg-opacity));
+  min-width: 400px;
+}
+
+body.theme-light {
+  .loginContainer {
+    background-color: rgb(28 25 23 / var(--tw-bg-opacity));
+  }
+}
+body.theme-dark {
+  .loginContainer {
+    border-color: rgb(75 85 99 / var(--tw-border-opacity));
+    background-color: rgb(28 25 23 / var(--tw-bg-opacity));
+  }
 }
 
 input {

@@ -1,0 +1,88 @@
+@import "src/app/shared-styles.scss";
+
+select::-ms-expand {
+  display: none;
+}
+select {
+  appearance: none;
+  -moz-appearance: none;
+}
+/* Chrome, Safari, Edge, Opera */
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  appearance: none;
+  margin: 0;
+}
+
+.fieldImei {
+  @extend .fields;
+  padding-right: 2.5rem;
+}
+
+body.theme-light {
+  .outlineText > span {
+    color: #343a40;
+  }
+  .userBreadcrumb {
+    color: black;
+    background-color: #b4b4b4;
+    border: 1px solid #b4b4b4;
+  }
+}
+body.theme-dark {
+  .outlineText > span {
+    color: white;
+  }
+  .userBreadcrumb {
+    color: white;
+    background-color: rgb(28 25 23);
+    border: 1px solid rgb(28 25 23);
+  }
+}
+
+.userBreadcrumb {
+  font-weight: bold;
+  border-radius: 5px;
+  padding: 5px;
+}
+
+.outlineText {
+  padding: 5px;
+  background: var(--fieldSearchBgcolor);
+  border: 1px solid #606060;
+  padding: 1.25rem;
+  border-radius: 6px;
+  gap: 0.5rem;
+  width: 600px;
+  @media screen and (max-width: 1023px) {
+    transition: width 1 ease-in-out;
+    width: 300px;
+  }
+}
+
+::ng-deep .p-breadcrumb {
+  background: transparent;
+  border: none;
+  .p-breadcrumb-list {
+    li {
+      .p-menuitem-separator {
+        color: black;
+      }
+      .p-menuitem-link {
+        .p-menuitem-icon {
+          color: black;
+        }
+        .p-menuitem-text {
+          color: black;
+        }
+      }
+    }
+    li:last-child .p-menuitem-text {
+      color: black;
+    }
+  }
+}
+
+::ng-deep .p-toolbar {
+  border: none;
+}

@@ -1,0 +1,71 @@
+<p-dialog
+  [header]="
+    spesaFissaMode === 'Aggiungi'
+      ? 'Aggiungi spesa fissa'
+      : 'Modifica spesa fissa'
+  "
+  [(visible)]="showSpesaFissaModal"
+  [style]="{ width: '40%' }"
+  [modal]="true"
+  (onHide)="handleClose()"
+>
+  <form [formGroup]="spesaFissaForm">
+    <div class="grid grid-cols-3 mb-2 gap-2">
+      <div>
+        <label for="meseSpesaFissa" class="label">
+          {{ "user_data.mese" | translate }}
+        </label>
+        <span class="p-input-icon-right w-full">
+          <i class="pi pi-angle-down"></i>
+          <select
+            name="meseSpesaFissa"
+            id="meseSpesaFissa"
+            class="fields"
+            formControlName="meseSpesaFissa"
+          >
+            <option [ngValue]="null" disabled>Seleziona Mese</option>
+            <option
+              [value]="meseSpesaFissa"
+              *ngFor="let meseSpesaFissa of mesiSpesaFissa"
+            >
+              {{ meseSpesaFissa }}
+            </option>
+          </select>
+        </span>
+      </div>
+      <div>
+        <label for="notaSpesaFissa" class="label">
+          {{ "user_data.nota" | translate }}
+        </label>
+        <input
+          type="text"
+          name="notaSpesaFissa"
+          id="notaSpesaFissa"
+          class="fields"
+          formControlName="notaSpesaFissa"
+        />
+      </div>
+      <div>
+        <label for="costoSpesaFissa" class="label">
+          {{ "user_data.costo_spesa_fissa" | translate }}
+        </label>
+        <input
+          type="number"
+          name="costoSpesaFissa"
+          id="costoSpesaFissa"
+          class="fields"
+          formControlName="costoSpesaFissa"
+        />
+      </div>
+    </div>
+    <div class="grid justify-center">
+      <p-button
+        [label]="spesaFissaMode === 'Aggiungi' ? 'Aggiungi' : 'Modifica'"
+        class="col-start-3"
+        styleClass="p-button-raised p-button-secondary"
+        (click)="toggleSpesaFissa()"
+        [disabled]="!spesaFissaForm.valid"
+      ></p-button>
+    </div>
+  </form>
+</p-dialog>

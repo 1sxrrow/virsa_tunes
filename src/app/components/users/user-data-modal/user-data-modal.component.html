@@ -1,0 +1,538 @@
+<p-dialog
+  #dialog
+  [modal]="true"
+  [(visible)]="showModal"
+  (onHide)="handleClose()"
+  [header]="modalTitle"
+  [style]="{ width: '50vw' }"
+>
+  <form [formGroup]="formData">
+    <div class="grid md:grid-cols-2 gap-4 mb-1 items-center">
+      <div class="mb-1 col-span-2">
+        <virsa-select
+          [isDisabled]="mode === 'Edit'"
+          [label]="'user_data.tipo_intervento' | translate"
+          [dataSet]="tipoInterventoDataSet"
+          specificName="tipo_intervento_user_data_modal"
+          formControlName="tipo_intervento"
+          [group]="formData"
+          [externalValue]="formData.get('tipo_intervento').value"
+          (selectionChange)="onOptionSelected($event)"
+        ></virsa-select>
+      </div>
+    </div>
+    <div class="grid md:grid-cols-2 gap-2 items-center" *ngIf="showFields">
+      <div class="mb-1" *ngIf="showFieldsRiparazione">
+        <label for="problema_user_data_modal" class="label">
+          {{ "user_data.problema" | translate }}
+        </label>
+        <input
+          type="text"
+          name="problema_user_data_modal"
+          id="problema_user_data_modal"
+          class="fields"
+          formControlName="problema"
+        />
+      </div>
+      <div class="mb-1" *ngIf="showFieldsRiparazione">
+        <virsa-select
+          [label]="'user_data.tipo_parte' | translate"
+          [dataSet]="tipoParteDataSet"
+          specificName="tipo_parte_user_data_modal"
+          formControlName="tipo_parte"
+          [group]="formData"
+          [externalValue]="formData.get('tipo_parte').value"
+        ></virsa-select>
+      </div>
+
+      <div class="mb-1" *ngIf="showFieldsVendita">
+        <virsa-select
+          [label]="'user_data.garanzia' | translate"
+          [dataSet]="mesiGaranziaDataSet"
+          specificName="garanzia_user_data_modal"
+          formControlName="garanzia"
+          [group]="formData"
+          [externalValue]="formData.get('garanzia').value"
+        ></virsa-select>
+      </div>
+
+      <div class="mb-1">
+        <label for="marca_telefono_user_data_modal" class="label">
+          {{ "user_data.marca_telefono" | translate }}
+        </label>
+        <input
+          type="text"
+          name="marca_telefono_user_data_modal"
+          id="marca_telefono_user_data_modal"
+          class="fields"
+          formControlName="marca_telefono"
+        />
+      </div>
+
+      <div class="mb-1">
+        <!-- <virsa-text-input
+          formControlName="modello_telefono"
+          label="Modello Telefono"
+          required="true"
+        ></virsa-text-input> -->
+        <label for="modello_telefono_user_data_modal" class="label">
+          {{ "user_data.modello_telefono" | translate }}
+        </label>
+        <input
+          type="text"
+          name="modello_telefono_user_data_modal"
+          id="modello_telefono_user_data_modal"
+          class="fields"
+          formControlName="modello_telefono"
+          required
+        />
+      </div>
+      <div class="mb-1">
+        <label for="imei_user_data_modal" class="label">
+          {{ "user_data.imei" | translate }}
+          <i
+            class="pi pi-question-circle"
+            style="font-size: 0.75rem"
+            pTooltip="Consigliati 15 caratteri"
+          ></i>
+        </label>
+        <span class="p-input-icon-right w-full">
+          <i
+            class="pi pi-check cursor-pointer"
+            (click)="checkImei()"
+            *ngIf="showFieldsVendita"
+          ></i>
+          <input
+            type="text"
+            name="imei_user_data_modal"
+            id="imei_user_data_modal"
+            class="fields fieldImei"
+            formControlName="imei"
+            required
+          />
+        </span>
+      </div>
+
+      <div class="mb-1" *ngIf="showFieldsVendita">
+        <label for="check_permuta_user_data_modal" class="mr-2">{{
+          "user_data.permuta" | translate
+        }}</label>
+        <p-checkbox
+          formControlName="checkedPermuta"
+          (ngModelChange)="myModelChanged($event)"
+          [(ngModel)]="checkedPermuta"
+          [binary]="true"
+          inputId="check_permuta_user_data_modal"
+          name="check_permuta_user_data_modal"
+          class="mr-2"
+        ></p-checkbox>
+      </div>
+
+      <div class="mb-1" *ngIf="showFieldsVendita && checkedPermuta">
+        <label for="costo_permuta_user_data_modal" class="label">
+          {{ "user_data.costo_permuta" | translate }}</label
+        >
+        <input
+          type="number"
+          name="costo_permuta_user_data_modal"
+          id="costo_permuta_user_data_modal"
+          class="fields"
+          formControlName="costoPermuta"
+        />
+      </div>
+      <div
+        class="col-start-1 col-end-3 mb-1"
+        *ngIf="showFieldsVendita && checkedPermuta"
+      >
+        <p-fileUpload
+          (onSelect)="onUpload($event)"
+          (onRemove)="onRemove($event)"
+          [multiple]="true"
+          accept="image/*"
+          [showCancelButton]="false"
+          [showUploadButton]="false"
+          maxFileSize="5000000"
+        >
+          <ng-template pTemplate="content">
+            <ul *ngIf="uploadedFiles">
+              <li *ngFor="let file of uploadedFiles">
+                <div
+                  class="w-full flex justify-evenly items-center border border-neutral-700 rounded-md p-2"
+                >
+                  <span>
+                    {{ file.file.filename }} - {{ file.file.filesize }} bytes
+                  </span>
+                  <p-button
+                    styleClass="p-button-help"
+                    icon="pi pi-download"
+                    pTooltip="Download"
+                    tooltipPosition="bottom"
+                    (click)="downloadFile(file.uploadURL)"
+                    class="ml-2"
+                  ></p-button>
+                </div>
+              </li>
+            </ul>
+          </ng-template>
+        </p-fileUpload>
+      </div>
+
+      <div
+        class="col-start-1 col-end-3 mb-1"
+        *ngIf="
+          showFieldsVendita &&
+          checkedPermuta &&
+          isUploading &&
+          !uploadedFilesDone
+        "
+      >
+        <p-progressBar [value]="percentage" />
+      </div>
+
+      <div class="mb-1">
+        <label for="costo_user_data_modal" class="label">
+          {{ "user_data.costo" | translate }}</label
+        >
+        <input
+          type="number"
+          name="costo_user_data_modal"
+          id="costo_user_data_modal"
+          class="fields"
+          formControlName="costo"
+        />
+      </div>
+
+      <div class="mb-1" *ngIf="showFieldsVendita">
+        <label for="costo_sconto_user_data_modal" class="label">
+          {{ "user_data.costo_sconto" | translate }}</label
+        >
+        <input
+          type="number"
+          name="costo_sconto_user_data_modal"
+          id="costo_sconto_user_data_modal"
+          class="fields"
+          formControlName="costo_sconto"
+        />
+      </div>
+
+      <div class="mb-1" *ngIf="showFieldsVendita">
+        <virsa-select
+          [label]="'user_data.modalita_pagamento' | translate"
+          [dataSet]="tipoPagamentoDataSet"
+          specificName="modalita_pagamento_user_data_modal"
+          formControlName="modalita_pagamento"
+          [group]="formData"
+          [externalValue]="formData.get('modalita_pagamento').value"
+        ></virsa-select>
+      </div>
+
+      <div class="mb-1" *ngIf="showFieldsVendita">
+        <virsa-select
+          [label]="'user_data.tipo_prodotto' | translate"
+          [dataSet]="condizioniProdottoDataSet"
+          specificName="tipo_prodotto_user_data_modal"
+          formControlName="tipo_prodotto"
+          [group]="formData"
+          [externalValue]="formData.get('tipo_prodotto').value"
+        ></virsa-select>
+      </div>
+
+      <div class="mb-1" *ngIf="showFieldsRiparazione">
+        <label for="codice_sblocco_user_data_modal" class="label">{{
+          "user_data.codice_sblocco" | translate
+        }}</label>
+        <input
+          type="text"
+          name="codice_sblocco_user_data_modal"
+          id="codice_sblocco_user_data_modal"
+          class="fields"
+          formControlName="codice_sblocco"
+        />
+      </div>
+      <div class="mb-1" *ngIf="showFieldsRiparazione">
+        <label for="nome_fornitore_pezzo_user_data_modal" class="label">{{
+          "user_data.nome_fornitore_pezzo" | translate
+        }}</label>
+        <input
+          type="text"
+          class="fields"
+          name="nome_fornitore_pezzo_user_data_modal"
+          id="nome_fornitore_pezzo_user_data_modal"
+          formControlName="nome_fornitore_pezzo"
+        />
+      </div>
+      <div class="mb-1" *ngIf="showFieldsRiparazione">
+        <label for="data_consegna_riparazione_user_data_modal" class="label">
+          {{ "user_data.data_consegna_riparazione" | translate }}
+        </label>
+        <p-calendar
+          formControlName="data_consegna_riparazione"
+          name="data_consegna_riparazione_user_data_modal"
+          inputId="data_consegna_riparazione_user_data_modal"
+          [style]="{ width: '100%' }"
+          [showButtonBar]="true"
+          dateFormat="dd/mm/yy"
+        ></p-calendar>
+      </div>
+      <div class="mb-1" *ngIf="showFieldsRiparazione">
+        <label
+          for="data_rest_dispositivo_cliente_user_data_modal"
+          class="label"
+        >
+          {{ "user_data.data_rest_dispositivo_cliente" | translate }}
+        </label>
+        <p-calendar
+          formControlName="data_rest_dispositivo_cliente"
+          name="data_rest_dispositivo_cliente_user_data_modal"
+          inputId="data_rest_dispositivo_cliente_user_data_modal"
+          [style]="{ width: '100%' }"
+          [showButtonBar]="true"
+          dateFormat="dd/mm/yy"
+        ></p-calendar>
+      </div>
+
+      <div class="mb-1" *ngIf="showFieldsRiparazione">
+        <label for="caparra_user_data_modal" class="label">
+          {{ "user_data.caparra" | translate }}
+        </label>
+        <input
+          type="number"
+          name="caparra_user_data_modal"
+          id="caparra_user_data_modal"
+          class="fields"
+          formControlName="caparra"
+        />
+      </div>
+
+      <div class="mb-1" *ngIf="showFieldsRiparazione">
+        <label for="costo_cambio_user_data_modal" class="label">
+          {{ "user_data.costoCambio" | translate }}
+        </label>
+        <input
+          type="number"
+          name="costo_cambio_user_data_modal"
+          id="costo_cambio_user_data_modal"
+          class="fields"
+          formControlName="costoCambio"
+        />
+      </div>
+
+      <div class="mb-1">
+        <virsa-select
+          [label]="'user_data.negozio' | translate"
+          [dataSet]="negozioDataSet"
+          specificName="negozio_user_data_modal"
+          formControlName="negozio"
+          [group]="formData"
+          [externalValue]="formData ? formData.get('negozio').value : ''"
+        ></virsa-select>
+      </div>
+
+      <div class="mb-1 col-span-2" *ngIf="showFieldsRiparazione">
+        <label for="note_user_data_modal" class="label">
+          {{ "user_data.note" | translate }}
+        </label>
+        <textarea
+          rows="5"
+          cols="30"
+          class="fields"
+          pInputTextarea
+          formControlName="note"
+          name="note_user_data_modal"
+          id="note_user_data_modal"
+        >
+        </textarea>
+      </div>
+
+      <div class="col-span-2 mb-1">
+        <label for="prodotti_aggiuntivi_user_data_modal" class="mr-2">{{
+          "user_data.prodotti_aggiuntivi" | translate
+        }}</label>
+        <p-checkbox
+          formControlName="checkedProdottiAggiuntivi"
+          (ngModelChange)="myModelChanged($event)"
+          [(ngModel)]="checkedProdottiAggiuntivi"
+          [binary]="true"
+          inputId="prodotti_aggiuntivi_user_data_modal"
+          name="prodotti_aggiuntivi_user_data_modal"
+          class="mr-2"
+        ></p-checkbox>
+      </div>
+
+      <div
+        *ngIf="checkedProdottiAggiuntivi"
+        class="col-span-2 border rounded-md mb-2"
+      >
+        <div *ngFor="let prodotto of prodottiAggiuntivi; let i = index">
+          <div
+            class="grid md:grid-cols-4 place-items-center auto-cols-min ml-2"
+          >
+            <div class="m-1">
+              <label
+                [for]="'quantita_user_data_modal_' + i"
+                class="labelShort"
+                >{{ "user_data.quantita" | translate }}</label
+              >
+              <input
+                #quantita
+                [id]="'quantita_user_data_modal_' + i"
+                [name]="'quantita_user_data_modal_' + i"
+                type="number"
+                class="fieldsShort mb-1"
+                (input)="
+                  changeValueProdottoAggiuntivi(
+                    prodotto.id,
+                    costo.value,
+                    nome.value,
+                    quantita.value
+                  )
+                "
+                [(value)]="prodotto.quantita"
+              />
+            </div>
+            <div class="m-1">
+              <label [for]="'nome_user_data_modal_' + i" class="labelShort">{{
+                "user_data.nome" | translate
+              }}</label>
+              <input
+                #nome
+                [id]="'nome_user_data_modal_' + i"
+                [name]="'nome_user_data_modal_' + i"
+                type="text"
+                class="fieldsShort mb-1"
+                (input)="
+                  changeValueProdottoAggiuntivi(
+                    prodotto.id,
+                    costo.value,
+                    nome.value,
+                    quantita.value
+                  )
+                "
+                [(value)]="prodotto.nomeProdotto"
+              />
+            </div>
+            <div class="m-1">
+              <label
+                [for]="'costo_pa_user_data_modal_' + i"
+                class="labelShort"
+                >{{ "user_data.costo" | translate }}</label
+              >
+              <input
+                #costo
+                [id]="'costo_pa_user_data_modal_' + i"
+                [name]="'costo_pa_user_data_modal_' + i"
+                type="number"
+                class="fieldsShort mb-1"
+                (input)="
+                  changeValueProdottoAggiuntivi(
+                    prodotto.id,
+                    costo.value,
+                    nome.value,
+                    quantita.value
+                  )
+                "
+                [(value)]="prodotto.costo"
+              />
+            </div>
+            <p-button
+              icon="pi pi-times"
+              styleClass="p-button-secondary"
+              class="flex mt-3"
+              (onClick)="removeProdottoAggiuntivi(prodotto)"
+            >
+            </p-button>
+          </div>
+        </div>
+        <div class="grid md:grid-cols-4 place-items-center auto-cols-min ml-2">
+          <div class="m-1">
+            <label for="quantita_pa_user_data_modal" class="labelShort">{{
+              "user_data.quantita" | translate
+            }}</label>
+            <input
+              #quantitaProdottoInput
+              id="quantita_pa_user_data_modal"
+              name="quantita_pa_user_data_modal"
+              type="number"
+              class="fieldsShort mb-1"
+            />
+          </div>
+          <div class="m-1">
+            <label for="nome_pa_user_data_modal" class="labelShort">{{
+              "user_data.nome" | translate
+            }}</label>
+            <input
+              #nomeProdottoInput
+              id="nome_pa_user_data_modal"
+              name="nome_pa_user_data_modal"
+              type="text"
+              class="fieldsShort mb-1"
+            />
+          </div>
+          <div class="m-1">
+            <label for="costo_pa_user_data_modal" class="labelShort">{{
+              "user_data.costo" | translate
+            }}</label>
+            <input
+              #costoProdottoInput
+              id="costo_pa_user_data_modal"
+              name="costo_pa_user_data_modal"
+              type="number"
+              class="fieldsShort mb-1"
+            />
+          </div>
+          <p-button
+            icon="pi pi-plus"
+            styleClass="p-button-secondary"
+            class="flex mt-3"
+            (onClick)="
+              addProdottoAggiuntivi(
+                quantitaProdottoInput.value,
+                nomeProdottoInput.value,
+                costoProdottoInput.value
+              )
+            "
+          >
+          </p-button>
+        </div>
+      </div>
+    </div>
+    <!-- visualizza chi ha fatto l'ultima modifica WIP 
+        <div class="row mb-1">
+        <p
+          [hidden]="!isInfo || !utenteInserimento"
+          class="text-gray-500 text-sm italic"
+        >
+          Utente di inserimento: {{ utenteInserimento }}
+        </p>
+        <p
+          [hidden]="!isInfo || !utenteUltimaModifica"
+          [value]="utenteUltimaModifica"
+          class="text-gray-500 text-sm italic"
+        >
+          Utente ultima modifica: {{ utenteUltimaModifica }}
+        </p>
+      </div> -->
+    <div
+      class="flex flex-row items-end justify-end col-start-5 col-end-5 gap-2"
+    >
+      <p-button *ngIf="isDevMode" (onClick)="findInvalidControls()">
+        check values
+      </p-button>
+      <p-button
+        *ngIf="mode === 'Add'"
+        styleClass="p-button-raised p-button-secondary"
+        [disabled]="!formData.valid"
+        (onClick)="addNewInterventoModal()"
+      >
+        {{ "user_data.aggiungi" | translate }}
+      </p-button>
+      <p-button
+        *ngIf="mode === 'Edit'"
+        styleClass="p-button-raised p-button-secondary"
+        (onClick)="modifyUserIntervento()"
+      >
+        {{ "user_data.modifica" | translate }}
+      </p-button>
+    </div>
+  </form>
+</p-dialog>

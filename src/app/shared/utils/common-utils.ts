@@ -1,14 +1,17 @@
-import { formatDate } from '@angular/common';
+import {
+  FormBuilder,
+  FormControl,
+  FormGroup,
+  Validators,
+} from '@angular/forms';
 import EscPosEncoder from 'esc-pos-encoder';
-import { Workbook } from 'exceljs';
-import * as fs from 'file-saver';
 import { MessageService } from 'primeng/api';
-import { Incasso } from '../models/incasso.model';
+import { Incasso, Incassov2 } from '../models/custom-interfaces';
+import { InventarioItemModel } from '../models/inventarioItem.model';
 import { prodottiAggiuntivi } from '../models/prodotti-aggiuntivi.model';
 import { SpecificDataModel } from '../models/specific-data.model';
 import { UserModel } from '../models/user-data.model';
 import { FirebaseStoreService } from '../services/firebase/firebase-store.service';
-import { InventarioItemModel } from '../models/inventarioItem.model';
 
 export type FileUpload = {
   file: { filename: string; filetype: string; filesize: number; addDate: Date };
@@ -116,6 +119,52 @@ export async function calculateIncassoIntervento(
   return incasso;
 }
 
+export async function calculateIncassoInterventov2(
+  specificData: SpecificDataModel,
+  firebaseStoreService: FirebaseStoreService
+): Promise<Incassov2> {
+  let incassoInterventoValue: number = 0;
+  if (specificData.costo_sconto) {
+    incassoInterventoValue = specificData.costo - specificData.costo_sconto;
+  } else {
+    incassoInterventoValue = specificData.costo;
+  }
+  let speseValue: number = 0;
+  // Verifico presenza dato costoCambio e se presente aggiungo alla spesa
+  if (specificData.costoCambio) {
+    speseValue += Number(specificData.costoCambio);
+  }
+  // Se intervento vendita recupero da imei articolo e aggiungo alla spesa
+  if (specificData.imei && specificData.tipo_intervento === 'Vendita') {
+    let data = await firebaseStoreService.imeiArticolo(specificData.imei);
+    if (data) {
+      let articolo: InventarioItemModel = Object.values(
+        data
+      )[0] as InventarioItemModel;
+      if (speseValue === 0) {
+        speseValue = Number(articolo.prezzo_acquisto);
+      } else {
+        speseValue += Number(articolo.prezzo_acquisto);
+      }
+    }
+  }
+  // Verifica presenza prodotti aggiuntivi
+  if (specificData.prodottiAggiuntivi.length > 0) {
+    specificData.prodottiAggiuntivi.forEach((x: prodottiAggiuntivi) => {
+      incassoInterventoValue += Number(x.quantita) * Number(x.costo);
+    });
+  }
+  let incasso: Incassov2 = {
+    incasso: incassoInterventoValue,
+    mese: calculateMese(new Date(specificData.data_intervento)),
+    spese: speseValue,
+    netto: (incassoInterventoValue - speseValue) as number,
+    negozio: specificData.negozio,
+    tipo_intervento: specificData.tipo_intervento,
+  };
+  return incasso;
+}
+
 export function createIncasso(
   incassoTotale: number,
   mese: string,
@@ -136,191 +185,6 @@ export function createIncasso(
       },
     ],
   };
-}
-
-export function createExcel(specificData: SpecificDataModel) {
-  const path =
-    specificData.tipo_intervento === 'Vendita'
-      ? '/assets/template_vendita.xlsx'
-      : '/assets/template_riparazione.xlsx';
-
-  this.http.get(path, { responseType: 'blob' }).subscribe((res) => {
-    const reader = new FileReader();
-    reader.onload = async (e) => {
-      const workbook = new Workbook();
-      let y = arrayBufferToBufferCycle(e.target.result);
-      // carico buffer excel
-      await workbook.xlsx.load(y, {
-        ignoreNodes: [
-          'dataValidations', // ignores the workbook's Data Validations
-          'autoFilter',
-          'drawings',
-        ],
-      });
-      var worksheet = workbook.getWorksheet('RICEVUTA');
-      let formatDateVar = formatDate(
-        specificData.data_intervento,
-        'd MMMM yyyy',
-        this.locale
-      );
-      if (specificData.tipo_intervento === 'Vendita') {
-        worksheet.getRow(2).height = 66;
-        const imageSrc = '/assets/logovirsa.png';
-        const img = await fetch(imageSrc);
-        const buffer = await img.arrayBuffer();
-        const logo = workbook.addImage({
-          buffer: buffer,
-          extension: 'png',
-        });
-        worksheet.addImage(logo, {
-          tl: { col: 1.15, row: 1.05 },
-          ext: { width: 88, height: 100 },
-        });
-        worksheet.getCell('B19').value = '1'; // quantità
-        worksheet.getCell('H5').value = formatDateVar; // data
-        worksheet.getCell('D9').value =
-          this.userData.nome + ' ' + this.userData.cognome; //nome cognome + gestione celle merged
-        worksheet.getCell('D10').value = this.userData.indirizzo; // //indirizzo + gestione celle merged
-        worksheet.getCell('D11').value =
-          this.userData.citta + ' / ' + this.userData.cap; //citta e cap + gestione celle merged
-        worksheet.getCell('D12').value = this.userData.numero_telefono; //telefono + gestione celle merged
-        worksheet.getCell('B16').value = specificData.modalita_pagamento; //metodo di pagamento + gestione celle merged
-        worksheet.getCell('F16').value = specificData.tipo_prodotto; //condizioni + gestione celle merged
-        worksheet.getCell('E16').value = this.userData.canale_com; // social / canale com
-        worksheet.getCell('E33').value = specificData.garanzia; //garanzia + gestione celle merged
-        worksheet.getCell('D19').value =
-          specificData.marca_telefono + ' ' + specificData.modello_telefono; // modello telefono
-        worksheet.getCell('E19').value = specificData.imei; // imei
-        worksheet.getCell('F19').value = specificData.costo; // costo
-        worksheet.getCell('G19').value = specificData.costo_sconto; // sconto
-        worksheet.getCell('H30').value = specificData.costo_sconto; // sconto
-        let discounted = specificData.costo - Number(specificData.costo_sconto);
-        worksheet.getCell('H19').value = discounted; // totale riga
-        let costoTotaleProdottiAggiuntivi: number = 0;
-        if (
-          specificData.checkedProdottiAggiuntivi &&
-          Object.keys(specificData.prodottiAggiuntivi).length > 0
-        ) {
-          Object.values(specificData.prodottiAggiuntivi).forEach((x, i) => {
-            if (i === 0) {
-              worksheet.getCell('B20').value = x.quantita;
-              worksheet.getCell('H20').value = worksheet.getCell('F20').value =
-                Number(x.costo);
-              worksheet.getCell('D20').value = x.nomeProdotto;
-              costoTotaleProdottiAggiuntivi += Number(x.costo);
-            }
-            if (i === 1) {
-              worksheet.getCell('B21').value = x.quantita;
-              worksheet.getCell('H21').value = worksheet.getCell('F21').value =
-                Number(x.costo);
-              worksheet.getCell('D21').value = x.nomeProdotto;
-              costoTotaleProdottiAggiuntivi += Number(x.costo);
-            }
-            if (i === 2) {
-              worksheet.getCell('B22').value = x.quantita;
-              worksheet.getCell('H22').value = worksheet.getCell('F22').value =
-                Number(x.costo);
-              worksheet.getCell('D22').value = x.nomeProdotto;
-              costoTotaleProdottiAggiuntivi += Number(x.costo);
-            }
-            if (i === 3) {
-              worksheet.getCell('B23').value = x.quantita;
-              worksheet.getCell('H23').value = worksheet.getCell('F23').value =
-                Number(x.costo);
-              worksheet.getCell('D23').value = x.nomeProdotto;
-              costoTotaleProdottiAggiuntivi += Number(x.costo);
-            }
-          });
-        }
-        worksheet.getCell('H31').value =
-          Number(specificData.costo) + Number(costoTotaleProdottiAggiuntivi); // subtotale
-        worksheet.getCell('H33').value =
-          Number(discounted) + Number(costoTotaleProdottiAggiuntivi); // totale
-      } else {
-        worksheet.getCell('C24').value = worksheet.getCell('C4').value =
-          this.userData.nome + ' ' + this.userData.cognome;
-        worksheet.getCell('C25').value = worksheet.getCell('C5').value =
-          this.userData.indirizzo;
-        worksheet.getCell('C6').value = this.userData.cap;
-        worksheet.getCell('C26').value = worksheet.getCell('C7').value =
-          this.userData.citta;
-        worksheet.getCell('C27').value = worksheet.getCell('C8').value =
-          this.userData.numero_telefono;
-        worksheet.getCell('D24').value = worksheet.getCell('D8').value =
-          specificData.tipo_parte;
-
-        let formatDateVar = specificData.data_consegna_riparazione
-          ? formatDate(
-              specificData.data_consegna_riparazione,
-              'd MMMM yyyy',
-              this.locale
-            )
-          : '';
-        worksheet.getCell('C17').value = formatDateVar;
-        worksheet.getCell('E11').value = specificData.codice_sblocco
-          ? specificData.codice_sblocco
-          : '';
-        worksheet.getCell('F18').value = worksheet.getCell('F26').value =
-          specificData.caparra ? Number(specificData.caparra) : '';
-        worksheet.getCell('B11').value = specificData.problema;
-        worksheet.getCell('D11').value = specificData.imei;
-        let costoTotaleProdottiAggiuntivi: number = 0;
-        if (
-          specificData.checkedProdottiAggiuntivi &&
-          Object.values(specificData.prodottiAggiuntivi).length > 0
-        ) {
-          Object.values(specificData.prodottiAggiuntivi).forEach((x, i) => {
-            if (i === 0) {
-              worksheet.getCell('F12').value = Number(x.costo);
-              worksheet.getCell('B12').value = x.nomeProdotto;
-              costoTotaleProdottiAggiuntivi += Number(x.costo);
-            }
-            if (i === 1) {
-              worksheet.getCell('F13').value = Number(x.costo);
-              worksheet.getCell('B13').value = x.nomeProdotto;
-              costoTotaleProdottiAggiuntivi += Number(x.costo);
-            }
-            if (i === 2) {
-              worksheet.getCell('F14').value = Number(x.costo);
-              worksheet.getCell('B14').value = x.nomeProdotto;
-              costoTotaleProdottiAggiuntivi += Number(x.costo);
-            }
-          });
-        }
-        worksheet.getCell('F11').value = Number(specificData.costo);
-        worksheet.getCell('F27').value = worksheet.getCell('F20').value =
-          specificData.caparra
-            ? Number(specificData.costo) +
-              Number(costoTotaleProdottiAggiuntivi) -
-              Number(specificData.caparra)
-            : Number(specificData.costo) +
-              Number(costoTotaleProdottiAggiuntivi);
-        worksheet.getCell('F16').value =
-          Number(specificData.costo) + Number(costoTotaleProdottiAggiuntivi);
-        worksheet.getCell('F5').value =
-          specificData.marca_telefono + ' ' + specificData.modello_telefono;
-      }
-      // Creazione Excel modificato
-      workbook.xlsx.writeBuffer().then((data) => {
-        let blob = new Blob([data], {
-          type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-        });
-        fs.saveAs(
-          blob,
-          (specificData.tipo_intervento === 'Vendita'
-            ? 'Vendita_'
-            : 'Riparazione_') +
-            this.userData.nome +
-            '_' +
-            this.userData.cognome +
-            '_' +
-            formatDateVar +
-            '.xlsx'
-        );
-      });
-    };
-    reader.readAsArrayBuffer(res);
-  });
 }
 
 export function createScontrino(
@@ -359,7 +223,18 @@ export function createScontrino(
     sconto.push(['Sconto:', '', specificData.costo_sconto + ',00 €']);
   }
   specificData.caparra ? (totale -= +specificData.caparra) : null;
-
+  let via: string;
+  let posto: string;
+  let telefono: string;
+  if (specificData.negozio === 'NEGOZIO I') {
+    via = 'VIA MIROLTE N. 54';
+    posto = '25049 ISEO (BS)';
+    telefono = 'tel: +39  3313017069';
+  } else {
+    via = 'VIA TRENTO 49A';
+    posto = '25128 BRESCIA';
+    telefono = 'tel: +39  3202258681';
+  }
   switch (specificData.tipo_intervento) {
     case 'Riparazione':
       return encoder
@@ -371,10 +246,10 @@ export function createScontrino(
         .align('center')
         .width(1)
         .height(1)
-        .line('VIA TRENTO 49A')
-        .line('25128 BRESCIA')
-        .line('P. IVA 04222840987')
-        .line('tel: +39  3313017069')
+        .line(via)
+        .line(posto)
+        .line('P. IVA 04548020983')
+        .line(telefono)
         .line('')
         .align('center')
         .size('normal')
@@ -455,10 +330,10 @@ export function createScontrino(
         .align('center')
         .width(1)
         .height(1)
-        .line('VIA TRENTO 49A')
-        .line('25128 BRESCIA')
-        .line('P. IVA 04222840987')
-        .line('tel: +39  3313017069')
+        .line(via)
+        .line(posto)
+        .line('P. IVA 04548020983')
+        .line(telefono)
         .line('')
         .align('center')
         .size('normal')
@@ -559,10 +434,10 @@ export function createScontrino(
         .align('center')
         .width(1)
         .height(1)
-        .line('VIA TRENTO 49A')
-        .line('25128 BRESCIA')
-        .line('P. IVA 04222840987')
-        .line('tel: +39  3313017069')
+        .line(via)
+        .line(posto)
+        .line('P. IVA 04548020983')
+        .line(telefono)
         .line('')
         .align('center')
         .size('normal')
@@ -666,6 +541,9 @@ export function createMultiScontrino(
   let counter = 0;
   let caparra = 0;
   let scontoValue = 0;
+  let via: string;
+  let posto: string;
+  let telefono: string;
   allItems.forEach((specificData) => {
     // Recupero dati intervento da mostrare nella tabella scontrino
     interventi.push([
@@ -745,6 +623,16 @@ export function createMultiScontrino(
         ['Si', '', specificData.costoPermuta + ',00 €']
       );
     }
+
+    if (specificData.negozio === 'NEGOZIO I') {
+      via = 'VIA MIROLTE N. 54';
+      posto = '25049 ISEO (BS)';
+      telefono = 'tel: +39  3313017069';
+    } else {
+      via = 'VIA TRENTO 49A';
+      posto = '25128 BRESCIA';
+      telefono = 'tel: +39  3202258681';
+    }
   });
 
   if (scontoValue > 0) {
@@ -763,10 +651,10 @@ export function createMultiScontrino(
       .width(1)
       .height(1)
       .line('DI SHARIF FAHID')
-      .line('VIA TRENTO 49A')
-      .line('25128 BRESCIA')
-      .line('P. IVA 04222840987')
-      .line('tel: +39  3313017069')
+      .line(via)
+      .line(posto)
+      .line('P. IVA 04548020983')
+      .line(telefono)
       .line('')
       .align('center')
       .size('normal')
@@ -850,10 +738,10 @@ export function createMultiScontrino(
       .width(1)
       .height(1)
       .line('DI SHARIF FAHID')
-      .line('VIA TRENTO 49A')
-      .line('25128 BRESCIA')
-      .line('P. IVA 04222840987')
-      .line('tel: +39  3313017069')
+      .line(via)
+      .line(posto)
+      .line('P. IVA 04548020983')
+      .line(telefono)
       .line('')
       .align('center')
       .size('normal')
@@ -921,10 +809,10 @@ export function createMultiScontrino(
       .width(1)
       .height(1)
       .line('DI SHARIF FAHID')
-      .line('VIA TRENTO 49A')
-      .line('25128 BRESCIA')
-      .line('P. IVA 04222840987')
-      .line('tel: +39  3313017069')
+      .line(via)
+      .line(posto)
+      .line('P. IVA 04548020983')
+      .line(telefono)
       .line('')
       .align('center')
       .size('normal')
@@ -1010,10 +898,10 @@ export function createMultiScontrino(
       .width(1)
       .height(1)
       .line('DI SHARIF FAHID')
-      .line('VIA TRENTO 49A')
-      .line('25128 BRESCIA')
-      .line('P. IVA 04222840987')
-      .line('tel: +39  3313017069')
+      .line(via)
+      .line(posto)
+      .line('P. IVA 04548020983')
+      .line(telefono)
       .line('')
       .align('center')
       .size('normal')
@@ -1047,9 +935,8 @@ export function createMultiScontrino(
           ['', '', ''],
           ['', '', ''],
           ['='.repeat(20), '='.repeat(15), '='.repeat(9)],
-          ...sconto,
           [
-            'Totale:',
+            'Totale',
             '',
             (encoder) =>
               encoder
@@ -1084,7 +971,7 @@ export function createMultiScontrino(
       .line('DI SHARIF FAHID')
       .line('VIA TRENTO 49A')
       .line('25128 BRESCIA')
-      .line('P. IVA 04222840987')
+      .line('P. IVA 04548020983')
       .line('tel: +39  3313017069')
       .line('')
       .align('center')
@@ -1222,4 +1109,50 @@ export function getTotalOfProduct(specificData: SpecificDataModel) {
 
 export function getBreadcrumbHome() {
   return { icon: 'pi pi-home', routerLink: '/' };
+}
+
+/**
+ * Metodo per creare il form dinamicamente
+ **/
+export function createForm(
+  fb: FormBuilder,
+  item: any,
+  tipo_intervento?: string
+) {
+  let baseFormStructure: { [key: string]: FormControl } = {};
+  if (tipo_intervento === 'Vendita') {
+    if (!item.hasOwnProperty('negozio')) {
+      baseFormStructure.negozio = new FormControl('');
+    }
+    if (!item.hasOwnProperty('costoPermuta')) {
+      baseFormStructure.costoPermuta = new FormControl('');
+    }
+  } else if (tipo_intervento === 'Riparazione') {
+    if (!item.hasOwnProperty('negozio')) {
+      baseFormStructure.negozio = new FormControl('');
+    }
+    if (!item.hasOwnProperty('note')) {
+      baseFormStructure.note = new FormControl('');
+    }
+    if (!item.hasOwnProperty('costoCambio')) {
+      baseFormStructure.costoCambio = new FormControl('');
+    }
+  }
+  for (const key in item) {
+    if (item.hasOwnProperty(key)) {
+      baseFormStructure[key] = new FormControl(item[key], Validators.required);
+    }
+  }
+  return fb.group(baseFormStructure);
+}
+// metodo per verificare quale dato nel form non funzione
+export function findInvalidControls(form: FormGroup) {
+  const invalid = [];
+  const controls = form.controls;
+  for (const name in controls) {
+    if (controls[name].invalid) {
+      invalid.push(name);
+    }
+  }
+  console.log(invalid);
 }

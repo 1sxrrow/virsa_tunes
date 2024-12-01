@@ -9,6 +9,8 @@
   <p-card>
     <p-table
       #dt1
+      [scrollable]="true"
+      scrollHeight="400px"
       [value]="itemsInventario"
       responsiveLayout="stack"
       [loading]="loading"
@@ -48,8 +50,8 @@
               {{ this.negozioSwitch ? "Negozio B" : "Negozio I" }}
             </span>
           </div>
-          <div class="p-toolbar-group-center">
-            <span class="p-input-icon-left">
+          <div class="p-toolbar-group-center flex-container">
+            <span class="p-input-icon-left responsive-input">
               <i class="pi pi-search"></i>
               <input
                 type="text"
@@ -161,240 +163,14 @@
       </ng-template>
     </p-table>
   </p-card>
-
+  <inventario-modal
+    *ngIf="showModal"
+    [showModal]="showModal"
+    (showModalChange)="handleShowModalChange($event)"
+  />
   <!-- Modale -->
-  <p-dialog
-    [header]="modalTitle"
-    [(visible)]="showModal"
-    (onHide)="closeDialog()"
-    aria-hidden="true"
-    [style]="{ width: '50vw' }"
-    [modal]="true"
-  >
-    <div class="grid items-center" (keyup.enter)="enterCheck()">
-      <form [formGroup]="itemForm">
-        <div class="grid grid-cols-2 mb-2">
-          <div class="mb-1 mr-2">
-            <label class="labelInput" for="imei">IMEI</label>
-            <input
-              id="imei"
-              pInputText
-              type="text"
-              class="ml-2"
-              formControlName="imei"
-              class="w-11/12 fields"
-              disabled="true"
-            />
-          </div>
-          <div class="mb-1">
-            <label class="labelInput" for="quantita">Quantità</label>
-            <input
-              id="quantita"
-              pInputText
-              pKeyFilter="int"
-              class="ml-2"
-              formControlName="quantita"
-              class="w-11/12 fields"
-              required
-            />
-          </div>
-
-          <div class="mb-1 mr-2">
-            <label for="negozio" class="labelInput">Negozio</label>
-            <span class="p-input-icon-right w-full">
-              <i class="pi pi-angle-down"></i>
-              <select
-                name="negozio"
-                id="negozio"
-                class="fields"
-                formControlName="negozio"
-              >
-                <option [ngValue]="null" disabled>Seleziona Negozio</option>
-                <option [value]="negozio" *ngFor="let negozio of selectNegozio">
-                  {{ negozio }}
-                </option>
-              </select>
-            </span>
-          </div>
-          <div class="mb-1">
-            <label for="nome" class="labelInput">Nome</label>
-            <input
-              id="nome"
-              pInputText
-              type="text"
-              formControlName="nome"
-              class="w-11/12 fields"
-              required
-            />
-          </div>
-          <div class="mb-1 mr-2">
-            <label for="marca" class="labelInput">Marca</label>
-            <span class="p-input-icon-right w-full">
-              <i class="pi pi-angle-down"></i>
-              <select
-                name="marca"
-                id="marca"
-                class="fields"
-                formControlName="marca"
-              >
-                <option [ngValue]="null" disabled>Seleziona Marca</option>
-                <option [value]="marca" *ngFor="let marca of selectMarca">
-                  {{ marca }}
-                </option>
-              </select>
-            </span>
-          </div>
-          <div class="mb-1">
-            <label for="colore" class="labelInput">Colore</label>
-            <input
-              id="colore"
-              pInputText
-              type="text"
-              formControlName="colore"
-              class="w-11/12 fields"
-              required
-            />
-          </div>
-          <div class="mb-1 mr-2">
-            <label for="memoria" class="labelInput">Memoria (GB)</label>
-            <input
-              id="memoria"
-              pInputText
-              type="text"
-              formControlName="memoria"
-              class="w-11/12 fields"
-              required
-            />
-          </div>
-          <div class="mb-1">
-            <label for="grado" class="labelInput">Grado</label>
-            <span class="p-input-icon-right w-full">
-              <i class="pi pi-angle-down"></i>
-              <select
-                name="grado"
-                id="grado"
-                class="fields"
-                formControlName="grado"
-              >
-                <option [ngValue]="null" disabled>Seleziona Grado</option>
-                <option [value]="grado" *ngFor="let grado of selectGrado">
-                  {{ grado }}
-                </option>
-              </select>
-            </span>
-          </div>
-          <div class="mb-1 mr-2">
-            <label for="garanzia_mesi" class="labelInput">Garanzia Mesi</label>
-            <span class="p-input-icon-right w-full">
-              <i class="pi pi-angle-down"></i>
-              <select
-                name="garanzia_mesi"
-                id="garanzia_mesi"
-                class="fields"
-                formControlName="garanzia_mesi"
-              >
-                <option [ngValue]="null" disabled>Seleziona Garanzia</option>
-                <option
-                  [value]="garanzia"
-                  *ngFor="let garanzia of selectGaranzia"
-                >
-                  {{ garanzia }}
-                </option>
-              </select>
-            </span>
-          </div>
-          <div class="mb-1">
-            <label class="labelInput" for="fornitore"> Fornitore </label>
-            <input
-              id="fornitore"
-              pInputText
-              type="text"
-              formControlName="fornitore"
-              class="w-11/12 fields"
-              required
-            />
-          </div>
-          <div class="mb-1 mr-2">
-            <label class="labelInput" for="perc_batteria">
-              Percentuale Batteria %
-            </label>
-            <input
-              id="perc_batteria"
-              pInputText
-              pKeyFilter="int"
-              formControlName="perc_batteria"
-              class="w-11/12 fields"
-              required
-            />
-          </div>
-          <div class="mb-1">
-            <label class="labelInput" for="prezzo_negozio">
-              Prezzo Negozio €
-            </label>
-            <input
-              id="prezzo_negozio"
-              pInputText
-              pKeyFilter="int"
-              formControlName="prezzo_negozio"
-              class="w-11/12 fields"
-              required
-            />
-          </div>
-          <div class="mb-1 mr-2">
-            <label class="labelInput" for="prezzo_online">
-              Prezzo Online €
-            </label>
-            <input
-              id="prezzo_online"
-              pInputText
-              pKeyFilter="int"
-              formControlName="prezzo_online"
-              class="w-11/12 fields"
-              required
-            />
-          </div>
-          <div class="mb-1" [hidden]="!this.isAdmin">
-            <label class="labelInput" for="prezzo_acquisto">
-              Prezzo Acquisto €
-            </label>
-            <input
-              id="prezzo_acquisto"
-              pInputText
-              pKeyFilter="int"
-              formControlName="prezzo_acquisto"
-              class="w-11/12 fields"
-              required
-            />
-          </div>
-        </div>
-      </form>
-    </div>
-    <div class="grid justify-center">
-      <p-button *ngIf="devmode" (onClick)="findInvalidControls()">
-        check values
-      </p-button>
-      <div *ngIf="isAdmin">
-        <p-button
-          styleClass="p-button-raised p-button-secondary"
-          label="Aggiungi"
-          [hidden]="isInfo"
-          (onClick)="addNewItem()"
-          [disabled]="!itemForm.valid"
-        ></p-button>
-        <p-button
-          styleClass="p-button-raised p-button-secondary"
-          label="Modifica"
-          [hidden]="!isInfo"
-          (onClick)="editItem()"
-          [disabled]="!(itemForm.valid && itemForm.dirty)"
-        ></p-button>
-      </div>
-    </div>
-  </p-dialog>
-  <!-- Toast per messaggi -->
-  <p-toast></p-toast>
   <!-- Dialog di conferma per rimozione elemento -->
-  <app-confirm-dialog></app-confirm-dialog>
+  <app-confirm-dialog />
   <!-- OverlayPanel per statistiche -->
   <!-- <p-overlayPanel #op>
     <ng-template pTemplate="content">

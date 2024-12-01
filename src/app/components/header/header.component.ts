@@ -1,27 +1,29 @@
-import { AfterViewInit, Component, EventEmitter, Output } from '@angular/core';
 import {
-  deleteApp,
-  FirebaseApp,
-  initializeApp,
-  provideFirebaseApp
-} from '@angular/fire/app';
-import { provideDatabase } from '@angular/fire/database';
+  AfterViewInit,
+  ChangeDetectionStrategy,
+  Component,
+  EventEmitter,
+  Output,
+  ViewEncapsulation,
+} from '@angular/core';
+import { FirebaseApp } from '@angular/fire/app';
 import { NavigationEnd, Router } from '@angular/router';
-import { getDatabase } from 'firebase/database';
 import { MenuItem } from 'primeng/api';
+import { Observable } from 'rxjs';
 import { PrintService } from 'src/app/shared/services/print/recipe-print.service';
-import {
-  devFirebaseConfig,
-  prodFirebaseConfig,
-} from 'src/environments/environment';
+import { ThemeService } from 'src/app/shared/services/theme/theme.service';
 import { AuthService } from '../login/auth.service';
 
 @Component({
   selector: 'app-header',
   templateUrl: './header.component.html',
   styleUrls: ['./header.component.scss'],
+  encapsulation: ViewEncapsulation.None,
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class HeaderComponent implements AfterViewInit {
+  currentTheme$: Observable<string>;
+  currentTheme: string;
   @Output() isSidenavOpen = new EventEmitter<boolean>();
   isSidenavOpenChange = false;
   isLogin = true;
@@ -50,22 +52,6 @@ export class HeaderComponent implements AfterViewInit {
     },
   };
 
-  testEnv = {
-    label: 'Passa a env di test',
-    icon: 'pi pi-bolt',
-    command: () => {
-      this.setTestEnv();
-    },
-  };
-
-  prodEnv = {
-    label: 'Passa a env di Prod',
-    icon: 'pi pi-bolt',
-    command: () => {
-      this.setProdEnv();
-    },
-  };
-
   items: MenuItem[] | undefined = [
     this.stampanteObj,
     this.inventarioObj,
@@ -76,7 +62,8 @@ export class HeaderComponent implements AfterViewInit {
     private router: Router,
     private authService: AuthService,
     private printService: PrintService,
-    private firebaseApp: FirebaseApp
+    private firebaseApp: FirebaseApp,
+    private themeService: ThemeService
   ) {
     this.router.events.subscribe((event) => {
       if (event instanceof NavigationEnd) {
@@ -107,6 +94,11 @@ export class HeaderComponent implements AfterViewInit {
         });
       });
     }
+
+    this.currentTheme$ = this.themeService.theme$;
+    this.currentTheme$.subscribe((value) => {
+      this.currentTheme = value;
+    });
   }
 
   ngAfterViewInit(): void {
@@ -143,18 +135,32 @@ export class HeaderComponent implements AfterViewInit {
     return this.router.url.includes('inventario') ? true : false;
   }
 
-  setTestEnv() {
-    deleteApp(this.firebaseApp);
-    this.firebaseApp = initializeApp(devFirebaseConfig);
+  toggleTheme(): void {
+    this.themeService.switchTheme();
   }
 
-  async setProdEnv() {
-    deleteApp(this.firebaseApp).then(() => {
-      console.log('App deleted');
-      provideFirebaseApp(() => initializeApp(prodFirebaseConfig));
-      console.log('App initialized', this.firebaseApp);
-      provideDatabase(() => getDatabase());
-      this.router.navigate(['login']);
-    });
+  get buttonTheme() {
+    let baseObject = {
+      borderRadius: '0px',
+      border: 0,
+      'border-style': 'none',
+      'border-color': 'transparent',
+      background: '',
+    };
+
+    if (this.currentTheme === 'theme-dark') {
+      baseObject.background = '#1c1917';
+    } else {
+      baseObject.background = '#0f172a';
+    }
+    return baseObject;
+  }
+
+  get toogleThemeIcon() {
+    if (this.currentTheme === 'theme-dark') {
+      return 'pi pi-moon';
+    } else {
+      return 'pi pi-sun';
+    }
   }
 }

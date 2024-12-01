@@ -1,0 +1,89 @@
+<p-dialog
+  [(visible)]="showIncassiModal"
+  [style]="{ width: '60%' }"
+  [modal]="true"
+  (onHide)="handleClose()"
+>
+  <ng-template pTemplate="header">
+    <div
+      class="flex align-items-center justify-between gap-2 w-full col-span-3"
+    >
+      <span class="font-bold text-2xl">
+        {{ "user_data.incassi" | translate }}
+      </span>
+      <p-button
+        type="button"
+        label="Spesa fissa"
+        icon="p-icon pi pi-plus"
+        (click)="modaleSpesaFissa()"
+        class="p-2"
+        styleClass="p-button-info"
+      ></p-button>
+    </div>
+  </ng-template>
+  <div class="grid grid-cols-2 gap-2 mb-3">
+    <virsa-select
+      [label]="'user_data.negozio' | translate"
+      [dataSet]="filterNegozio"
+      specificName="negozio_incassi_modal"
+      (selectionChange)="onNegozioOptionSelected($event)"
+    ></virsa-select>
+    <virsa-select
+      [label]="'user_data.tipo_intervento' | translate"
+      [dataSet]="filterTipoIntervento"
+      specificName="tipo_intervento_incassi_modal"
+      (selectionChange)="onTipoInterventoOptionSelected($event)"
+    ></virsa-select>
+  </div>
+  <!-- Table per incassi non filtrati -->
+  <p-table [value]="incassiShow$ | async" [loading]="loadingTable">
+    <ng-template pTemplate="header">
+      <tr>
+        <th>{{ "user_data.mese" | translate }}</th>
+        <th>{{ "user_data.lordo" | translate }}</th>
+        <th>{{ "user_data.spese" | translate }}</th>
+        <th>{{ "user_data.netto" | translate }}</th>
+      </tr>
+    </ng-template>
+    <ng-template pTemplate="body" let-incasso>
+      <tr>
+        <td>
+          <span>
+            {{ incasso.mese }}
+            <i
+              *ngIf="incasso.hasSpeseFisse"
+              class="pi pi-question-circle cursor-pointer"
+              style="font-size: 0.75rem"
+              pTooltip="Spese fisse"
+              (click)="modaleListaSpeseFisse(incasso.mese)"
+            ></i>
+          </span>
+        </td>
+        <td>{{ incasso.incasso }}€</td>
+        <td>{{ incasso.spese }}€</td>
+        <td>{{ incasso.netto }}€</td>
+      </tr>
+    </ng-template>
+    <ng-template pTemplate="emptymessage">
+      <tr>
+        <td colspan="4" class="text-center">
+          {{ "Nessun incasso disponibile" | translate }}
+        </td>
+      </tr>
+    </ng-template>
+  </p-table>
+</p-dialog>
+
+<spesa-fissa-modal
+  *ngIf="showSpesaFissaModal"
+  [mesiSpesaFissa]="mesiSpesaFissa"
+  [showSpesaFissaModal]="showSpesaFissaModal"
+  (showSpesaFissaModalChange)="handleShowSpesaFissaModalChange($event)"
+/>
+
+<spese-fisse-modal
+  *ngIf="showSpeseFisseModal"
+  [listaSpeseFisse]="listaSpeseFisseArray"
+  [showListaSpeseFisseModal]="showSpeseFisseModal"
+  (showSpeseFisseModalChange)="handleShowSpeseFisseModalChange($event)"
+/>

@@ -1,0 +1,76 @@
+.scrollableContent {
+  max-height: 400px; /* Altezza fissa, puoi modificarla secondo necessità */
+  overflow-y: auto; /* Abilita lo scorrimento verticale */
+}
+
+body.theme-light {
+  .p-card .p-card-content {
+    padding: 0;
+  }
+  .p-datatable.p-datatable-sm .p-datatable-header {
+    padding: 0;
+    padding-bottom: 1px;
+  }
+  .p-breadcrumb {
+    padding: 0px;
+    background: transparent;
+    border: none;
+    border-color: transparent;
+    .p-breadcrumb-list {
+      li.p-menuitem-separator {
+        color: black;
+      }
+      li .p-menuitem-link .p-menuitem-icon {
+        color: black;
+      }
+      li:last-child .p-menuitem-text {
+        color: black;
+      }
+    }
+  }
+  ul.p-breadcrumb-list {
+    height: 30px;
+  }
+  .p-toolbar {
+    border: none;
+  }
+}
+
+body.theme-dark {
+  .p-card .p-card-content {
+    padding: 0;
+  }
+  .p-datatable.p-datatable-sm .p-datatable-header {
+    padding: 0;
+    padding-bottom: 1px;
+  }
+  .p-breadcrumb {
+    padding: 0px;
+    background: transparent;
+    border: none;
+    border-color: transparent;
+    .p-breadcrumb-list {
+      li.p-menuitem-separator {
+        color: white;
+      }
+      li .p-menuitem-link .p-menuitem-icon {
+        color: white;
+      }
+      li:last-child .p-menuitem-text {
+        color: white;
+      }
+    }
+  }
+  ul.p-breadcrumb-list {
+    height: 30px;
+  }
+  .p-toolbar {
+    border: none;
+  }
+}
+
+.truncate-text {
+  white-space: nowrap; /* Impedisce al testo di andare a capo */
+  text-overflow: ellipsis; /* Aggiunge i puntini di sospensione (...) al testo troncato */
+  max-width: 100%;
+}

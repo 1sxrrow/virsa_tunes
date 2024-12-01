@@ -13,15 +13,22 @@
         "build": {
           "builder": "@angular-devkit/build-angular:browser",
           "options": {
-            "allowedCommonJsDependencies": ["exceljs", "file-saver"],
+            "allowedCommonJsDependencies": ["exceljs", "file-saver", "crypto-js", "lodash"],
             "outputPath": "dist/virsa_tunes",
             "index": "src/index.html",
             "main": "src/main.ts",
             "polyfills": ["zone.js", "src/polyfills.ts"],
             "tsConfig": "tsconfig.app.json",
-            "assets": ["src/favicon.ico", "src/assets"],
+            "assets": [
+              "src/favicon.ico",
+              "src/assets",
+              {
+                "glob": "**/*.css",
+                "input": "src/assets/themes/",
+                "output": "/assets/themes/"
+              }
+            ],
             "styles": [
-              "node_modules/bootstrap/dist/css/bootstrap.min.css",
               "src/styles.scss"
             ],
             "stylePreprocessorOptions": {
