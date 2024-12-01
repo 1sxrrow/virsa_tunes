@@ -46,8 +46,8 @@ export const IS_DEV_MODE = new InjectionToken<boolean>('isDevMode', {
   providedIn: 'root',
   factory: () => isDevMode(),
 });
-const firebaseConfig = IS_DEV_MODE ? devFirebaseConfig : prodFirebaseConfig;
-const dbname = IS_DEV_MODE ? 'dev' : 'prod';
+const firebaseConfig = isDevMode() ? devFirebaseConfig : prodFirebaseConfig;
+const dbname = isDevMode() ? 'dev' : 'prod';
 
 @NgModule({
   declarations: [AppComponent, HeaderComponent, FooterComponent],
