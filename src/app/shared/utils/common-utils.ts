@@ -191,6 +191,7 @@ export function createScontrino(
   specificData: SpecificDataModel,
   userData: UserModel
 ): EscPosEncoder {
+  debugger
   let encoder: EscPosEncoder = new EscPosEncoder();
   let prodottiAggiuntiviTmp: [string, string, string][] = [];
   let totale: number = +specificData.costo;
@@ -226,7 +227,7 @@ export function createScontrino(
   let via: string;
   let posto: string;
   let telefono: string;
-  if (specificData.negozio === 'NEGOZIO I') {
+  if (specificData.negozio === 'Negozio I') {
     via = 'VIA MIROLTE N. 54';
     posto = '25049 ISEO (BS)';
     telefono = 'tel: +39  3313017069';
@@ -624,7 +625,7 @@ export function createMultiScontrino(
       );
     }
 
-    if (specificData.negozio === 'NEGOZIO I') {
+    if (specificData.negozio === 'Negozio I') {
       via = 'VIA MIROLTE N. 54';
       posto = '25049 ISEO (BS)';
       telefono = 'tel: +39  3313017069';
