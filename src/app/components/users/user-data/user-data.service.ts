@@ -255,6 +255,7 @@ export class UserDataService {
             specific_data_input.idDbIncasso = specific_data.idDbIncasso;
           } else {
             specific_data.idDbIncasso = this.firebaseStoreService.generateId();
+            specific_data.incassov2 = incassov2;
           }
 
           await this.firebaseStoreService.UpdateIncassov2(
