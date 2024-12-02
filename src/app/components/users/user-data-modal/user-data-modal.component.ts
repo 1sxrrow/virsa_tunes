@@ -93,7 +93,6 @@ export class UserDataModalComponent implements OnInit {
           this.storage.input.selectedItem.tipo_intervento
         )
       : undefined;
-    this.dateFieldsFix();
     this.mode = this.formData ? 'Edit' : 'Add';
     switch (this.mode) {
       case 'Add':
@@ -110,6 +109,7 @@ export class UserDataModalComponent implements OnInit {
           .subscribe((res) => {
             this.modalTitle = res;
           });
+        this.dateFieldsFix();
         this.handleEditMode(
           this.userDataModalService.getIntervento(this.formData)
         );
@@ -269,15 +269,13 @@ export class UserDataModalComponent implements OnInit {
     }
   }
 
-
-
   async addNewInterventoModal() {
     await this.userDataService
       .addNewIntervento(
         new SpecificDataModel(this.formData.value),
         this.storage.input.userData,
         this.prodottiAggiuntivi,
-        this.uploadedFiles,
+        this.uploadedFiles
       )
       .then((result) => {
         if (result) {
@@ -305,7 +303,7 @@ export class UserDataModalComponent implements OnInit {
       new SpecificDataModel(this.formData.getRawValue()),
       this.prodottiAggiuntivi,
       this.storage.input.userData,
-      this.uploadedFiles,
+      this.uploadedFiles
     );
 
     this.showModal = !this.showModal;
