@@ -1,11 +1,10 @@
 import { Inject, Injectable } from '@angular/core';
-import {
-  BehaviorSubject,
-  map,
-  Observable
-} from 'rxjs';
+import { BehaviorSubject, map, Observable } from 'rxjs';
 import { IS_DEV_MODE } from 'src/app/app.module';
-import { costoStorico, UserModelWithInterventi } from 'src/app/shared/models/custom-interfaces';
+import {
+  costoStorico,
+  UserModelWithInterventi,
+} from 'src/app/shared/models/custom-interfaces';
 import { InventarioItemModel } from 'src/app/shared/models/inventarioItem.model';
 import { UserCacheService } from 'src/app/shared/services/user-cache.service';
 import {
@@ -46,7 +45,7 @@ export class UserDataService {
       .snapshotChanges()
       .pipe(
         map((data) => {
-          const userModel: UserModel[ ] = [];
+          const userModel: UserModel[] = [];
           const usersWithInterventi: UserModelWithInterventi[] = [];
           const interventiCounts: { [userId: number]: number } = {};
           data.forEach((item) => {
@@ -163,7 +162,7 @@ export class UserDataService {
     specific_data: SpecificDataModel,
     user_input?: UserModel,
     prodottiAggiuntivi?: prodottiAggiuntivi[],
-    uploadedFiles?: FileUpload[],
+    uploadedFiles?: FileUpload[]
   ): Promise<boolean> {
     if (uploadedFiles.length) {
       specific_data.files = [...uploadedFiles];
@@ -234,7 +233,7 @@ export class UserDataService {
     specific_data_input: SpecificDataModel,
     prodotti_aggiuntivi_input: prodottiAggiuntivi[],
     user_input?: UserModel,
-    uploadedFiles?: FileUpload[],
+    uploadedFiles?: FileUpload[]
   ) {
     specific_data_input.id = id_intervento;
     specific_data_input.prodottiAggiuntivi = prodotti_aggiuntivi_input;
@@ -251,7 +250,12 @@ export class UserDataService {
             this.firebaseStoreService
           );
 
-          specific_data_input.idDbIncasso = specific_data.idDbIncasso;
+          // Safeguard per Incasso v2 per interventi che non hanno idDbIncasso
+          if (specific_data.idDbIncasso) {
+            specific_data_input.idDbIncasso = specific_data.idDbIncasso;
+          } else {
+            specific_data.idDbIncasso = this.firebaseStoreService.generateId();
+          }
 
           await this.firebaseStoreService.UpdateIncassov2(
             specific_data.idDbIncasso,
@@ -287,7 +291,11 @@ export class UserDataService {
       new Date(spec_retrieved[spec_retrieved.indexOf(i[0])].data_intervento)
     );
     // Rimuovo Incasso v2
-    this.firebaseStoreService.deleteIncassov2(single.idDbIncasso);
+    if (single.idDbIncasso) {
+      this.firebaseStoreService.deleteIncassov2(single.idDbIncasso);
+    } else {
+      console.log('non è presente idDbIncasso, intervento non con IncassoV2');
+    }
     // update User dato che ho cancellato un intervento
     spec_retrieved.splice(spec_retrieved.indexOf(i[0]), 1);
     user_input.specific_data = spec_retrieved;
