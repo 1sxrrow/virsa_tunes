@@ -1,5 +1,5 @@
-import { formatDate } from '@angular/common';
 import {
+  ChangeDetectionStrategy,
   ChangeDetectorRef,
   Component,
   ElementRef,
@@ -7,6 +7,7 @@ import {
   Inject,
   Input,
   LOCALE_ID,
+  OnDestroy,
   OnInit,
   Output,
   ViewChild,
@@ -23,7 +24,7 @@ import { TranslateService } from '@ngx-translate/core';
 import { saveAs } from 'file-saver';
 import { MessageService } from 'primeng/api';
 import { FileRemoveEvent } from 'primeng/fileupload';
-import { finalize } from 'rxjs';
+import { finalize, Subscription } from 'rxjs';
 import { IS_DEV_MODE } from 'src/app/app.module';
 import { prodottiAggiuntivi } from 'src/app/shared/models/prodotti-aggiuntivi.model';
 import { SpecificDataModel } from 'src/app/shared/models/specific-data.model';
@@ -40,14 +41,14 @@ import {
 import { UserDataService } from '../user-data/user-data.service';
 import { userDataModalStorage } from './user-data-modal-storage.service';
 import { UserDataModalService } from './user-data-modal.service';
-import { costoStorico } from 'src/app/shared/models/custom-interfaces';
 
 @Component({
   selector: 'user-data-modal',
   templateUrl: 'user-data-modal.component.html',
   encapsulation: ViewEncapsulation.None,
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class UserDataModalComponent implements OnInit {
+export class UserDataModalComponent implements OnInit, OnDestroy {
   @Input() formData: FormGroup = undefined;
   @Input() showModal: boolean = false;
   @Output() showModalChange = new EventEmitter();
@@ -70,6 +71,8 @@ export class UserDataModalComponent implements OnInit {
   uploadedFilesDone = false;
   percentage: number = 0;
   isUploading = false;
+
+  storedSubscriptions: Subscription = new Subscription();
 
   constructor(
     private fb: FormBuilder,
@@ -96,19 +99,23 @@ export class UserDataModalComponent implements OnInit {
     this.mode = this.formData ? 'Edit' : 'Add';
     switch (this.mode) {
       case 'Add':
-        this.translate
-          .get('user_data.title.USER_DATA_MODAL_ADD_TITLE')
-          .subscribe((res) => {
-            this.modalTitle = res;
-          });
+        this.storedSubscriptions.add(
+          this.translate
+            .get('user_data.title.USER_DATA_MODAL_ADD_TITLE')
+            .subscribe((res) => {
+              this.modalTitle = res;
+            })
+        );
         this.handleInitialAddMode();
         break;
       case 'Edit':
-        this.translate
-          .get('user_data.title.USER_DATA_MODAL_EDIT_TITLE')
-          .subscribe((res) => {
-            this.modalTitle = res;
-          });
+        this.storedSubscriptions.add(
+          this.translate
+            .get('user_data.title.USER_DATA_MODAL_EDIT_TITLE')
+            .subscribe((res) => {
+              this.modalTitle = res;
+            })
+        );
         this.dateFieldsFix();
         this.handleEditMode(
           this.userDataModalService.getIntervento(this.formData)
@@ -117,6 +124,12 @@ export class UserDataModalComponent implements OnInit {
     }
 
     keylistener(this.isDevMode);
+  }
+
+  ngOnDestroy(): void {
+    if (this.storedSubscriptions) {
+      this.storedSubscriptions.unsubscribe();
+    }
   }
 
   get tipoInterventoDataSet() {
@@ -152,28 +165,25 @@ export class UserDataModalComponent implements OnInit {
     this.formData = new FormGroup({
       tipo_intervento: new FormControl('', Validators.required),
     });
-    this.formData.get('tipo_intervento').valueChanges.subscribe((value) => {});
-  }
-
-  handleAddMode(type: string): void {
-    switch (type) {
-      case 'Vendita':
-        this.initVenditaFormGroup();
-        break;
-      case 'Riparazione':
-        this.initRiparazioneFormGroup();
-        break;
-    }
+    this.storedSubscriptions.add(
+      this.formData.get('tipo_intervento').valueChanges.subscribe((value) => {})
+    );
   }
 
   handleEditMode(type: string): void {
-    this.setInterventiAggiuntivi();
+    this.prodottiAggiuntivi = this.userDataModalService.setInterventiAggiuntivi(
+      this.storage.input.selectedItem
+    );
     switch (type) {
       case 'Vendita':
         this.checkedPermuta = this.formData.get('checkedPermuta').value;
-        this.formData.get('checkedPermuta').valueChanges.subscribe((value) => {
-          this.checkedPermuta = value;
-        });
+        this.storedSubscriptions.add(
+          this.formData
+            .get('checkedPermuta')
+            .valueChanges.subscribe((value) => {
+              this.checkedPermuta = value;
+            })
+        );
         if (this.checkedPermuta) {
           if (this.storage.input.selectedItem.files) {
             this.uploadedFiles = Object.values(
@@ -184,95 +194,45 @@ export class UserDataModalComponent implements OnInit {
         this.checkedProdottiAggiuntivi = this.formData.get(
           'checkedProdottiAggiuntivi'
         ).value;
-        this.formData
-          .get('checkedProdottiAggiuntivi')
-          .valueChanges.subscribe((value) => {
-            this.checkedProdottiAggiuntivi = value;
-          });
-        this.initVenditaFormGroup();
+        this.storedSubscriptions.add(
+          this.formData
+            .get('checkedProdottiAggiuntivi')
+            .valueChanges.subscribe((value) => {
+              this.checkedProdottiAggiuntivi = value;
+            })
+        );
+        this.initFieldsAndFormGroup('Vendita');
         break;
       case 'Riparazione':
-        this.initRiparazioneFormGroup();
+        this.checkedProdottiAggiuntivi = this.formData.get(
+          'checkedProdottiAggiuntivi'
+        ).value;
+        this.storedSubscriptions.add(
+          this.formData
+            .get('checkedProdottiAggiuntivi')
+            .valueChanges.subscribe((value) => {
+              this.checkedProdottiAggiuntivi = value;
+            })
+        );
+        this.initFieldsAndFormGroup('Riparazione');
         break;
     }
   }
 
-  initVenditaFormGroup() {
+  initFieldsAndFormGroup(intervento: string) {
     this.showFields = true;
-    this.showFieldsRiparazione = false;
-    this.showFieldsVendita = true;
-    if (!this.formData) {
-      this.formData = new FormGroup({
-        tipo_intervento: new FormControl(
-          this.userDataModalService.getIntervento(this.formData),
-          Validators.required
-        ),
-        costo: new FormControl('', Validators.required),
-        costo_sconto: new FormControl('', Validators.required),
-        data_intervento: new FormControl(''),
-        modalita_pagamento: new FormControl('', Validators.required),
-        marca_telefono: new FormControl('', Validators.required),
-        modello_telefono: new FormControl('', Validators.required),
-        tipo_prodotto: new FormControl('', Validators.required),
-        imei: new FormControl('', []),
-        garanzia: new FormControl('', Validators.required),
-        checkedProdottiAggiuntivi: new FormControl(''),
-        checkedPermuta: new FormControl('', []),
-        costoPermuta: new FormControl('', []),
-        negozio: new FormControl('', Validators.required),
-      });
-    }
-  }
-  initRiparazioneFormGroup() {
-    this.showFields = true;
-    this.showFieldsVendita = false;
-    this.showFieldsRiparazione = true;
-    if (!this.formData) {
-      this.formData = new FormGroup({
-        tipo_intervento: new FormControl(
-          this.userDataModalService.getIntervento(this.formData),
-          Validators.required
-        ),
-        problema: new FormControl('', Validators.required),
-        tipo_parte: new FormControl('', Validators.required),
-        costo: new FormControl('', Validators.required),
-        data_intervento: new FormControl(''),
-        marca_telefono: new FormControl('', Validators.required),
-        modello_telefono: new FormControl('', Validators.required),
-        imei: new FormControl('', []),
-        checkedProdottiAggiuntivi: new FormControl(''),
-        data_consegna_riparazione: new FormControl('', Validators.required),
-        codice_sblocco: new FormControl(''),
-        caparra: new FormControl(''),
-        nome_fornitore_pezzo: new FormControl(''),
-        data_rest_dispositivo_cliente: new FormControl(''),
-        costoCambio: new FormControl(''),
-        negozio: new FormControl(''),
-        note: new FormControl(''),
-      });
-    }
+    this.showFieldsRiparazione = intervento === 'Riparazione' ? true : false;
+    this.showFieldsVendita = intervento === 'Vendita' ? true : false;
+    this.formData = this.userDataModalService.initFormGroup(this.formData);
   }
 
-  private setInterventiAggiuntivi() {
-    if (this.storage.input.selectedItem.prodottiAggiuntivi) {
-      let array = Object.values(
-        this.storage.input.selectedItem.prodottiAggiuntivi
-      );
-      array.forEach((item) => {
-        if (!item.id) {
-          item.id = Math.random().toString(36).substr(2, 9);
-        }
-      });
-      this.prodottiAggiuntivi = array;
-    } else {
-      this.prodottiAggiuntivi = [];
-    }
-  }
-
-  async addNewInterventoModal() {
-    await this.userDataService
+  async addIntervento() {
+    const filteredData = this.userDataModalService.getFilteredFormData(
+      this.formData
+    );
+    this.userDataService
       .addNewIntervento(
-        new SpecificDataModel(this.formData.value),
+        new SpecificDataModel(filteredData),
         this.storage.input.userData,
         this.prodottiAggiuntivi,
         this.uploadedFiles
@@ -280,24 +240,19 @@ export class UserDataModalComponent implements OnInit {
       .then((result) => {
         if (result) {
           this.showModal = !this.showModal;
-          callModalToast(
-            this.messageService,
-            'Aggiunto',
-            'Nuovo intervento aggiunto'
-          );
+          //prettier-ignore
+          callModalToast(this.messageService, 'Aggiunto', 'Nuovo intervento aggiunto');
         } else {
-          callModalToast(
-            this.messageService,
-            'Errore',
-            'Articolo non disponibile',
-            'error'
-          );
+          //prettier-ignore
+          callModalToast(this.messageService, 'Errore', 'Articolo non disponibile', 'error');
         }
       });
   }
 
-  //Metodo di modifica scatenato alla pressione del pulsante di modifica nel componentø
-  modifyUserIntervento() {
+  /*
+   * Metodo di modifica scatenato alla pressione del pulsante di modifica nel component
+   */
+  updateIntervento() {
     this.userDataService.modifyIntervento(
       this.storage.input.id,
       new SpecificDataModel(this.formData.getRawValue()),
@@ -307,14 +262,13 @@ export class UserDataModalComponent implements OnInit {
     );
 
     this.showModal = !this.showModal;
-    callModalToast(
-      this.messageService,
-      'Modificato',
-      'Utente modificato',
-      'info'
-    );
+    // prettier-ignore
+    callModalToast(this.messageService, 'Modificato', 'Utente modificato', 'info');
   }
 
+  /*
+   * Metodo di modifica valore scatenato dalle dropdown
+   */
   onOptionSelected(selectEventEmitterObject: selectEventEmitterObject) {
     this.formData
       .get(selectEventEmitterObject.formControlName)
@@ -324,56 +278,14 @@ export class UserDataModalComponent implements OnInit {
     }
   }
 
+  /*
+   * Metodo per visualizzare campi in base all'intervento selezionato
+   */
   private setValuesForm() {
     if (this.userDataModalService.getIntervento(this.formData) == 'Vendita') {
-      this.showFields = true;
-      this.showFieldsRiparazione = false;
-      this.showFieldsVendita = true;
-      this.formData = new FormGroup({
-        tipo_intervento: new FormControl(
-          this.userDataModalService.getIntervento(this.formData),
-          Validators.required
-        ),
-        costo: new FormControl('', Validators.required),
-        costo_sconto: new FormControl('', Validators.required),
-        data_intervento: new FormControl(''),
-        modalita_pagamento: new FormControl('', Validators.required),
-        marca_telefono: new FormControl('', Validators.required),
-        modello_telefono: new FormControl('', Validators.required),
-        tipo_prodotto: new FormControl('', Validators.required),
-        imei: new FormControl('', []),
-        garanzia: new FormControl('', Validators.required),
-        checkedProdottiAggiuntivi: new FormControl(''),
-        checkedPermuta: new FormControl('', []),
-        costoPermuta: new FormControl('', []),
-        negozio: new FormControl('', Validators.required),
-      });
+      this.initFieldsAndFormGroup('Vendita');
     } else {
-      this.showFields = true;
-      this.showFieldsVendita = false;
-      this.showFieldsRiparazione = true;
-      this.formData = new FormGroup({
-        tipo_intervento: new FormControl(
-          this.userDataModalService.getIntervento(this.formData),
-          Validators.required
-        ),
-        problema: new FormControl('', Validators.required),
-        tipo_parte: new FormControl('', Validators.required),
-        costo: new FormControl('', Validators.required),
-        data_intervento: new FormControl(''),
-        marca_telefono: new FormControl('', Validators.required),
-        modello_telefono: new FormControl('', Validators.required),
-        imei: new FormControl('', []),
-        checkedProdottiAggiuntivi: new FormControl(''),
-        data_consegna_riparazione: new FormControl('', Validators.required),
-        codice_sblocco: new FormControl(''),
-        caparra: new FormControl(''),
-        nome_fornitore_pezzo: new FormControl(''),
-        data_rest_dispositivo_cliente: new FormControl(''),
-        costoCambio: new FormControl(''),
-        negozio: new FormControl(''),
-        note: new FormControl(''),
-      });
+      this.initFieldsAndFormGroup('Riparazione');
     }
   }
 
@@ -385,7 +297,9 @@ export class UserDataModalComponent implements OnInit {
     return checkedValue;
   }
 
-  // Metodi per p-FileUpload
+  /*
+   * Metodi per p-FileUpload
+   */
   onUpload(event: UploadEvent) {
     for (let file of event.files) {
       this.uploadedFilesDone = false;
@@ -395,123 +309,112 @@ export class UserDataModalComponent implements OnInit {
       const storageRef = this.firebaseStorage.ref(filePath);
       const uploadTask = this.firebaseStorage.upload(filePath, file);
       // Monitor uploading process
-      uploadTask.percentageChanges().subscribe((percentage) => {
-        this.percentage = Math.round(percentage);
-        if (percentage === 100) {
-          this.percentage = 0;
-          this.isUploading = false;
-        }
-      });
+      this.storedSubscriptions.add(
+        uploadTask.percentageChanges().subscribe((percentage) => {
+          this.percentage = Math.round(percentage);
+          if (percentage === 100) {
+            this.percentage = 0;
+            this.isUploading = false;
+          }
+        })
+      );
 
       uploadTask
         .snapshotChanges()
         .pipe(
           finalize(() => {
-            storageRef.getDownloadURL().subscribe((downloadURL) => {
-              console.log(`File available at ${downloadURL}`);
-              if (this.uploadedFiles === undefined) {
-                this.uploadedFiles = [];
-              }
-              this.uploadedFiles.push({
-                file: {
-                  filename: file.name,
-                  filetype: file.type,
-                  filesize: file.size,
-                  addDate: new Date(),
-                },
-                filePath: filePath,
-                uploadURL: downloadURL,
-              });
-              this.uploadedFilesDone = true;
-              callModalToast(
-                this.messageService,
-                'File Caricato',
-                'Il file è stato caricato correttamente',
-                'info'
-              );
-            });
+            this.storedSubscriptions.add(
+              storageRef.getDownloadURL().subscribe((downloadURL) => {
+                console.log(`File available at ${downloadURL}`);
+                if (this.uploadedFiles === undefined) {
+                  this.uploadedFiles = [];
+                }
+                this.uploadedFiles.push({
+                  file: {
+                    filename: file.name,
+                    filetype: file.type,
+                    filesize: file.size,
+                    addDate: new Date(),
+                  },
+                  filePath: filePath,
+                  uploadURL: downloadURL,
+                });
+                this.uploadedFilesDone = true;
+                // prettier-ignore
+                callModalToast(this.messageService, 'File Caricato', 'Il file è stato caricato correttamente', 'info');
+              })
+            );
           })
         )
         .subscribe();
     }
   }
-
+  /*
+   * Pressione tasto di rimozione su singolo elemento lista file in permuta
+   */
   onRemove(event: FileRemoveEvent) {
-    // X su singolo elemento della lista
     this.uploadedFiles.forEach((item) => {
       if (item.file.filename === event.file.name) {
         this.firebaseStorage.storage
           .refFromURL(item.uploadURL)
           .delete()
           .then(() => {
-            callModalToast(
-              this.messageService,
-              'File Rimosso',
-              'Il file è stato rimosso',
-              'info'
-            );
-            console.log('File deleted successfully');
+            // prettier-ignore
+            callModalToast(this.messageService, 'File Rimosso', 'Il file è stato rimosso', 'info' );
           })
           .catch((error) => {
-            callModalToast(
-              this.messageService,
-              'Errore rimozione',
-              'Il file non è stato rimosso',
-              'error'
-            );
+            // prettier-ignore
+            callModalToast( this.messageService, 'Errore rimozione', 'Il file non è stato rimosso', 'error');
+            console.log(error);
           });
         this.uploadedFiles.splice(this.uploadedFiles.indexOf(item), 1);
       }
     });
   }
 
+  /*
+   * Pressione tasto di rimozione di tutti gli elementi in lista file in permuta
+   */
   onClear(event: Event) {
-    // X per rimozione di tutti gli elementi
     this.uploadedFiles.forEach((item) => {
       this.firebaseStorage.storage
         .refFromURL(item.uploadURL)
         .delete()
         .then(() => {
-          callModalToast(
-            this.messageService,
-            'File Rimosso',
-            'Il file è stato rimosso',
-            'info'
-          );
-          console.log('File deleted successfully');
+          // prettier-ignore
+          callModalToast(this.messageService, 'File Rimosso', 'Il file è stato rimosso', 'info');
         })
         .catch((error) => {
-          callModalToast(
-            this.messageService,
-            'Errore rimozione',
-            'Il file non è stato rimosso',
-            'error'
-          );
+          // prettier-ignore
+          callModalToast(this.messageService, 'Errore rimozione', 'Il file non è stato rimosso', 'error');
+          console.log(error);
         });
     });
     this.uploadedFiles = [];
   }
 
   downloadFile(downloadUrl: string) {
-    this.firebaseStorage
-      .refFromURL(downloadUrl)
-      .getDownloadURL()
-      .subscribe(
-        (url) => {
-          // Fetch the file
-          fetch(url).then((response) => {
-            response.blob().then((blob) => {
-              // Use FileSaver to save the blob
-              const filename = url.split('/').pop().split('?')[0]; // Extract filename from URL
-              saveAs(blob, filename || 'downloaded-file');
+    this.storedSubscriptions.add(
+      this.firebaseStorage
+        .refFromURL(downloadUrl)
+        .getDownloadURL()
+        .subscribe(
+          (url) => {
+            // Fetch the file
+            fetch(url).then((response) => {
+              response.blob().then((blob) => {
+                // Use FileSaver to save the blob
+                const filename = url.split('/').pop().split('?')[0]; // Extract filename from URL
+                saveAs(blob, filename || 'downloaded-file');
+              });
             });
-          });
-        },
-        (error) => {
-          console.error('Error downloading file:', error);
-          // Handle any errors here, such as showing an error message to the user
-        }
-      );
+          },
+          (error) => {
+            console.error('Error downloading file:', error);
+            // Handle any errors here, such as showing an error message to the user
+          }
+        )
+    );
   }
 
   addProdottoAggiuntivi(quantita: number, nome: string, costo: number) {
@@ -554,31 +457,33 @@ export class UserDataModalComponent implements OnInit {
       .then((data) => {
         if (data) {
           let item = Object.values(data);
-          console.log(item);
           this.formData.patchValue({
             modello_telefono: item[0]['nome'],
             costo: +item[0]['prezzo_negozio'],
             marca_telefono: item[0]['marca'],
-            tipo_prodotto: this.determineTipoProdotto(item[0]['grado']),
+            tipo_prodotto: this.userDataModalService.getTipoProdotto(
+              item[0]['grado']
+            ),
           });
           callModalToast(this.messageService, 'Completato', 'Dati valorizzati');
         } else {
-          callModalToast(
-            this.messageService,
-            'Attenzione',
-            'IMEI non presente',
-            'warn'
-          );
+          // prettier-ignore
+          callModalToast(this.messageService, 'Attenzione', 'IMEI non presente', 'warn');
         }
       });
   }
 
-  determineTipoProdotto(grado: string): string {
-    return grado === 'Nuovo' ? 'Nuovo' : 'Usato';
-  }
-
   findInvalidControls() {
     findInvalidControls(this.formData);
+  }
+
+  enterCheck() {
+    if (this.mode === 'Edit' && this.formData.valid && this.formData.dirty) {
+      this.updateIntervento();
+    }
+    if (this.mode === 'Add' && this.formData.valid) {
+      this.addIntervento();
+    }
   }
 
   dateFieldsFix() {

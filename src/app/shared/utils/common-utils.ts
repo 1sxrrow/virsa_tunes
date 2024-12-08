@@ -154,9 +154,13 @@ export async function calculateIncassoInterventov2(
       incassoInterventoValue += Number(x.quantita) * Number(x.costo);
     });
   }
+  const meseIncasso =
+    specificData.tipo_intervento === 'Vendita'
+      ? calculateMese(new Date(specificData.data_intervento))
+      : calculateMese(new Date(specificData.data_rest_dispositivo_cliente));
   let incasso: Incassov2 = {
     incasso: incassoInterventoValue,
-    mese: calculateMese(new Date(specificData.data_intervento)),
+    mese: meseIncasso,
     spese: speseValue,
     netto: (incassoInterventoValue - speseValue) as number,
     negozio: specificData.negozio,
@@ -191,7 +195,6 @@ export function createScontrino(
   specificData: SpecificDataModel,
   userData: UserModel
 ): EscPosEncoder {
-  debugger
   let encoder: EscPosEncoder = new EscPosEncoder();
   let prodottiAggiuntiviTmp: [string, string, string][] = [];
   let totale: number = +specificData.costo;

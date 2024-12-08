@@ -451,6 +451,7 @@ p-calendar.ng-dirty.ng-invalid > .p-calendar > .p-inputtext {
   color: var(--datepicker-date-highlight);
   background: var(--datepicker-date-highlight-background);
   overflow: visible;
+  border-radius: 3px;
 }
 .p-datepicker table td > span:focus {
   outline: 0 none;
@@ -461,6 +462,7 @@ p-calendar.ng-dirty.ng-invalid > .p-calendar > .p-inputtext {
   background: var(--datepicker-date-highlight-background-today);
   color: var(--datepicker-date-highlight-today);
   border-color: transparent;
+  border-radius: 3px;
 }
 .p-datepicker table td.p-datepicker-today > span.p-highlight {
   color: rgba(255, 255, 255, 0.87);

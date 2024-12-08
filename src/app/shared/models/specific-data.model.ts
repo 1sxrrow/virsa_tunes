@@ -1,5 +1,5 @@
 import { FileUpload } from '../utils/common-utils';
-import { costoStorico, Incasso, Incassov2 } from './custom-interfaces';
+import { Incasso, Incassov2 } from './custom-interfaces';
 import { prodottiAggiuntivi } from './prodotti-aggiuntivi.model';
 
 export class SpecificDataModel {

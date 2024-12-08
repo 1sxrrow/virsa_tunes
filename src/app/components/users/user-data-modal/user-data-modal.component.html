@@ -6,7 +6,7 @@
   [header]="modalTitle"
   [style]="{ width: '50vw' }"
 >
-  <form [formGroup]="formData">
+  <form [formGroup]="formData" (keyup.enter)="enterCheck()">
     <div class="grid md:grid-cols-2 gap-4 mb-1 items-center">
       <div class="mb-1 col-span-2">
         <virsa-select
@@ -290,7 +290,6 @@
           dateFormat="dd/mm/yy"
         ></p-calendar>
       </div>
-
       <div class="mb-1" *ngIf="showFieldsRiparazione">
         <label for="caparra_user_data_modal" class="label">
           {{ "user_data.caparra" | translate }}
@@ -522,14 +521,14 @@
         *ngIf="mode === 'Add'"
         styleClass="p-button-raised p-button-secondary"
         [disabled]="!formData.valid"
-        (onClick)="addNewInterventoModal()"
+        (onClick)="addIntervento()"
       >
         {{ "user_data.aggiungi" | translate }}
       </p-button>
       <p-button
         *ngIf="mode === 'Edit'"
         styleClass="p-button-raised p-button-secondary"
-        (onClick)="modifyUserIntervento()"
+        (onClick)="updateIntervento()"
       >
         {{ "user_data.modifica" | translate }}
       </p-button>

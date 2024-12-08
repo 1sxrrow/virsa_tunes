@@ -114,7 +114,6 @@ export class UserDataService {
     if (userModel['interventiCount']) {
       delete userModel['interventiCount'];
     }
-    debugger;
     userModel.id = this.getLastId() + 1;
     userModel.utenteInserimento = this.authService.getUserState().displayName;
     userModel.dataInserimento = new Date().toLocaleDateString(this.locale);
@@ -127,7 +126,6 @@ export class UserDataService {
   }
 
   deleteUser(id: number) {
-    debugger;
     this.users = this.users.filter((user) => user.id !== id);
     this.firebaseStoreService.DeleteUser(id.toString());
     this.usersSubject.next(this.users.slice());
@@ -154,7 +152,6 @@ export class UserDataService {
       ...user,
       interventiCount: this.getTotalInterventi(user),
     }));
-    debugger;
     this.usersWithInterventiSubject.next(usersWithInterventi);
   }
 
@@ -209,14 +206,20 @@ export class UserDataService {
       this.firebaseStoreService
     );
 
-    // Generazione ID univoco
-    specific_data.idDbIncasso = this.firebaseStoreService.generateId();
-    specific_data.incassov2 = incassoIntervento;
-    // Nuovo sistema incasso
-    this.firebaseStoreService.AddIncassov2(
-      specific_data.idDbIncasso,
-      specific_data.incassov2
-    );
+    // Generazione ID univoco se sono in Vendita o Riparazione con data restituz. valorizzata
+    if (
+      specific_data.tipo_intervento === 'Vendita' ||
+      (specific_data.tipo_intervento === 'Riparazione' &&
+        specific_data.data_rest_dispositivo_cliente)
+    ) {
+      specific_data.idDbIncasso = this.firebaseStoreService.generateId();
+      specific_data.incassov2 = incassoIntervento;
+      // Nuovo sistema incasso
+      this.firebaseStoreService.AddIncassov2(
+        specific_data.idDbIncasso,
+        specific_data.incassov2
+      );
+    }
     let t: SpecificDataModel[] = Object.values(user_work.specific_data);
     t.push(specific_data);
     user_work.specific_data = t;
@@ -245,23 +248,30 @@ export class UserDataService {
       if (specific_data.id === id_intervento) {
         // Aggiorno Incasso v2
         try {
-          const incassov2 = await calculateIncassoInterventov2(
-            specific_data_input,
-            this.firebaseStoreService
-          );
+          if (
+            specific_data_input.tipo_intervento === 'Vendita' ||
+            (specific_data_input.tipo_intervento === 'Riparazione' &&
+              specific_data_input.data_rest_dispositivo_cliente)
+          ) {
+            const incassov2 = await calculateIncassoInterventov2(
+              specific_data_input,
+              this.firebaseStoreService
+            );
 
-          // Safeguard per Incasso v2 per interventi che non hanno idDbIncasso
-          if (specific_data.idDbIncasso) {
-            specific_data_input.idDbIncasso = specific_data.idDbIncasso;
-          } else {
-            specific_data.idDbIncasso = this.firebaseStoreService.generateId();
-            specific_data.incassov2 = incassov2;
+            // Safeguard per Incasso v2 per interventi che non hanno idDbIncasso
+            if (specific_data_input.idDbIncasso) {
+              specific_data_input.idDbIncasso = specific_data.idDbIncasso;
+            } else {
+              specific_data_input.idDbIncasso =
+                this.firebaseStoreService.generateId();
+              specific_data_input.incassov2 = incassov2;
+            }
+
+            this.firebaseStoreService.UpdateIncassov2(
+              specific_data_input.idDbIncasso,
+              incassov2
+            );
           }
-
-          await this.firebaseStoreService.UpdateIncassov2(
-            specific_data.idDbIncasso,
-            incassov2
-          );
 
           specific_data_input.data_intervento = specific_data.data_intervento;
           if (specific_data_input.files === undefined) {
@@ -286,11 +296,8 @@ export class UserDataService {
       return data.id === id_intervento;
     });
 
-    // Recupero dait per Incasso e lo cancello
+    // Recupero dati per Incasso e lo cancello
     let single = spec_retrieved[spec_retrieved.indexOf(i[0])];
-    let calculatedMese = calculateMese(
-      new Date(spec_retrieved[spec_retrieved.indexOf(i[0])].data_intervento)
-    );
     // Rimuovo Incasso v2
     if (single.idDbIncasso) {
       this.firebaseStoreService.deleteIncassov2(single.idDbIncasso);

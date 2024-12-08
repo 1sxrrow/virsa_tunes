@@ -16,8 +16,8 @@ export const routes: Routes = [
         (m) => m.UsersComponentsModule
       ),
     canActivate: [AuthGuard],
-    resolve: { usersWithInterventi: usersWithInterventiResolver },
-    runGuardsAndResolvers: 'always',
+    // resolve: { usersWithInterventi: usersWithInterventiResolver },
+    // runGuardsAndResolvers: 'always',
   },
   {
     path: 'inventario',

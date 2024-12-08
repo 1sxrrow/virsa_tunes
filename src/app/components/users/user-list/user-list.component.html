@@ -12,6 +12,8 @@
     <p-card>
       <p-table
         #dt1
+        stateStorage="session"
+        stateKey="userList-session"
         [scrollable]="true"
         scrollHeight="400px"
         [value]="users"

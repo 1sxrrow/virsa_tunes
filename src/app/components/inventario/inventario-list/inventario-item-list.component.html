@@ -9,6 +9,8 @@
   <p-card>
     <p-table
       #dt1
+      stateStorage="session"
+      stateKey="invetarioList-session"
       [scrollable]="true"
       scrollHeight="400px"
       [value]="itemsInventario"

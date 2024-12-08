@@ -12,11 +12,12 @@ import {
   MessageService,
 } from 'primeng/api';
 import { Table } from 'primeng/table';
-import { map, Observable, of } from 'rxjs';
-import { catchError, switchMap } from 'rxjs/operators';
+import { Observable } from 'rxjs';
+import { UserModelWithInterventi } from 'src/app/shared/models/custom-interfaces';
 import { UserModel } from 'src/app/shared/models/user-data.model';
 import { FirebaseStoreService } from 'src/app/shared/services/firebase/firebase-store.service';
 import { PrintService } from 'src/app/shared/services/print/recipe-print.service';
+import { UserCacheService } from 'src/app/shared/services/user-cache.service';
 import {
   callModalToast,
   getBreadcrumbHome,
@@ -25,8 +26,6 @@ import { AuthService } from '../../login/auth.service';
 import { UserDataStorage } from '../user-data/user-data-storage.service';
 import { UserDataService } from '../user-data/user-data.service';
 import { UserListModalStorage } from '../user-list-modal/user-list-modal-storage.service';
-import { UserCacheService } from 'src/app/shared/services/user-cache.service';
-import { UserModelWithInterventi } from 'src/app/shared/models/custom-interfaces';
 
 @Component({
   selector: 'app-user-list',
@@ -163,31 +162,31 @@ export class UserListComponent implements OnInit {
 
   userValues() {
     const cachedUsers = this.userCacheService.getCachedUsers();
-    this.usersWithInterventi$ = this.route.data.pipe(
-      map((data) => {
-        const usersWithInterventi = data['usersWithInterventi'];
-        const cachedData = this.userCacheService.getCachedData(
-          'usersWithInterventi'
-        );
-        //prettier-ignore
-        if (this.userCacheService.hasDataChanged('usersWithInterventi', usersWithInterventi) || !cachedData ) {
-          console.log('User data has changed or no cached data found, updating cache.');
-          this.userCacheService.cacheUsers(usersWithInterventi);
-        } else {
-          console.log('User data has not changed, using cached data.');
-        }
-        return usersWithInterventi;
-      }),
-      catchError((error) => {
-        console.log('Error in component:', error);
-        return of(cachedUsers);
-      })
-    );
-    const resolverData = this.route.snapshot.data['usersWithInterventi'];
-    if (resolverData) {
-      this.userDataService.setUsersWithInterventi(resolverData);
-    }
-    this.usersWithInterventi$ = this.userDataService.getUsersWithInterventiObservable();
+    // this.usersWithInterventi$ = this.route.data.pipe(
+    //   map((data) => {
+    //     const usersWithInterventi = data['usersWithInterventi'];
+    //     const cachedData = this.userCacheService.getCachedData(
+    //       'usersWithInterventi'
+    //     );
+    //     //prettier-ignore
+    //     if (this.userCacheService.hasDataChanged('usersWithInterventi', usersWithInterventi) || !cachedData ) {
+    //       console.log('User data has changed or no cached data found, updating cache.');
+    //       this.userCacheService.cacheUsers(usersWithInterventi);
+    //     } else {
+    //       console.log('User data has not changed, using cached data.');
+    //     }
+    //     return usersWithInterventi;
+    //   }),
+    //   catchError((error) => {
+    //     console.log('Error in component:', error);
+    //     return of(cachedUsers);
+    //   })
+    // );
+    // const resolverData = this.route.snapshot.data['usersWithInterventi'];
+    // if (resolverData) {
+    //   this.userDataService.setUsersWithInterventi(resolverData);
+    // }
+    this.usersWithInterventi$ = this.userDataService.fetchUsersWithInterventi();
   }
 
   myModelChanged(event) {}
