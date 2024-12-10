@@ -65,7 +65,22 @@ export class UserListModalComponent implements OnInit {
     }
     try {
       let datiFatturaStructure = this.formData.get('datiFattura').value;
-      this.checkedFattura = datiFatturaStructure.datiFattura ? true : false;
+      if (typeof datiFatturaStructure === 'object') {
+        // prettier-ignore
+        {
+          this.formData.setControl('datiFattura', new FormControl(datiFatturaStructure.datiFattura));
+          this.formData.setControl('partitaIva', new FormControl(datiFatturaStructure.partitaIva));
+          this.formData.setControl('codiceFiscale', new FormControl(datiFatturaStructure.codiceFiscale));
+          this.formData.setControl('codiceUnivoco', new FormControl(datiFatturaStructure.codiceUnivoco));
+          this.formData.setControl('denominazione', new FormControl(datiFatturaStructure.denominazione));
+          this.formData.setControl('indirizzoFatturazione', new FormControl(datiFatturaStructure.indirizzoFatturazione));
+          this.formData.setControl('cittaFatturazione', new FormControl(datiFatturaStructure.cittaFatturazione));
+          this.formData.setControl('pec', new FormControl(datiFatturaStructure.pec));
+        }
+        this.checkedFattura = datiFatturaStructure.datiFattura ? true : false;
+      } else {
+        this.checkedFattura = this.formData.get('datiFattura').value;
+      }
     } catch {
       this.checkedFattura = false;
       this.formData.setControl('datiFattura', new FormControl(''));
@@ -155,22 +170,8 @@ export class UserListModalComponent implements OnInit {
    * @returns {any}
    **/
   editUser() {
-    let datiFattura;
-    this.checkedFattura
-      ? (datiFattura = {
-          partitaIva: this.formData.value['partitaIva'],
-          pec: this.formData.value['pec'],
-          codiceUnivoco: this.formData.value['codiceUnivoco'],
-          codiceFiscale: this.formData.value['codiceFiscale'],
-          datiFattura: this.formData.value['datiFattura'],
-          denominazione: this.formData.value['denominazione'],
-          indirizzoFatturazione: this.formData.value['indirizzoFatturazione'],
-          cittaFatturazione: this.formData.value['cittaFatturazione'],
-        })
-      : (datiFattura = {});
     let user = new UserModel({
       ...this.formData.value,
-      datiFattura: datiFattura,
     });
     this.userDataService.editUser(user);
     callModalToast(

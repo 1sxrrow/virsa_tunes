@@ -13,8 +13,15 @@ export class UserModel {
   public specific_data: SpecificDataModel[] = [];
   public utenteInserimento?: string;
   public ultimoUtenteModifica?: string;
-  public datiFattura: DatiFattura;
+  public datiFattura: boolean;
   public dataInserimento: string;
+  public partitaIva?: string;
+  public pec?: string;
+  public codiceUnivoco?: string;
+  public codiceFiscale?: string;
+  public denominazione?: string;
+  public indirizzoFatturazione?: string;
+  public cittaFatturazione?: string;
 
   public constructor(init?: Partial<UserModel>) {
     Object.assign(this, init);
