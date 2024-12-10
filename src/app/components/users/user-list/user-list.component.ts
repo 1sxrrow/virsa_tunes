@@ -1,8 +1,9 @@
 import {
+  AfterViewInit,
   ChangeDetectionStrategy,
   Component,
   OnInit,
-  ViewEncapsulation,
+  ViewEncapsulation
 } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import {
@@ -35,7 +36,7 @@ import { UserListModalStorage } from '../user-list-modal/user-list-modal-storage
   changeDetection: ChangeDetectionStrategy.OnPush,
   encapsulation: ViewEncapsulation.None,
 })
-export class UserListComponent implements OnInit {
+export class UserListComponent implements OnInit, AfterViewInit {
   items: MenuItem[] | undefined = [{ label: 'Database', routerLink: '/users' }];
   home: MenuItem | undefined = getBreadcrumbHome();
 
@@ -65,9 +66,18 @@ export class UserListComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    // Inizializza il servizio di stampa
     this.initializePrintService();
     this.userValues();
+  }
+
+  ngAfterViewInit(): void {
+    const userListSession = sessionStorage.getItem('userList-session');
+    if (userListSession) {
+      const sessionObj = JSON.parse(userListSession);
+      if (sessionObj.filters) {
+        sessionStorage.removeItem('userList-session');
+      }
+    }
   }
 
   initializePrintService() {

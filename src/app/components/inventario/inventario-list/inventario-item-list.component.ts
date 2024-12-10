@@ -50,11 +50,18 @@ export class InventarioItemListComponent implements OnInit, OnDestroy {
     private authService: AuthService,
     private confirmationService: ConfirmationService,
     private messageService: MessageService,
-    private inventarioModalStorage: InventarioModalStorage,
+    private inventarioModalStorage: InventarioModalStorage
   ) {}
 
   ngOnInit(): void {
-    //load items in memory
+    const userListSession = sessionStorage.getItem('invetarioList-session');
+    if (userListSession) {
+      const sessionObj = JSON.parse(userListSession);
+      if (sessionObj.filters) {
+        sessionStorage.removeItem('userList-session');
+      }
+    }
+
     this.key = '';
     this.retrieveData();
     this.isAdmin = this.authService.getIsAdmin();
