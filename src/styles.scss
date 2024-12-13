@@ -133,9 +133,6 @@ body {
   height: 100vh;
   transition: height 0.25s; /* Transizione fluida */
 
-  @media (max-width: 767px) {
-    height: 790px;
-  }
   @media (max-width: 609px) {
     height: 840px;
   }

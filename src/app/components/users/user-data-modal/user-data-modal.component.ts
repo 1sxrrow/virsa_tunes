@@ -457,15 +457,21 @@ export class UserDataModalComponent implements OnInit, OnDestroy {
       .then((data) => {
         if (data) {
           let item = Object.values(data);
-          this.formData.patchValue({
-            modello_telefono: item[0]['nome'],
-            costo: +item[0]['prezzo_negozio'],
-            marca_telefono: item[0]['marca'],
-            tipo_prodotto: this.userDataModalService.getTipoProdotto(
-              item[0]['grado']
-            ),
-          });
-          callModalToast(this.messageService, 'Completato', 'Dati valorizzati');
+          if (item[0]['quantita'] > 0) {
+            this.formData.patchValue({
+              modello_telefono: item[0]['nome'],
+              costo: +item[0]['prezzo_negozio'],
+              marca_telefono: item[0]['marca'],
+              tipo_prodotto: this.userDataModalService.getTipoProdotto(
+                item[0]['grado']
+              ),
+            });
+            // prettier-ignore
+            callModalToast(this.messageService, 'Completato', 'Dati valorizzati');
+          } else {
+            // prettier-ignore
+            callModalToast(this.messageService, 'Errore', 'Quantità articolo a zero', 'error');
+          }
         } else {
           // prettier-ignore
           callModalToast(this.messageService, 'Attenzione', 'IMEI non presente', 'warn');

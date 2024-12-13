@@ -262,18 +262,17 @@ export class FirebaseStoreService {
     console.log('Item updated successfully!');
   }
 
-  imeiArticolo(imei: string) {
-    return this.InventarioListRef.query
+  async imeiArticolo(imei: string) {
+    const snapshot = await this.InventarioListRef.query
       .orderByChild('imei')
       .equalTo(imei)
-      .once('value')
-      .then((snapshot) => {
-        if (snapshot.exists()) {
-          return snapshot.val();
-        } else {
-          return null;
-        }
-      });
+      .once('value');
+
+    if (snapshot.exists()) {
+      return snapshot.val();
+    } else {
+      return null;
+    }
   }
 
   updateArticoloImei(imei: string, item: InventarioItemModel) {
