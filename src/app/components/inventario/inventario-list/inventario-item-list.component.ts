@@ -54,11 +54,11 @@ export class InventarioItemListComponent implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit(): void {
-    const userListSession = sessionStorage.getItem('invetarioList-session');
-    if (userListSession) {
-      const sessionObj = JSON.parse(userListSession);
+    const invetarioListSession = sessionStorage.getItem('invetarioList-session');
+    if (invetarioListSession) {
+      const sessionObj = JSON.parse(invetarioListSession);
       if (sessionObj.filters) {
-        sessionStorage.removeItem('userList-session');
+        sessionStorage.removeItem('invetarioList-session');
       }
     }
 
