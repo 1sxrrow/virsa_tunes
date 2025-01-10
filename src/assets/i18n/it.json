@@ -109,6 +109,22 @@
       "Dic"
     ],
     "today": "Oggi",
-    "weekHeader": "Set"
+    "weekHeader": "Set",
+    "startsWith": "Comincia con",
+    "contains": "Contiene",
+    "notContains": "Non contiene",
+    "endsWith": "Finisce con",
+    "equals": "Uguale",
+    "notEquals": "Non uguale",
+    "noFilter": "Nessun filtro",
+    "dateIs": "Data è",
+    "dateIsNot": "Data non è",
+    "dateIsBefore": "Data è dopo",
+    "dateIsAfter": "Data è prima",
+    "matchAll": "Confronta tutto",
+    "matchAny": "Confronta alcuni",
+    "addRule": "Aggiungi Filtro",
+    "clear": "Rimuovi",
+    "apply": "Aggiungi"
   }
 }

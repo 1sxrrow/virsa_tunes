@@ -97,30 +97,37 @@
       </ng-template>
       <ng-template pTemplate="header">
         <tr>
-          <th pSortableColumn="imei" style="width: 20%">
-            IMEI<p-sortIcon field="imei"></p-sortIcon>
+          <th style="width: 20%">
+            IMEI
+            <p-columnFilter type="text" field="imei" display="menu" />
           </th>
-          <th pSortableColumn="nome" style="width: 20%">
-            Nome<p-sortIcon field="nome"></p-sortIcon>
+          <th style="width: 20%">
+            Nome
+            <p-columnFilter type="text" field="nome" display="menu" />
           </th>
-          <th pSortableColumn="colore" style="width: 20%">
-            Colore<p-sortIcon field="colore"></p-sortIcon>
+          <th style="width: 20%">
+            Colore
+            <p-columnFilter type="text" field="colore" display="menu" />
           </th>
-          <th pSortableColumn="quantita" style="width: 20%">
-            Quantità<p-sortIcon field="quantita"></p-sortIcon>
+          <th style="width: 20%">
+            Quantità
+            <p-columnFilter type="text" field="quantita" display="menu" />
           </th>
-          <th pSortableColumn="percentuale" style="width: 20%">
-            % Batteria<p-sortIcon field="percentuale"></p-sortIcon>
+          <th style="width: 20%">
+            % Batteria
+            <p-columnFilter type="text" field="percentuale" display="menu" />
           </th>
-          <th pSortableColumn="memoria" style="width: 20%">
-            Memoria (GB)<p-sortIcon field="memoria"></p-sortIcon>
+          <th style="width: 20%">
+            Memoria (GB)
+            <p-columnFilter type="text" field="memoria" display="menu" />
           </th>
-          <th
-            pSortableColumn="prezzo_acquisto"
-            style="width: 20%"
-            *ngIf="isAdmin"
-          >
-            Prezzo Acquisto<p-sortIcon field="prezzo_acquisto"></p-sortIcon>
+          <th style="width: 20%" *ngIf="isAdmin">
+            Prezzo Acquisto
+            <p-columnFilter
+              type="text"
+              field="prezzo_acquisto"
+              display="menu"
+            />
           </th>
           <th style="width: 20%">Azioni</th>
         </tr>

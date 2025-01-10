@@ -3505,9 +3505,9 @@ p-treeselect.p-treeselect-clearable .p-treeselect-clear-icon {
 }
 
 .p-column-filter-overlay {
-  background: #071426;
+  background: var(--modal-background-color);
   color: rgba(255, 255, 255, 0.87);
-  border: 1px solid #0b213f;
+  border: 1px solid var(--modal-border-color);
   border-radius: 6px;
   box-shadow: 0 2px 4px -1px rgba(0, 0, 0, 0.2), 0 4px 5px 0 rgba(0, 0, 0, 0.14),
     0 1px 10px 0 rgba(0, 0, 0, 0.12);
@@ -3551,9 +3551,9 @@ p-treeselect.p-treeselect-clearable .p-treeselect-clear-icon {
 
 .p-column-filter-overlay-menu .p-column-filter-operator {
   padding: 0.75rem 1.25rem;
-  border-bottom: 1px solid #0b213f;
+  border-bottom: 1px solid var(--modal-border-color);
   color: rgba(255, 255, 255, 0.87);
-  background: #071426;
+  background: var(--modal-background-color);
   margin: 0;
   border-top-right-radius: 6px;
   border-top-left-radius: 6px;
