@@ -3,7 +3,7 @@ import {
   ChangeDetectionStrategy,
   Component,
   OnInit,
-  ViewEncapsulation
+  ViewEncapsulation,
 } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import {
@@ -74,8 +74,15 @@ export class UserListComponent implements OnInit, AfterViewInit {
     const userListSession = sessionStorage.getItem('userList-session');
     if (userListSession) {
       const sessionObj = JSON.parse(userListSession);
-      if (sessionObj.filters) {
+      if (sessionObj.filters && sessionObj.filters?.global) {
         sessionStorage.removeItem('userList-session');
+      } else if (
+        sessionObj.filters &&
+        sessionObj.filters?.nome &&
+        sessionObj.filters?.cognome
+      ) {
+        delete sessionObj.filters;
+        sessionStorage.setItem('userList-session', JSON.stringify(sessionObj));
       }
     }
   }

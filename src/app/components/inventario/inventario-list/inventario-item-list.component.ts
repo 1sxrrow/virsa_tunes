@@ -1,9 +1,4 @@
-import {
-  Component,
-  OnDestroy,
-  OnInit,
-  ViewEncapsulation
-} from '@angular/core';
+import { Component, OnDestroy, OnInit, ViewEncapsulation } from '@angular/core';
 import {
   ConfirmationService,
   ConfirmEventType,
@@ -54,11 +49,19 @@ export class InventarioItemListComponent implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit(): void {
-    const invetarioListSession = sessionStorage.getItem('invetarioList-session');
+    const invetarioListSession = sessionStorage.getItem(
+      'invetarioList-session'
+    );
     if (invetarioListSession) {
       const sessionObj = JSON.parse(invetarioListSession);
-      if (sessionObj.filters) {
+      if (sessionObj.filters && sessionObj.filters?.global) {
         sessionStorage.removeItem('invetarioList-session');
+      } else {
+        delete sessionObj.filters;
+        sessionStorage.setItem(
+          'invetarioList-session',
+          JSON.stringify(sessionObj)
+        );
       }
     }
 
