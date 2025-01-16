@@ -1,0 +1,45 @@
+<p-dialog
+  [(visible)]="showIncassiModal"
+  [style]="{ width: '60%' }"
+  [modal]="true"
+  (onHide)="handleClose()"
+>
+  <ng-template pTemplate="header">
+    <div
+      class="flex align-items-center justify-between gap-2 w-full col-span-3"
+    >
+      <span class="font-bold text-2xl">
+        {{ "user_data.incassi" | translate }} {{ meseInput }}
+      </span>
+    </div>
+  </ng-template>
+  <p-table [value]="filteredMeseIncassi" [loading]="loading">
+    <ng-template pTemplate="header">
+      <tr>
+        <th>Utente</th>
+        <th>Tipo Intervento</th>
+        <th>Costo</th>
+        <th>negozio</th>
+        <th>modello telefono</th>
+        <th>data Intervento</th>
+      </tr>
+    </ng-template>
+    <ng-template pTemplate="body" let-incasso>
+      <tr>
+        <td>{{ incasso.user.nome }} {{ incasso.user.cognome }}</td>
+        <td>{{ incasso.data.tipo_intervento }}</td>
+        <td>{{ incasso.data.costo }} €</td>
+        <td>{{ incasso.data.negozio }}</td>
+        <td>{{ incasso.data.modello_telefono }}</td>
+        <td>{{ incasso.data.data_intervento | date : "dd/MM/yyyy" }}</td>
+      </tr>
+    </ng-template>
+    <ng-template pTemplate="emptymessage">
+      <tr>
+        <td colspan="4" class="text-center">
+          {{ "Nessun incasso disponibile per questo mese" | translate }}
+        </td>
+      </tr>
+    </ng-template>
+  </p-table>
+</p-dialog>

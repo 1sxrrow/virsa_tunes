@@ -258,7 +258,6 @@ export class UserDataService {
               this.firebaseStoreService
             );
             // Safeguard per Incasso v2 per interventi che non hanno idDbIncasso
-            debugger;
             if (!specific_data.idDbIncasso) {
               specific_data_input.idDbIncasso =
                 this.firebaseStoreService.generateId();

@@ -290,4 +290,20 @@ export class FirebaseStoreService {
   generateId() {
     return this.db.createPushId(); // Generate a unique ID
   }
+
+  async getArticoloFromIncasso(idIncassoInput: string) {
+    const snapshot = await this.UsersRef.query.orderByChild('id').once('value');
+    if (snapshot.exists()) {
+      const users: UserModel[] = Object.values(snapshot.val());
+      for (const user of users) {
+        if (user.specific_data) {
+          for (const item of user.specific_data) {
+            if (item.idDbIncasso && item.idDbIncasso === idIncassoInput) {
+              return { user, data: item };
+            }
+          }
+        }
+      }
+    }
+  }
 }

@@ -36,7 +36,13 @@
     ></virsa-select>
   </div>
   <!-- Table per incassi non filtrati -->
-  <p-table [value]="incassiShow$ | async" [loading]="loadingTable">
+  <p-table
+    [value]="incassiShow$ | async"
+    [loading]="loadingTable"
+    selectionMode="single"
+    [(selection)]="selectedIncasso"
+    (onRowSelect)="onRowSelectIncassi($event)"
+  >
     <ng-template pTemplate="header">
       <tr>
         <th>{{ "user_data.mese" | translate }}</th>
@@ -46,7 +52,7 @@
       </tr>
     </ng-template>
     <ng-template pTemplate="body" let-incasso>
-      <tr>
+      <tr [pSelectableRowDblClick]="incasso">
         <td>
           <span>
             {{ incasso.mese }}
@@ -86,4 +92,12 @@
   [listaSpeseFisse]="listaSpeseFisseArray"
   [showListaSpeseFisseModal]="showSpeseFisseModal"
   (showSpeseFisseModalChange)="handleShowSpeseFisseModalChange($event)"
+/>
+
+<list-incassi-modal
+  *ngIf="showListIncassiModal"
+  [meseInput]="meseInputListIncassiModal"
+  [filteredMeseIncassi]="listIncassiModalResult"
+  [showIncassiModal]="showListIncassiModal"
+  (showIncassiModalChange)="handleShowListIncassiModalChange($event)"
 />

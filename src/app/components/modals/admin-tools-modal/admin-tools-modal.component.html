@@ -27,8 +27,8 @@
     <p-button
       label="Statistiche"
       class="truncate"
-      (click)="opStats.toggle($event)"
-      styleClass="p-button-info"
+      (click)="showStatsModalMethod()"
+      styleClass="p-button-secondary"
     ></p-button>
     <p-button
       [hidden]="true"
@@ -58,16 +58,14 @@
   </div>
 </p-dialog>
 
-<p-overlayPanel #opStats>
-  <ng-template pTemplate="content">
-    <div *ngFor="let item of canaleComResults">
-      <span>{{ item.name }}: {{ item.value }}</span>
-    </div>
-  </ng-template>
-</p-overlayPanel>
-
 <incassi-modal
   *ngIf="showIncassiModal"
   [(showIncassiModal)]="showIncassiModal"
   (showIncassiModalChange)="handleShowIncassiModalChange($event)"
+/>
+<stats-modal
+  *ngIf="showStatsModal"
+  [(showStatsModal)]="showStatsModal"
+  [canaleComResults]="canaleComResults"
+  (showIncassiModalChange)="handleShowStatsModalChange($event)"
 />

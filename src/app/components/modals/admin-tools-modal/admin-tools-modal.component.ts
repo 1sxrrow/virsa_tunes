@@ -1,4 +1,12 @@
-import { Component, EventEmitter, Input, OnInit, Output, ViewEncapsulation } from '@angular/core';
+import {
+  Component,
+  EventEmitter,
+  Input,
+  OnInit,
+  Output,
+  ViewEncapsulation,
+} from '@angular/core';
+import { FirebaseApp } from '@angular/fire/app';
 import {
   ConfirmationService,
   ConfirmEventType,
@@ -6,9 +14,6 @@ import {
 } from 'primeng/api';
 import { FirebaseStoreService } from 'src/app/shared/services/firebase/firebase-store.service';
 import { callModalToast, UploadEvent } from 'src/app/shared/utils/common-utils';
-import { UserDataService } from '../../users/user-data/user-data.service';
-import { canaleComunicazione } from 'src/app/shared/utils/common-enums';
-import { FirebaseApp } from '@angular/fire/app';
 @Component({
   selector: 'admin-tools-modal',
   templateUrl: './admin-tools-modal.component.html',
@@ -19,22 +24,20 @@ export class AdminToolsModalComponent implements OnInit {
   @Output() showAdminModalChange = new EventEmitter<boolean>();
   showIncassiModal: boolean;
   showUploadComponent: boolean;
+  showStatsModal: boolean;
   ambiente: string;
   FileJSON: File;
 
-  canaleComResults: { name: string; value: number }[] = [];
 
   constructor(
     private firebaseApp: FirebaseApp,
     private messageService: MessageService,
-    private userDataService: UserDataService,
     private firebaseStoreService: FirebaseStoreService,
     private confirmationService: ConfirmationService
   ) {}
 
   ngOnInit(): void {
     this.ambiente = this.firebaseApp.name;
-    this.canaleComResults = this.getCanaleComResults();
   }
 
   handleClose() {
@@ -45,6 +48,10 @@ export class AdminToolsModalComponent implements OnInit {
   handleShowIncassiModalChange(show: boolean) {
     this.showIncassiModal = show;
   }
+  
+  handleShowStatsModalChange(show: boolean) {
+    this.showStatsModal = show;
+  }
 
   showIncassiModalMethod() {
     this.showIncassiModal = !this.showIncassiModal;
@@ -52,6 +59,10 @@ export class AdminToolsModalComponent implements OnInit {
 
   showUploadComponentMethod() {
     this.showUploadComponent = !this.showUploadComponent;
+  }
+
+  showStatsModalMethod() {
+    this.showStatsModal = !this.showStatsModal;
   }
 
   async exportFirebaseDatabaseToJSON() {
@@ -103,28 +114,5 @@ export class AdminToolsModalComponent implements OnInit {
 
   onUploadFileJSON(event: UploadEvent) {
     this.FileJSON = event.files[0];
-  }
-
-  getCanaleComResults() {
-    const canaleComunicazioniCount: { [key: string]: number } = {};
-    this.userDataService.users.forEach((user) => {
-      const canaleCom: canaleComunicazione =
-        user.canale_com as unknown as canaleComunicazione;
-      if (canaleComunicazioniCount[canaleCom]) {
-        canaleComunicazioniCount[canaleCom]++;
-      } else {
-        canaleComunicazioniCount[canaleCom] = 1;
-      }
-    });
-    canaleComunicazioniCount['Totale'] = this.userDataService.users.length;
-
-    const canaleComunicazioniResult = Object.entries(
-      canaleComunicazioniCount
-    ).map(([key, value]) => ({
-      name: key,
-      value: value,
-    }));
-
-    return canaleComunicazioniResult;
   }
 }

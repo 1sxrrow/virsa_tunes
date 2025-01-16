@@ -16,6 +16,7 @@ import {
   negozioInventario,
   tipoIntervento,
 } from 'src/app/shared/utils/common-enums';
+import { ListIncassiModalService } from '../list-incassi-modal/list-incassi-modal.service';
 
 @Component({
   selector: 'incassi-modal',
@@ -28,16 +29,21 @@ export class IncassiModalComponent implements OnInit, OnDestroy {
   @Output() showIncassiModalChange = new EventEmitter<boolean>();
 
   selectedNegozio: string = '';
+  selectedIncasso: Incassov2;
+
   showSpesaFissaModal: boolean = false;
   showSpeseFisseModal: boolean = false;
+  showListIncassiModal: boolean = false;
+
   selectedTipoIntervento: string = '';
   filterNegozio: { value: string; label: string }[];
   filterTipoIntervento: { value: string; label: string }[];
   loadingTable: boolean = true;
-  incassiShow: Incassov2[] = [];
   mesiSpesaFissa: string[] = [];
   mesiSpeseFisseList: string[] = [];
   listaSpeseFisseArray: SpesaFissa[] = [];
+
+  meseInputListIncassiModal: string;
 
   private subscriptions: Subscription = new Subscription();
   private incassiShowSubject = new BehaviorSubject<Incassov2[]>([]);
@@ -70,6 +76,13 @@ export class IncassiModalComponent implements OnInit, OnDestroy {
     this.listaSpeseFisseArray = [];
     this.filterIncassi(this.selectedNegozio, this.selectedTipoIntervento);
     this.showSpeseFisseModal = show;
+  }
+
+  handleShowListIncassiModalChange(show: boolean) {
+    if (this.selectedIncasso) {
+      this.selectedIncasso = null;
+    }
+    this.showListIncassiModal = show;
   }
 
   onNegozioOptionSelected(selectedNegozioValue: selectDataSet) {
@@ -186,5 +199,13 @@ export class IncassiModalComponent implements OnInit, OnDestroy {
         }
       });
     this.subscriptions.add(mesiSpeseFisseSubscription);
+  }
+
+  /**
+   * Mostra modale in modalità di modifica / visualizzazione
+   **/
+  onRowSelectIncassi(event: any) {
+    this.meseInputListIncassiModal = this.selectedIncasso.mese;
+    this.showListIncassiModal = true;
   }
 }
