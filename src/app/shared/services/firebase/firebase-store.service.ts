@@ -17,6 +17,7 @@ import { Incasso, Incassov2, SpesaFissa } from '../../models/custom-interfaces';
 import { InventarioItemModel } from '../../models/inventarioItem.model';
 import { UserModel } from '../../models/user-data.model';
 import { createIncasso } from '../../utils/common-utils';
+import { formatDate } from '@angular/common';
 
 @Injectable({ providedIn: 'root' })
 export class FirebaseStoreService {
@@ -299,6 +300,11 @@ export class FirebaseStoreService {
         if (user.specific_data) {
           for (const item of user.specific_data) {
             if (item.idDbIncasso && item.idDbIncasso === idIncassoInput) {
+              item.data_intervento = formatDate(
+                new Date(item.data_intervento),
+                'dd/MM/yyyy',
+                'it-IT'
+              );
               return { user, data: item };
             }
           }

@@ -12,6 +12,7 @@ import { Subscription } from 'rxjs';
 import { SpecificDataModel } from 'src/app/shared/models/specific-data.model';
 import { UserModel } from 'src/app/shared/models/user-data.model';
 import { ListIncassiModalService } from './list-incassi-modal.service';
+import { getTotalOfProduct } from 'src/app/shared/utils/common-utils';
 
 @Component({
   selector: 'list-incassi-modal',
@@ -50,5 +51,9 @@ export class ListIncassiModalComponent implements OnInit, OnDestroy {
   handleClose() {
     this.showIncassiModal = false;
     this.showIncassiModalChange.emit(this.showIncassiModal);
+  }
+
+  getTotalOfProduct(specificData: SpecificDataModel): number {
+    return getTotalOfProduct(specificData);
   }
 }

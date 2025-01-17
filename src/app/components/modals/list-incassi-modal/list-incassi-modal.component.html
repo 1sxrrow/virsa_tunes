@@ -13,7 +13,12 @@
       </span>
     </div>
   </ng-template>
-  <p-table [value]="filteredMeseIncassi" [loading]="loading">
+  <p-table
+    [value]="filteredMeseIncassi"
+    [loading]="loading"
+    sortField="data.data_intervento"
+    [sortOrder]="1"
+  >
     <ng-template pTemplate="header">
       <tr>
         <th>Utente</th>
@@ -21,17 +26,19 @@
         <th>Costo</th>
         <th>negozio</th>
         <th>modello telefono</th>
-        <th>data Intervento</th>
+        <th pSortableColumn="data.data_intervento">
+          data Intervento <p-sortIcon field="data.data_intervento" />
+        </th>
       </tr>
     </ng-template>
     <ng-template pTemplate="body" let-incasso>
       <tr>
         <td>{{ incasso.user.nome }} {{ incasso.user.cognome }}</td>
         <td>{{ incasso.data.tipo_intervento }}</td>
-        <td>{{ incasso.data.costo }} €</td>
+        <td>{{ getTotalOfProduct(incasso.data) }} €</td>
         <td>{{ incasso.data.negozio }}</td>
         <td>{{ incasso.data.modello_telefono }}</td>
-        <td>{{ incasso.data.data_intervento | date : "dd/MM/yyyy" }}</td>
+        <td>{{ incasso.data.data_intervento }}</td>
       </tr>
     </ng-template>
     <ng-template pTemplate="emptymessage">
