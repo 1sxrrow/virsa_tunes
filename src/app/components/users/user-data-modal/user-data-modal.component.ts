@@ -204,7 +204,6 @@ export class UserDataModalComponent implements OnInit, OnDestroy {
         this.initFieldsAndFormGroup('Vendita');
         break;
       case 'Riparazione':
-        debugger;
         this.checkedProdottiAggiuntivi = this.formData.get(
           'checkedProdottiAggiuntivi'
         )?.value;
