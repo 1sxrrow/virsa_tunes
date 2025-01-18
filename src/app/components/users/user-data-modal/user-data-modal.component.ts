@@ -166,7 +166,7 @@ export class UserDataModalComponent implements OnInit, OnDestroy {
       tipo_intervento: new FormControl('', Validators.required),
     });
     this.storedSubscriptions.add(
-      this.formData.get('tipo_intervento').valueChanges.subscribe((value) => {})
+      this.formData.get('tipo_intervento')?.valueChanges.subscribe((value) => {})
     );
   }
 
@@ -176,11 +176,11 @@ export class UserDataModalComponent implements OnInit, OnDestroy {
     );
     switch (type) {
       case 'Vendita':
-        this.checkedPermuta = this.formData.get('checkedPermuta').value;
+        this.checkedPermuta = this.formData.get('checkedPermuta')?.value;
         this.storedSubscriptions.add(
           this.formData
             .get('checkedPermuta')
-            .valueChanges.subscribe((value) => {
+            ?.valueChanges.subscribe((value) => {
               this.checkedPermuta = value;
             })
         );
@@ -193,27 +193,29 @@ export class UserDataModalComponent implements OnInit, OnDestroy {
         }
         this.checkedProdottiAggiuntivi = this.formData.get(
           'checkedProdottiAggiuntivi'
-        ).value;
+        )?.value;
         this.storedSubscriptions.add(
           this.formData
             .get('checkedProdottiAggiuntivi')
-            .valueChanges.subscribe((value) => {
+            ?.valueChanges.subscribe((value) => {
               this.checkedProdottiAggiuntivi = value;
             })
         );
         this.initFieldsAndFormGroup('Vendita');
         break;
       case 'Riparazione':
+        debugger;
         this.checkedProdottiAggiuntivi = this.formData.get(
           'checkedProdottiAggiuntivi'
-        ).value;
+        )?.value;
         this.storedSubscriptions.add(
           this.formData
             .get('checkedProdottiAggiuntivi')
-            .valueChanges.subscribe((value) => {
+            ?.valueChanges.subscribe((value) => {
               this.checkedProdottiAggiuntivi = value;
             })
         );
+
         this.initFieldsAndFormGroup('Riparazione');
         break;
     }

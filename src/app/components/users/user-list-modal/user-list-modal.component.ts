@@ -64,7 +64,7 @@ export class UserListModalComponent implements OnInit {
       this.initForm();
     }
     try {
-      let datiFatturaStructure = this.formData.get('datiFattura').value;
+      let datiFatturaStructure = this.formData.get('datiFattura')?.value;
       if (typeof datiFatturaStructure === 'object') {
         // prettier-ignore
         {
@@ -79,7 +79,7 @@ export class UserListModalComponent implements OnInit {
         }
         this.checkedFattura = datiFatturaStructure.datiFattura ? true : false;
       } else {
-        this.checkedFattura = this.formData.get('datiFattura').value;
+        this.checkedFattura = this.formData.get('datiFattura')?.value;
       }
     } catch {
       this.checkedFattura = false;
@@ -92,7 +92,7 @@ export class UserListModalComponent implements OnInit {
       this.formData.setControl('cittaFatturazione', new FormControl(''));
       this.formData.setControl('pec', new FormControl(''));
     }
-    this.formData.get('datiFattura').valueChanges.subscribe((value) => {
+    this.formData.get('datiFattura')?.valueChanges.subscribe((value) => {
       this.checkedFattura = value;
     });
   }

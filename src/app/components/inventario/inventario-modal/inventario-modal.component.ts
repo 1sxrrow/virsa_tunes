@@ -204,7 +204,7 @@ export class InventarioModalComponent implements OnInit {
   addCostoStoricoList() {
     this.listaStorico.push({
       id: Math.random().toString(36).substr(2, 9),
-      prezzo: this.formData.get('prezzo_acquisto').value,
+      prezzo: this.formData.get('prezzo_acquisto')?.value,
       data: formatDate(new Date(), 'dd/MM/yyyy', this.locale),
     });
   }
