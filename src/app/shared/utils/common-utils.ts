@@ -1149,6 +1149,10 @@ export function createForm(
     if (!item.hasOwnProperty('costoCambio')) {
       baseFormStructure.costoCambio = new FormControl('');
     }
+  } else if (tipo_intervento === undefined) {
+    if (!item.hasOwnProperty('dataAcquistoInventario')) {
+      baseFormStructure.dataAcquistoInventario = new FormControl('');
+    }
   }
   for (const key in item) {
     if (item.hasOwnProperty(key)) {

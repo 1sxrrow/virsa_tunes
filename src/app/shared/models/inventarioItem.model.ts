@@ -1,4 +1,4 @@
-import { costoStorico } from "./custom-interfaces";
+import { costoStorico } from './custom-interfaces';
 
 export class InventarioItemModel {
   public id: number;
@@ -17,6 +17,7 @@ export class InventarioItemModel {
   public negozio: string;
   public IMEI: string;
   public data: Date;
+  public dataAcquistoInventario?: string;
   public listaStorico?: costoStorico[];
 
   constructor(init?: Partial<InventarioItemModel>) {

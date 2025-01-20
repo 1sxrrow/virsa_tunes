@@ -75,6 +75,15 @@ export class InventarioModalComponent implements OnInit {
           : 'Visualizza Articolo';
         this.setListaStorico();
       }
+
+      if (this.formData.value['dataAcquistoInventario']) {
+        let valuedataAcquistoInventario = new Date(
+          this.formData.value['dataAcquistoInventario']
+        );
+        this.formData.patchValue({
+          dataAcquistoInventario: valuedataAcquistoInventario,
+        });
+      }
     } else {
       this.initForm();
       this.modalTitle = 'Aggiungi Articolo';
@@ -122,6 +131,7 @@ export class InventarioModalComponent implements OnInit {
       prezzo_negozio: new FormControl({ value: 0, disabled: !this.isAdmin }, Validators.required),
       quantita: new FormControl({ value: '', disabled: !this.isAdmin }, Validators.required),
       imei: new FormControl({ value: '', disabled: !this.isAdmin }, Validators.required),
+      dataAcquistoInventario: new FormControl({ value: '', disabled: !this.isAdmin }),
       data: new FormControl(''),
     });
   }

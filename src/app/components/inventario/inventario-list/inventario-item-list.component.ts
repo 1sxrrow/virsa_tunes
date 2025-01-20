@@ -58,6 +58,7 @@ export class InventarioItemListComponent implements OnInit, OnDestroy {
         sessionStorage.removeItem('invetarioList-session');
       } else {
         delete sessionObj.filters;
+        delete sessionObj.selection;
         sessionStorage.setItem(
           'invetarioList-session',
           JSON.stringify(sessionObj)

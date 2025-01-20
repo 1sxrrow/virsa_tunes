@@ -159,6 +159,19 @@
             />
           </span>
         </div>
+        <div class="mb-1">
+          <label for="data_acquisto_inventario_modal" class="label">
+            Data Acquisto
+          </label>
+          <p-calendar
+            formControlName="dataAcquistoInventario"
+            name="data_acquisto_inventario_modal"
+            inputId="data_acquisto_inventario_modal"
+            [style]="{ width: '100%' }"
+            [showButtonBar]="true"
+            dateFormat="dd/mm/yy"
+          ></p-calendar>
+        </div>
         <div
           class="mb-1 col-span-2 border border-neutral-700 rounded-md"
           *ngIf="listaStoricoLength > 0"
