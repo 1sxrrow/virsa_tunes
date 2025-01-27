@@ -1127,33 +1127,72 @@ export function getBreadcrumbHome() {
  * Metodo per creare il form dinamicamente
  **/
 export function createForm(
+  provenienza: string,
   fb: FormBuilder,
   item: any,
   tipo_intervento?: string
 ) {
   let baseFormStructure: { [key: string]: FormControl } = {};
-  if (tipo_intervento === 'Vendita') {
-    if (!item.hasOwnProperty('negozio')) {
-      baseFormStructure.negozio = new FormControl('');
-    }
-    if (!item.hasOwnProperty('costoPermuta')) {
-      baseFormStructure.costoPermuta = new FormControl('');
-    }
-  } else if (tipo_intervento === 'Riparazione') {
-    if (!item.hasOwnProperty('negozio')) {
-      baseFormStructure.negozio = new FormControl('');
-    }
-    if (!item.hasOwnProperty('note')) {
-      baseFormStructure.note = new FormControl('');
-    }
-    if (!item.hasOwnProperty('costoCambio')) {
-      baseFormStructure.costoCambio = new FormControl('');
-    }
-  } else if (tipo_intervento === undefined) {
-    if (!item.hasOwnProperty('dataAcquistoInventario')) {
-      baseFormStructure.dataAcquistoInventario = new FormControl('');
-    }
+  switch (provenienza) {
+    case 'userData':
+      if (tipo_intervento === 'Vendita') {
+        if (!item.hasOwnProperty('negozio')) {
+          baseFormStructure.negozio = new FormControl('');
+        }
+        if (!item.hasOwnProperty('costoPermuta')) {
+          baseFormStructure.costoPermuta = new FormControl('');
+        }
+      } else if (tipo_intervento === 'Riparazione') {
+        if (!item.hasOwnProperty('negozio')) {
+          baseFormStructure.negozio = new FormControl('');
+        }
+        if (!item.hasOwnProperty('note')) {
+          baseFormStructure.note = new FormControl('');
+        }
+        if (!item.hasOwnProperty('costoCambio')) {
+          baseFormStructure.costoCambio = new FormControl('');
+        }
+      }
+      break;
+    case 'inventario':
+      if (!item.hasOwnProperty('dataAcquistoInventario')) {
+        baseFormStructure.dataAcquistoInventario = new FormControl('');
+      }
+      if (item.hasOwnProperty('key')) {
+        baseFormStructure.dataAcquistoInventario = new FormControl('');
+      }
+      break;
+    case 'userList':
+      if (!item.hasOwnProperty('datiFattura')) {
+        baseFormStructure.datiFattura = new FormControl(false);
+      }
+      if (!item.hasOwnProperty('codiceFiscale')) {
+        baseFormStructure.codiceFiscale = new FormControl('');
+      }
+      if (!item.hasOwnProperty('partitaIva')) {
+        baseFormStructure.partitaIva = new FormControl('');
+      }
+      if (!item.hasOwnProperty('codiceUnivoco')) {
+        baseFormStructure.codiceUnivoco = new FormControl('');
+      }
+      if (!item.hasOwnProperty('denominazione')) {
+        baseFormStructure.denominazione = new FormControl('');
+      }
+      if (!item.hasOwnProperty('denominazione')) {
+        baseFormStructure.denominazione = new FormControl('');
+      }
+      if (!item.hasOwnProperty('indirizzoFatturazione')) {
+        baseFormStructure.indirizzoFatturazione = new FormControl('');
+      }
+      if (!item.hasOwnProperty('cittaFatturazione')) {
+        baseFormStructure.cittaFatturazione = new FormControl('');
+      }
+      if (!item.hasOwnProperty('pec')) {
+        baseFormStructure.pec = new FormControl('');
+      }
+      break;
   }
+
   for (const key in item) {
     if (item.hasOwnProperty(key)) {
       baseFormStructure[key] = new FormControl(item[key], Validators.required);

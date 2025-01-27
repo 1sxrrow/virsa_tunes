@@ -66,6 +66,7 @@ export class InventarioModalComponent implements OnInit {
     if (this.mode === 'Edit') {
       if (this.storage.input.key && this.storage.input.selectedItem) {
         this.formData = createForm(
+          'inventario',
           this.fb,
           this.storage.input.selectedItem,
           undefined

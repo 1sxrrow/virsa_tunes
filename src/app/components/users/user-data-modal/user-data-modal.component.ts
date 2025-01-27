@@ -91,6 +91,7 @@ export class UserDataModalComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.formData = this.storage.input.selectedItem
       ? createForm(
+        'userData',
           this.fb,
           this.storage.input.selectedItem,
           this.storage.input.selectedItem.tipo_intervento

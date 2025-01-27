@@ -54,6 +54,7 @@ export class UserListModalComponent implements OnInit {
       this.mode = 'Edit';
       this.modalTitle = 'Info Cliente';
       this.formData = createForm(
+        'userList',
         this.fb,
         this.storage.input.selectedItem,
         undefined
@@ -64,7 +65,7 @@ export class UserListModalComponent implements OnInit {
       this.initForm();
     }
     try {
-      let datiFatturaStructure = this.formData.get('datiFattura')?.value;
+      let datiFatturaStructure = this.formData.get('DatiFattura')?.value;
       if (typeof datiFatturaStructure === 'object') {
         // prettier-ignore
         {
@@ -78,8 +79,23 @@ export class UserListModalComponent implements OnInit {
           this.formData.setControl('pec', new FormControl(datiFatturaStructure.pec));
         }
         this.checkedFattura = datiFatturaStructure.datiFattura ? true : false;
+        this.formData.setControl('DatiFattura', new FormControl({}));
       } else {
-        this.checkedFattura = this.formData.get('datiFattura')?.value;
+        let datiFatturaStructure = this.formData.get('datiFattura')?.value;
+        if (typeof datiFatturaStructure === 'object') {
+          // prettier-ignore
+          {
+            this.formData.setControl('datiFattura', new FormControl(datiFatturaStructure.datiFattura));
+            this.formData.setControl('partitaIva', new FormControl(datiFatturaStructure.partitaIva));
+            this.formData.setControl('codiceFiscale', new FormControl(datiFatturaStructure.codiceFiscale));
+            this.formData.setControl('codiceUnivoco', new FormControl(datiFatturaStructure.codiceUnivoco));
+            this.formData.setControl('denominazione', new FormControl(datiFatturaStructure.denominazione));
+            this.formData.setControl('indirizzoFatturazione', new FormControl(datiFatturaStructure.indirizzoFatturazione));
+            this.formData.setControl('cittaFatturazione', new FormControl(datiFatturaStructure.cittaFatturazione));
+            this.formData.setControl('pec', new FormControl(datiFatturaStructure.pec));
+          }
+        }
+        this.checkedFattura = this.formData.get('datiFattura')?.value || false;
       }
     } catch {
       this.checkedFattura = false;
