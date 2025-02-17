@@ -17,7 +17,7 @@ export class InventarioItemModel {
   public negozio: string;
   public IMEI: string;
   public data: Date;
-  public dataAcquistoInventario?: string;
+  public dataAcquistoInventario?: Date;
   public listaStorico?: costoStorico[];
 
   constructor(init?: Partial<InventarioItemModel>) {

@@ -62,7 +62,6 @@ export class InventarioModalComponent implements OnInit {
     this.inventarioModalService.valDataSet();
     this.isAdmin = this.authService.getIsAdmin();
     this.mode = this.storage.input.mode;
-
     if (this.mode === 'Edit') {
       if (this.storage.input.key && this.storage.input.selectedItem) {
         this.formData = createForm(
@@ -155,7 +154,15 @@ export class InventarioModalComponent implements OnInit {
           );
           this.loading = false;
         } else {
+          debugger;
           this.formData.patchValue({ data: new Date().toISOString() });
+          if (this.formData.value['dataAcquistoInventario'] !== '') {
+            this.formData.patchValue({
+              dataAcquistoInventario: new Date(
+                this.formData.value['dataAcquistoInventario']
+              ).toISOString(),
+            });
+          }
           let item: InventarioItemModel = new InventarioItemModel(
             this.formData.value
           );
