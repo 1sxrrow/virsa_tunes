@@ -41,6 +41,7 @@ import {
 import { UserDataService } from '../user-data/user-data.service';
 import { userDataModalStorage } from './user-data-modal-storage.service';
 import { UserDataModalService } from './user-data-modal.service';
+import { InventarioItemModel } from 'src/app/shared/models/inventarioItem.model';
 
 @Component({
   selector: 'user-data-modal',
@@ -59,6 +60,7 @@ export class UserDataModalComponent implements OnInit, OnDestroy {
 
   mode: string;
   showFieldsRiparazione: boolean;
+  showFieldsAcquisto: boolean;
   showFieldsVendita: boolean;
   showFields: boolean;
   modalTitle: string;
@@ -91,7 +93,7 @@ export class UserDataModalComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.formData = this.storage.input.selectedItem
       ? createForm(
-        'userData',
+          'userData',
           this.fb,
           this.storage.input.selectedItem,
           this.storage.input.selectedItem.tipo_intervento
@@ -157,6 +159,13 @@ export class UserDataModalComponent implements OnInit, OnDestroy {
     return this.userDataModalService.getNegozioDataSet();
   }
 
+  get gradoDataSet() {
+    return this.userDataModalService.getGradoDataSet();
+  }
+  get marcaDataSet() {
+    return this.userDataModalService.getMarcaDataSet();
+  }
+
   handleClose() {
     this.showModal = false;
     this.showModalChange.emit(this.showModal);
@@ -167,7 +176,9 @@ export class UserDataModalComponent implements OnInit, OnDestroy {
       tipo_intervento: new FormControl('', Validators.required),
     });
     this.storedSubscriptions.add(
-      this.formData.get('tipo_intervento')?.valueChanges.subscribe((value) => {})
+      this.formData
+        .get('tipo_intervento')
+        ?.valueChanges.subscribe((value) => {})
     );
   }
 
@@ -218,6 +229,8 @@ export class UserDataModalComponent implements OnInit, OnDestroy {
 
         this.initFieldsAndFormGroup('Riparazione');
         break;
+      case 'Acquisto':
+        this.initFieldsAndFormGroup('Acquisto');
     }
   }
 
@@ -225,30 +238,52 @@ export class UserDataModalComponent implements OnInit, OnDestroy {
     this.showFields = true;
     this.showFieldsRiparazione = intervento === 'Riparazione' ? true : false;
     this.showFieldsVendita = intervento === 'Vendita' ? true : false;
+    this.showFieldsAcquisto = intervento === 'Acquisto' ? true : false;
     this.formData = this.userDataModalService.initFormGroup(this.formData);
   }
 
   async addIntervento() {
-    const filteredData = this.userDataModalService.getFilteredFormData(
-      this.formData
-    );
-    this.userDataService
-      .addNewIntervento(
-        new SpecificDataModel(filteredData),
-        this.storage.input.userData,
-        this.prodottiAggiuntivi,
-        this.uploadedFiles
-      )
-      .then((result) => {
-        if (result) {
-          this.showModal = !this.showModal;
-          //prettier-ignore
-          callModalToast(this.messageService, 'Aggiunto', 'Nuovo intervento aggiunto');
-        } else {
-          //prettier-ignore
-          callModalToast(this.messageService, 'Errore', 'Articolo non disponibile', 'error');
-        }
-      });
+    let error = false;
+    //prettier-ignore
+    const filteredData = this.userDataModalService.getFilteredFormData(this.formData);
+    if (filteredData['tipo_intervento'] === 'Acquisto') {
+      //prettier-ignore
+      let data: InventarioItemModel = await this.firebaseStoreService.imeiArticolo(filteredData['imei']);
+      if (!data) {
+        //prettier-ignore
+        callModalToast(this.messageService, 'Errore', 'Imei già presente', 'error');
+        error = true;
+      } else {
+        const tipoIntervento = filteredData['tipo_intervento'];
+        filteredData['data'] = new Date().toISOString();
+        delete filteredData['tipo_intervento'];
+        //prettier-ignore
+        filteredData['dataAcquistoInventario'] = new Date(filteredData['dataAcquistoInventario']).toISOString();
+        //prettier-ignore
+        const articoloInvId = this.firebaseStoreService.addArticoloInventario(filteredData as InventarioItemModel);
+        filteredData['idArticolo'] = articoloInvId;
+        filteredData['tipo_intervento'] = tipoIntervento;
+      }
+    }
+    if (!error) {
+      this.userDataService
+        .addNewIntervento(
+          new SpecificDataModel(filteredData),
+          this.storage.input.userData,
+          this.prodottiAggiuntivi,
+          this.uploadedFiles
+        )
+        .then((result) => {
+          if (result) {
+            this.showModal = !this.showModal;
+            //prettier-ignore
+            callModalToast(this.messageService, 'Aggiunto', 'Nuovo intervento aggiunto');
+          } else {
+            //prettier-ignore
+            callModalToast(this.messageService, 'Errore', 'Articolo non disponibile', 'error');
+          }
+        });
+    }
   }
 
   /*
@@ -284,11 +319,8 @@ export class UserDataModalComponent implements OnInit, OnDestroy {
    * Metodo per visualizzare campi in base all'intervento selezionato
    */
   private setValuesForm() {
-    if (this.userDataModalService.getIntervento(this.formData) == 'Vendita') {
-      this.initFieldsAndFormGroup('Vendita');
-    } else {
-      this.initFieldsAndFormGroup('Riparazione');
-    }
+    let value = this.userDataModalService.getIntervento(this.formData);
+    this.initFieldsAndFormGroup(value);
   }
 
   checkCongruenzaProdottiAggiuntivi() {
@@ -509,6 +541,14 @@ export class UserDataModalComponent implements OnInit, OnDestroy {
       );
       this.formData.patchValue({
         data_rest_dispositivo_cliente: valueDataRestDispositivoCliente,
+      });
+    }
+    if (this.formData.value['dataAcquistoInventario']) {
+      let valuedataAcquistoInventario = new Date(
+        this.formData.value['dataAcquistoInventario']
+      );
+      this.formData.patchValue({
+        dataAcquistoInventario: valuedataAcquistoInventario,
       });
     }
   }

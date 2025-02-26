@@ -1211,3 +1211,8 @@ export function findInvalidControls(form: FormGroup) {
   }
   console.log(invalid);
 }
+
+export function normalizeString(value: string): string {
+  if (!value) return '';
+  return value.charAt(0).toUpperCase() + value.slice(1).toLowerCase();
+}

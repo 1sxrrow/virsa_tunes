@@ -259,7 +259,12 @@ export class UserDataComponent implements OnInit, OnDestroy {
   }
 
   getTotalOfProduct(specificData: SpecificDataModel): number {
-    return getTotalOfProduct(specificData);
+    if (specificData.tipo_intervento !== 'Acquisto') {
+      return getTotalOfProduct(specificData);
+    } else {
+      const obj: Object = specificData;
+      return obj['prezzo_negozio'];
+    }
   }
 
   selezioneScontrinoMultiplo() {
@@ -315,5 +320,13 @@ export class UserDataComponent implements OnInit, OnDestroy {
   getInterventi(id: number) {
     return 0;
     // return this.userDataService.getTotalInterventi(id);
+  }
+
+  getNomeElemento(specificData): string {
+    if (specificData.modello_telefono) {
+      return specificData.modello_telefono;
+    } else {
+      return specificData['nome'];
+    }
   }
 }

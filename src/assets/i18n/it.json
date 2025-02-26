@@ -60,7 +60,17 @@
     "costoCambio": "Costo Cambio(€)",
     "aggiungi": "Aggiungi",
     "modifica": "Modifica",
-    "note": "Note"
+    "note": "Note",
+    "colore": "Colore",
+    "memoria": "Memoria (GB)",
+    "grado": "Grado",
+    "percentuale": "Percentuale Batteria %",
+    "marca": "Marca",
+    "data_acquisto": "Data Acquisto",
+    "prezzo_acquisto": "Prezzo Acquisto €",
+    "prezzo_negozio": "Prezzo Negozio €",
+    "prezzo_online": "Prezzo Online €",
+    "fornitore": "Fornitore"
   },
   "inventario": {
     "marca": "Marca",
@@ -125,6 +135,7 @@
     "matchAny": "Confronta alcuni",
     "addRule": "Aggiungi Filtro",
     "clear": "Rimuovi",
-    "apply": "Aggiungi"
+    "apply": "Aggiungi",
+    "choose": "Scegli"
   }
 }

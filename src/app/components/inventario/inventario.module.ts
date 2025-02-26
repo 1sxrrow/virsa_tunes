@@ -5,9 +5,14 @@ import { SharedModule } from 'src/app/shared/shared.module';
 import { CommonModule } from '@angular/common';
 import { InventarioModalStorage } from './inventario-modal/inventario-modal-storage.service';
 import { InventarioRoutingModule } from './inventario.routing.module';
+import { ExcelUploadModalComponent } from './excel-upload-modal/excel-upload-modal.component';
 
 @NgModule({
-  declarations: [InventarioItemListComponent, InventarioModalComponent],
+  declarations: [
+    InventarioItemListComponent,
+    InventarioModalComponent,
+    ExcelUploadModalComponent,
+  ],
   providers: [InventarioModalStorage],
   imports: [CommonModule, SharedModule, InventarioRoutingModule],
 })

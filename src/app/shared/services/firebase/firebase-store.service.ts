@@ -255,6 +255,7 @@ export class FirebaseStoreService {
     const generatedId = this.db.createPushId(); // Generate a unique ID
     this.InventarioRef = this.db.object(`inventario/${generatedId}`);
     this.InventarioRef.set(item);
+    return generatedId;
   }
 
   editArticoloInventario(item: InventarioItemModel, key: string) {

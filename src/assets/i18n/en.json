@@ -60,7 +60,16 @@
     "costoCambio": "Replacement Cost (€)",
     "aggiungi": "Add",
     "modifica": "Update",
-    "note": "Notes"
+    "note": "Notes",
+    "colore": "Color",
+    "memoria": "Storage (GB)",
+    "grado": "Grade",
+    "percentuale": "Battery Percentage %",
+    "data_acquisto": "Purchase Date",
+    "prezzo_acquisto": "Purchase Price €",
+    "prezzo_negozio": "Shop Price €",
+    "prezzo_online": "Online Price €",
+    "fornitore": "Supplier"
   },
   "inventario": {
     "marca": "Brand",
@@ -109,6 +118,7 @@
       "Dec"
     ],
     "today": "Today",
-    "weekHeader": "Set"
+    "weekHeader": "Set",
+    "choose": "Choose"
   }
 }

@@ -35,6 +35,8 @@ export class InventarioItemListComponent implements OnInit, OnDestroy {
 
   selectedItem: InventarioItemModel;
   showModal: boolean = false;
+  showExcelUploadModal: boolean = false;
+
   key: string;
   subscription: Subscription;
   negozioSwitch = false; // false: Negozio I, true: Negozio B
@@ -175,5 +177,13 @@ export class InventarioItemListComponent implements OnInit, OnDestroy {
       return result;
     }
     return false;
+  }
+
+  openExcelUploadModal() {
+    this.showExcelUploadModal = !this.showExcelUploadModal;
+  }
+  
+  handleShowExcelUploadModalChange(show: boolean) {
+    this.showExcelUploadModal = show;
   }
 }

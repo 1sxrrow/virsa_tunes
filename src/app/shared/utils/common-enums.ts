@@ -1,6 +1,7 @@
 export enum tipoIntervento {
   'Vendita',
   'Riparazione',
+  'Acquisto',
 }
 
 export enum canaleComunicazione {
@@ -84,6 +85,7 @@ export enum marcaInventario {
   'HP',
   'HP (Hewlett-Packard)',
   'Honor',
+  'Htc',
   'Huawei',
   'Infinix',
   'Lenovo',

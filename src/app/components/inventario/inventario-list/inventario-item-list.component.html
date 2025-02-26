@@ -45,6 +45,14 @@
               [disabled]="!isAdmin"
               (click)="isAdmin ? addItemModal() : null"
             ></p-button>
+            <p-button
+              pTooltip="Carica Excel"
+              tooltipPosition="top"
+              icon="pi pi-file-excel"
+              styleClass="p-button-success ml-2"
+              [disabled]="!isAdmin"
+              (click)="isAdmin ? openExcelUploadModal() : null"
+            ></p-button>
             <span
               *ngIf="isFilterNegozio"
               class="text-sm text-white font-bold ml-2"
@@ -177,6 +185,12 @@
     [showModal]="showModal"
     (showModalChange)="handleShowModalChange($event)"
   />
+  <excel-upload-modal
+    *ngIf="showExcelUploadModal"
+    [showModal]="showExcelUploadModal"
+    (showModalChange)="handleShowExcelUploadModalChange($event)"
+  >
+  </excel-upload-modal>
   <!-- Modale -->
   <!-- Dialog di conferma per rimozione elemento -->
   <app-confirm-dialog />
