@@ -235,15 +235,16 @@ export class UserDataModalService {
         Validators.required
       );
       formGroupConfig.data = new FormControl(
-        formData?.get('data')?.value || '',
+        formData?.get('data')?.value || ''
       );
     }
 
     return new FormGroup(formGroupConfig);
   }
 
-  getFilteredFormData(formData: FormGroup) {
-    const formDataValue = formData.value;
+  getFilteredFormData(formData: FormGroup | Object) {
+    const formDataValue =
+      formData instanceof FormGroup ? formData.value : formData;
     const filteredData = {};
     Object.keys(formDataValue).forEach((key) => {
       if (

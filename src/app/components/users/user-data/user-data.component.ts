@@ -206,6 +206,14 @@ export class UserDataComponent implements OnInit, OnDestroy {
   }
 
   deleteIntervento(id_intervento: number) {
+    let intervento = Object.values(this.userData.specific_data).find(
+      (item) => item.id === id_intervento
+    );
+    if (intervento.tipo_intervento === 'Acquisto') {
+      this.firebaseStoreService.deleteArticoloInventario(
+        intervento['idArticolo']
+      );
+    }
     this.userDataService.deleteIntervento(id_intervento, this.userData);
   }
 

@@ -290,14 +290,31 @@ export class UserDataModalComponent implements OnInit, OnDestroy {
    * Metodo di modifica scatenato alla pressione del pulsante di modifica nel component
    */
   updateIntervento() {
+    //prettier-ignore
+    const filteredData = this.userDataModalService.getFilteredFormData(
+      this.formData.getRawValue()
+    );
+    if (filteredData['tipo_intervento'] === 'Acquisto') {
+      // Salvo dati che non devono essere presenti in Inventario
+      const tipoIntervento = filteredData['tipo_intervento'];
+      delete filteredData['tipo_intervento'];
+      delete filteredData['id'];
+      const filteredInvetarioModel = filteredData as InventarioItemModel;
+      this.firebaseStoreService.updateArticoloImei(
+        filteredData['imei'],
+        filteredInvetarioModel
+      );
+      filteredData['tipo_intervento'] = tipoIntervento;
+      filteredData['idArticolo'] =
+        this.storage.input.selectedItem['idArticolo'];
+    }
     this.userDataService.modifyIntervento(
       this.storage.input.id,
-      new SpecificDataModel(this.formData.getRawValue()),
+      filteredData as SpecificDataModel,
       this.prodottiAggiuntivi,
       this.storage.input.userData,
       this.uploadedFiles
     );
-
     this.showModal = !this.showModal;
     // prettier-ignore
     callModalToast(this.messageService, 'Modificato', 'Utente modificato', 'info');
