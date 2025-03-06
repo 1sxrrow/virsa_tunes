@@ -52,7 +52,16 @@ export class HeaderComponent implements AfterViewInit {
     },
   };
 
+  logoutObj = {
+    label: 'Logout',
+    icon: 'pi pi-sign-out',
+    command: () => {
+      this.logout();
+    },
+  };
+
   items: MenuItem[] | undefined = [
+    this.logoutObj,
     this.stampanteObj,
     this.inventarioObj,
     // this.prodEnv,
@@ -137,6 +146,11 @@ export class HeaderComponent implements AfterViewInit {
 
   toggleTheme(): void {
     this.themeService.switchTheme();
+  }
+
+  logout(): void {
+    this.authService.logout();
+    this.router.navigate(['login']);
   }
 
   get buttonTheme() {

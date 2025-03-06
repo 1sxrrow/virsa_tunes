@@ -10,7 +10,7 @@ import { Router } from '@angular/router';
 import { updateProfile } from 'firebase/auth';
 import { environmentValues } from 'src/app/shared/utils/enviromentValues';
 import { AuthService } from './auth.service';
-import { IS_DEV_MODE } from 'src/app/app.module';
+import { appName, IS_DEV_MODE } from 'src/app/app.module';
 
 @Component({
   selector: 'app-login',
@@ -19,6 +19,7 @@ import { IS_DEV_MODE } from 'src/app/app.module';
   encapsulation: ViewEncapsulation.None,
 })
 export class LoginComponent {
+  appName: string;
   passwordValue: string;
   emailValue: string;
   emailError = false;
@@ -32,11 +33,11 @@ export class LoginComponent {
   @ViewChild('emailHelp') emailHelp: ElementRef;
 
   constructor(
-    public afAuth: AngularFireAuth,
     private authService: AuthService,
     private router: Router,
     @Inject(IS_DEV_MODE) public isDevMode: boolean
   ) {
+    this.appName = appName;
     if (this.isDevMode) {
       this.emailValue = environmentValues.emailValue;
       this.passwordValue = environmentValues.passwordValue;
@@ -46,24 +47,16 @@ export class LoginComponent {
 
   CheckLogin() {
     this.loading = true;
-    this.afAuth
-      .signInWithEmailAndPassword(this.emailValue, this.passwordValue)
-      .then((result) => {
-        this.authService.setUserState(result.user);
-        //set user in memory
-        localStorage.setItem(
-          'user',
-          JSON.stringify(this.authService.getUserState())
-        );
-        JSON.parse(localStorage.getItem('user'));
-
+    this.authService.login(this.emailValue, this.passwordValue).subscribe(
+      (result) => {
         this.checkUsername(result.user);
         this.router.navigate(['/users']);
-      })
-      .catch((error) => {
+      },
+      (error) => {
         this.loading = false;
         this.checkError(error);
-      });
+      }
+    );
   }
 
   checkError(error) {

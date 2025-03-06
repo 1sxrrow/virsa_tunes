@@ -1,5 +1,5 @@
 <div>
-  <app-header />
+  <app-header *ngIf="isUserSignedin" />
   <div
     class="flex-auto mx-auto pt-3 pl-10 pr-10 pb-1 mainContent container"
     [@fadeAnimation]="o.isActivated ? o.activatedRoute : ''"

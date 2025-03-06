@@ -137,5 +137,29 @@
     "clear": "Rimuovi",
     "apply": "Aggiungi",
     "choose": "Scegli"
+  },
+  "modals": {
+    "telefoni": {
+      "title": "Lista clienti con recapiti",
+      "cliente": "Cliente",
+      "telefono": "Recapito"
+    },
+    "acquisti": {
+      "title": "Lista articoli acqusitati da clienti",
+      "imei": "IMEI",
+      "negozio": "Negozio",
+      "dataAcquistoInventario": "Data acquisto",
+      "marca": "Marca",
+      "garanzia": "Garanzia",
+      "colore": "Colore",
+      "fornitore": "Fornitore",
+      "quantita": "Quantità",
+      "memoria": "Memoria",
+      "grado": "Grado",
+      "percentuale": "Perc. Batteria %",
+      "prezzo_acquisto": "Prezzo Acquisto €",
+      "prezzo_online": "Prezzo Online €",
+      "prezzo_negozio": "Prezzo Negozio €"
+    }
   }
 }

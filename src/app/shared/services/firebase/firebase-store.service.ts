@@ -18,6 +18,23 @@ import { InventarioItemModel } from '../../models/inventarioItem.model';
 import { UserModel } from '../../models/user-data.model';
 import { createIncasso } from '../../utils/common-utils';
 import { formatDate } from '@angular/common';
+import { map, Observable } from 'rxjs';
+export interface resultAcquistInterface {
+  cliente: String;
+  dataAcquistoInventario: String;
+  marca: String;
+  garanzia: String;
+  colore: String;
+  fornitore: String;
+  quantita: Number;
+  memoria: Number;
+  grado: String;
+  percentuale: Number;
+  prezzo_acquisto: Number;
+  prezzo_online: Number;
+  prezzo_negozio: Number;
+  imei: String;
+}
 
 @Injectable({ providedIn: 'root' })
 export class FirebaseStoreService {
@@ -312,5 +329,62 @@ export class FirebaseStoreService {
         }
       }
     }
+  }
+
+  getAcquistiClienti(): Observable<resultAcquistInterface[]> {
+    return this.UsersRef.snapshotChanges().pipe(
+      map((changes) =>
+        changes.map((c) => ({ key: c.payload.key, ...c.payload.val() }))
+      ),
+      map((users: UserModel[]) => {
+        const result: resultAcquistInterface[] = [];
+        users.forEach((user) => {
+          if (user.specific_data) {
+            user.specific_data.forEach((item) => {
+              if (item['idArticolo']) {
+                const itemResult = {
+                  cliente: `${user.nome} ${user.cognome}`,
+                  dataAcquistoInventario: item['dataAcquistoInventario'],
+                  marca: item['marca'],
+                  garanzia: item['garanzia_mesi'],
+                  colore: item['colore'],
+                  fornitore: item['fornitore'],
+                  quantita: item['quantita'],
+                  memoria: item['memoria'],
+                  grado: item['grado'],
+                  percentuale: item['perc_batteria'],
+                  prezzo_acquisto: item['prezzo_acquisto'],
+                  prezzo_online: item['prezzo_online'],
+                  prezzo_negozio: item['prezzo_negozio'],
+                  negozio: item['negozio'],
+                  imei: `${item['imei']}`,
+                };
+                result.push(itemResult);
+              }
+            });
+          }
+        });
+        return result;
+      })
+    );
+  }
+
+  getTelefoniClienti() {
+    return this.UsersRef.snapshotChanges().pipe(
+      map((changes) =>
+        changes.map((c) => ({ key: c.payload.key, ...c.payload.val() }))
+      ),
+      map((users: UserModel[]) => {
+        const result = [];
+        users.forEach((user) => {
+          const itemResult = {
+            cliente: `${user.nome} ${user.cognome}`,
+            telefono: user.numero_telefono,
+          };
+          result.push(itemResult);
+        });
+        return result;
+      })
+    );
   }
 }

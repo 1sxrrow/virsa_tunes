@@ -242,30 +242,57 @@ export class UserDataModalComponent implements OnInit, OnDestroy {
     this.formData = this.userDataModalService.initFormGroup(this.formData);
   }
 
-  async addIntervento() {
+  addIntervento() {
     let error = false;
     //prettier-ignore
     const filteredData = this.userDataModalService.getFilteredFormData(this.formData);
     if (filteredData['tipo_intervento'] === 'Acquisto') {
       //prettier-ignore
-      let data: InventarioItemModel = await this.firebaseStoreService.imeiArticolo(filteredData['imei']);
-      if (!data) {
-        //prettier-ignore
-        callModalToast(this.messageService, 'Errore', 'Imei già presente', 'error');
-        error = true;
-      } else {
-        const tipoIntervento = filteredData['tipo_intervento'];
-        filteredData['data'] = new Date().toISOString();
-        delete filteredData['tipo_intervento'];
-        //prettier-ignore
-        filteredData['dataAcquistoInventario'] = new Date(filteredData['dataAcquistoInventario']).toISOString();
-        //prettier-ignore
-        const articoloInvId = this.firebaseStoreService.addArticoloInventario(filteredData as InventarioItemModel);
-        filteredData['idArticolo'] = articoloInvId;
-        filteredData['tipo_intervento'] = tipoIntervento;
-      }
-    }
-    if (!error) {
+      this.firebaseStoreService.imeiArticolo(filteredData['imei']).then(
+        (data) => {
+          if(data) {
+            //prettier-ignore
+            callModalToast(this.messageService, 'Errore', 'Imei già presente', 'error');
+            error = true;
+          } else {
+            const tipoIntervento = filteredData['tipo_intervento'];
+            filteredData['data'] = new Date().toISOString();
+            filteredData['data_intervento'] = new Date().toString();
+            delete filteredData['tipo_intervento'];
+            delete filteredData['checkedPermuta'];
+            delete filteredData['checkedProdottiAggiuntivi'];
+            delete filteredData['idDbIncasso'];
+            //prettier-ignore
+            filteredData['dataAcquistoInventario'] = new Date(filteredData['dataAcquistoInventario']).toISOString();
+            //prettier-ignore
+            filteredData['idUtente'] = this.storage.input.userData.id;
+            const articoloInvId = this.firebaseStoreService.addArticoloInventario(
+              filteredData as InventarioItemModel
+            );
+            delete filteredData['idUtente'];
+            filteredData['idArticolo'] = articoloInvId;
+            filteredData['tipo_intervento'] = tipoIntervento;
+            this.userDataService
+            .addNewIntervento(
+              new SpecificDataModel(filteredData),
+              this.storage.input.userData,
+              this.prodottiAggiuntivi,
+              this.uploadedFiles
+            )
+            .then((result) => {
+              if (result) {
+                //prettier-ignore
+                callModalToast(this.messageService, 'Aggiunto', 'Nuovo intervento aggiunto');
+                this.handleClose();
+              } else {
+                //prettier-ignore
+                callModalToast(this.messageService, 'Errore', 'Articolo non disponibile', 'error');
+              }
+            });
+          }
+        }
+      );
+    } else {
       this.userDataService
         .addNewIntervento(
           new SpecificDataModel(filteredData),
@@ -275,9 +302,9 @@ export class UserDataModalComponent implements OnInit, OnDestroy {
         )
         .then((result) => {
           if (result) {
-            this.showModal = !this.showModal;
             //prettier-ignore
             callModalToast(this.messageService, 'Aggiunto', 'Nuovo intervento aggiunto');
+            this.handleClose();
           } else {
             //prettier-ignore
             callModalToast(this.messageService, 'Errore', 'Articolo non disponibile', 'error');

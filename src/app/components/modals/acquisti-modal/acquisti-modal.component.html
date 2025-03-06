@@ -1,0 +1,88 @@
+<p-dialog
+  [(visible)]="showAcquistiModal"
+  [style]="{ width: '60%' }"
+  [modal]="true"
+  (onHide)="handleClose()"
+>
+  <ng-template pTemplate="header">
+    <div
+      class="flex align-items-center justify-between gap-2 w-full col-span-3"
+    >
+      <span class="font-bold text-2xl">
+        {{ "modals.acquisti.title" | translate }}
+      </span>
+    </div>
+  </ng-template>
+  <ng-container *ngIf="acquistiShow$ | async as acquistiShow; else loading">
+    <span class="p-input-icon-left w-full mb-2 mt-2">
+      <i class="pi pi-search"></i>
+      <input
+        type="text"
+        pInputText
+        placeholder="Ricerca IMEI"
+        class="fields fieldsSearch"
+        (input)="table.filterGlobal($event.target.value, 'contains')"
+      />
+    </span>
+    <p-table
+      #table
+      [value]="acquistiShow"
+      [loading]="loadingTable"
+      [globalFilterFields]="['imei']"
+    >
+      <ng-template pTemplate="header">
+        <tr>
+          <!-- <th>{{ "user_data.cliente" | translate }}</th> -->
+          <th>{{ "modals.acquisti.imei" | translate }}</th>
+          <th>{{ "modals.acquisti.negozio" | translate }}</th>
+          <th>{{ "modals.acquisti.dataAcquistoInventario" | translate }}</th>
+          <th>{{ "modals.acquisti.marca" | translate }}</th>
+          <th>{{ "modals.acquisti.garanzia" | translate }}</th>
+          <th>{{ "modals.acquisti.colore" | translate }}</th>
+          <th>{{ "modals.acquisti.fornitore" | translate }}</th>
+          <th>{{ "modals.acquisti.quantita" | translate }}</th>
+          <th>{{ "modals.acquisti.memoria" | translate }}</th>
+          <th>{{ "modals.acquisti.grado" | translate }}</th>
+          <th>{{ "modals.acquisti.percentuale" | translate }}</th>
+          <th>{{ "modals.acquisti.prezzo_acquisto" | translate }}</th>
+          <th>{{ "modals.acquisti.prezzo_online" | translate }}</th>
+          <th>{{ "modals.acquisti.prezzo_negozio" | translate }}</th>
+        </tr>
+      </ng-template>
+      <ng-template pTemplate="body" let-rowData>
+        <tr>
+          <td>{{ rowData.imei }}</td>
+          <td>{{ rowData.negozio }}</td>
+          <td>{{ rowData.dataAcquistoInventario | date : "dd/MM/yyyy" }}</td>
+          <td>{{ rowData.marca }}</td>
+          <td>{{ rowData.garanzia }}</td>
+          <td>{{ rowData.colore }}</td>
+          <td>{{ rowData.fornitore }}</td>
+          <td>{{ rowData.quantita }}</td>
+          <td>{{ rowData.memoria }} GB</td>
+          <td>{{ rowData.grado }}</td>
+          <td>{{ rowData.percentuale }}%</td>
+          <td>{{ rowData.prezzo_acquisto }}€</td>
+          <td>{{ rowData.prezzo_online }}€</td>
+          <td>{{ rowData.prezzo_negozio }}€</td>
+        </tr>
+      </ng-template>
+      <ng-template pTemplate="emptymessage">
+        <tr>
+          <td colspan="13" class="text-center">
+            {{ "Nessun acquisto disponibile" | translate }}
+          </td>
+        </tr>
+      </ng-template>
+    </p-table>
+  </ng-container>
+  <ng-template #loading>
+    <p-table [loading]="true">
+      <ng-template pTemplate="header">
+        <tr>
+          <th>Loading...</th>
+        </tr>
+      </ng-template>
+    </p-table>
+  </ng-template>
+</p-dialog>

@@ -194,17 +194,21 @@ export class UserDataService {
         return false;
       }
     }
-    // Aggiunta data intervento
-    specific_data.data_intervento = new Date().toString();
-    // Aggiunta prodotti aggiuntivi se passati in input
-    prodottiAggiuntivi
-      ? (specific_data.prodottiAggiuntivi = prodottiAggiuntivi)
-      : null;
-    // Aggiunta Incasso dato che ho aggiunto un intervento
-    let incassoIntervento = await calculateIncassoInterventov2(
-      specific_data,
-      this.firebaseStoreService
-    );
+
+    let incassoIntervento;
+    if (specific_data.tipo_intervento !== 'Acquisto') {
+      // Aggiunta data intervento
+      specific_data.data_intervento = new Date().toString();
+      // Aggiunta prodotti aggiuntivi se passati in input
+      prodottiAggiuntivi
+        ? (specific_data.prodottiAggiuntivi = prodottiAggiuntivi)
+        : null;
+      // Aggiunta Incasso dato che ho aggiunto un intervento
+      incassoIntervento = await calculateIncassoInterventov2(
+        specific_data,
+        this.firebaseStoreService
+      );
+    }
 
     // Generazione ID univoco se sono in Vendita o Riparazione con data restituz. valorizzata
     if (

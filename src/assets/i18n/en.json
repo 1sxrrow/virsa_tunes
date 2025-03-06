@@ -120,5 +120,29 @@
     "today": "Today",
     "weekHeader": "Set",
     "choose": "Choose"
+  },
+  "modals": {
+    "telefoni": {
+      "title": "list of clients with phone numbers",
+      "cliente": "User",
+      "telefono": "Phonenumber"
+    },
+    "acquisti": {
+      "title": "List of items purchased by customers",
+      "imei": "IMEI",
+      "negozio": "Shop",
+      "dataAcquistoInventario": "Purchase date",
+      "marca": "Brand",
+      "garanzia": "Warranty",
+      "colore": "Color",
+      "fornitore": "Supplier",
+      "quantita": "Quantity",
+      "memoria": "Storage",
+      "grado": "Grade",
+      "percentuale": "Battery Percentage %",
+      "prezzo_acquisto": "Purchase Price €",
+      "prezzo_online": "Online Price €",
+      "prezzo_negozio": "Shop Price €"
+    }
   }
 }

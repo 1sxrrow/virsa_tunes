@@ -1,7 +1,8 @@
 <app-circle-spinner *ngIf="loading"></app-circle-spinner>
 <div *ngIf="!loading" class="p-10">
   <div class="grid place-items-center w-auto">
-    <div class="loginContainer" (keyup.enter)="CheckLogin()">
+    <span class="text-2xl mb-5 font-extrabold">{{ appName }}</span>
+    <div class="loginContainer">
       <h1 class="loginLabel">Login</h1>
       <div class="fieldsContainer">
         <div class="mb-2">

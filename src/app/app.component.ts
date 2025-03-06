@@ -1,9 +1,9 @@
+import { animate, style, transition, trigger } from '@angular/animations';
 import { Component, OnInit } from '@angular/core';
 import { NavigationEnd, Router } from '@angular/router';
 import { filter } from 'rxjs';
+import { AuthService } from './components/login/auth.service';
 import { TranslateCustomService } from './shared/services/translation/translate-custom-service.service';
-import { fadeInAnimation } from './shared/utils/animations';
-import { animate, style, transition, trigger } from '@angular/animations';
 
 @Component({
   selector: 'app-root',
@@ -20,13 +20,18 @@ import { animate, style, transition, trigger } from '@angular/animations';
 })
 export class AppComponent implements OnInit {
   isSidenavOpen = false;
+  isUserSignedin = false;
   animate = false;
   constructor(
     private translateCustomService: TranslateCustomService,
+    private auth: AuthService,
     private router: Router
   ) {}
 
   ngOnInit(): void {
+    this.auth.getUserStatus().subscribe((result) => {
+      this.isUserSignedin = result;
+    });
     this.translateCustomService;
     this.router.events
       .pipe(filter((event) => event instanceof NavigationEnd))

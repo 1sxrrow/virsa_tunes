@@ -168,7 +168,7 @@
               tooltipPosition="bottom"
               icon="pi pi-times-circle"
               [disabled]="!isAdmin"
-              (click)="isAdmin ? confirmDeleteItem(item.key) : null"
+              (click)="isAdmin ? confirmDeleteItem(item.key, item) : null"
             ></p-button>
           </td>
         </tr>
