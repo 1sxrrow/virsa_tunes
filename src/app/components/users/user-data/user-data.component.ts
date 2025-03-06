@@ -35,6 +35,8 @@ import {
 import { userDataModalStorage } from '../user-data-modal/user-data-modal-storage.service';
 import { UserDataStorage } from './user-data-storage.service';
 import { UserDataService } from './user-data.service';
+import { PDFDocument } from 'pdf-lib';
+import { saveAs } from 'file-saver';
 
 @Component({
   selector: 'app-user-data',
@@ -336,5 +338,58 @@ export class UserDataComponent implements OnInit, OnDestroy {
     } else {
       return specificData['nome'];
     }
+  }
+
+  async createPdf(specificData) {
+    const url = '/assets/template_compra_cellulare_2024_editabile.pdf';
+    const existingPdfBytes = await fetch(url).then((res) => res.arrayBuffer());
+
+    // Load a PDFDocument from the existing PDF bytes
+    const pdfDoc = await PDFDocument.load(existingPdfBytes);
+
+    // Get the form so we can fill it in
+    const form = pdfDoc.getForm();
+    // Fill in the form fields
+    const nomeField = form.getTextField('nome_utente');
+    nomeField.setText(`${this.userData.nome} ${this.userData.cognome}`);
+    const cittaField = form.getTextField('citta');
+    cittaField.setText(this.userData.citta);
+    const viaField = form.getTextField('via');
+    viaField.setText(this.userData.indirizzo);
+    const numeroField = form.getTextField('numero_utente');
+    numeroField.setText(this.userData.numero_telefono);
+
+    const marcaField = form.getTextField('marca');
+    marcaField.setText(specificData.marca || '');
+
+    const imeiField = form.getTextField('imei');
+    imeiField.setText(specificData.imei || '');
+
+    const modelloField = form.getTextField('modello');
+    modelloField.setText(specificData.nome || '');
+
+    const coloreField = form.getTextField('colore');
+    coloreField.setText(specificData.colore || '');
+
+    const memoriaField = form.getTextField('memoria');
+    memoriaField.setText(specificData.memoria.toString() || '');
+    const dataField = form.getTextField('data_oggi');
+    const date = new Date();
+    const formattedDate = `${date.getDate().toString().padStart(2, '0')}/${(
+      date.getMonth() + 1
+    )
+      .toString()
+      .padStart(2, '0')}/${date.getFullYear()}`;
+    dataField.setText(formattedDate || '');
+
+    // Serialize the PDFDocument to bytes (a Uint8Array)
+    const pdfBytes = await pdfDoc.save();
+
+    // Trigger the browser to download the PDF document
+    const blob = new Blob([pdfBytes], { type: 'application/pdf' });
+    saveAs(
+      blob,
+      `${this.userData.nome}_${this.userData.cognome}_modulo_acquisto_cellulare.pdf`
+    );
   }
 }
