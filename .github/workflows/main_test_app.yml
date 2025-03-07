@@ -1,0 +1,70 @@
+name: Build and Deploy to Firebase (Test App)
+
+on:
+  push:
+    branches:
+      - test_app
+    paths:
+      - "package.json"
+  pull_request:
+    branches:
+      - test_app
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: "18"
+
+      - name: Cache dependencies
+        id: cache
+        uses: actions/cache@v3
+        with:
+          path: |
+            ~/.npm
+            node_modules
+          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-node-
+      - name: Install dependencies
+        if: steps.cache.outputs.cache-hit != 'true'
+        run: npm install
+
+      - name: Add node_modules/.bin to PATH
+        run: echo "$(npm bin)" >> $GITHUB_PATH
+
+      - name: Check if version changed
+        id: version_check
+        run: |
+          # Install jq
+          sudo apt-get update && sudo apt-get install -y jq
+          git fetch origin test_app --depth=2
+          old_version=$(git show origin/test_app~1:package.json | jq -r .version)
+          new_version=$(jq -r .version package.json)
+          echo "Old version: $old_version"
+          echo "New version: $new_version"
+          echo "old_version=$old_version" >> $GITHUB_ENV
+          echo "new_version=$new_version" >> $GITHUB_ENV
+          if [ "$old_version" == "$new_version" ]; then
+            echo "Version did not change. Exiting."
+            exit 1
+          fi
+
+      - name: Build the project
+        if: success()
+        run: npm run build
+
+      - name: Deploy to Firebase
+        if: success()
+        uses: w9jds/firebase-action@v13.23.1
+        with:
+          args: deploy --only hosting
+        env:
+          GCP_SA_KEY: ${{secrets.FIREBASE_SERVICE_ACCOUNT_TEST_APP_DATABASE}}
