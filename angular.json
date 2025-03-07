@@ -13,7 +13,12 @@
         "build": {
           "builder": "@angular-devkit/build-angular:browser",
           "options": {
-            "allowedCommonJsDependencies": ["exceljs", "file-saver", "crypto-js", "lodash"],
+            "allowedCommonJsDependencies": [
+              "exceljs",
+              "file-saver",
+              "crypto-js",
+              "lodash"
+            ],
             "outputPath": "dist/virsa_tunes",
             "index": "src/index.html",
             "main": "src/main.ts",
@@ -26,11 +31,14 @@
                 "glob": "**/*.css",
                 "input": "src/assets/themes/",
                 "output": "/assets/themes/"
+              },
+              {
+                "glob": "**/*",
+                "input": "src/app/shared/workers",
+                "output": "/assets/workers"
               }
             ],
-            "styles": [
-              "src/styles.scss"
-            ],
+            "styles": ["src/styles.scss"],
             "stylePreprocessorOptions": {
               "includePaths": ["src/styles"]
             },
