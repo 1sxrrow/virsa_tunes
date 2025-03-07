@@ -28,7 +28,7 @@ RUN npm run build --prod
 FROM nginx:alpine
 
 # Copy the built Angular app from the build stage
-COPY --from=build /app/dist/virsa_tunes /usr/share/nginx/html
+COPY --from=build /app/dist/test_app /usr/share/nginx/html
 
 # Expose port 80
 EXPOSE 80
