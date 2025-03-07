@@ -45,5 +45,5 @@ export class AppComponent implements OnInit {
     return document.body.scrollHeight > window.innerHeight;
   }
 
-  title = 'virsa_tunes';
+  title = 'test_app';
 }

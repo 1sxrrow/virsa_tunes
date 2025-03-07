@@ -3,7 +3,7 @@
   "version": 1,
   "newProjectRoot": "projects",
   "projects": {
-    "virsa_tunes": {
+    "test_app": {
       "projectType": "application",
       "schematics": {},
       "root": "",
@@ -20,7 +20,7 @@
               "lodash",
               "pako"
             ],
-            "outputPath": "dist/virsa_tunes",
+            "outputPath": "dist/test_app",
             "index": "src/index.html",
             "main": "src/main.ts",
             "polyfills": ["zone.js", "src/polyfills.ts"],
@@ -77,10 +77,10 @@
           "builder": "@angular-devkit/build-angular:dev-server",
           "configurations": {
             "production": {
-              "browserTarget": "virsa_tunes:build:production"
+              "browserTarget": "test_app:build:production"
             },
             "development": {
-              "browserTarget": "virsa_tunes:build:development"
+              "browserTarget": "test_app:build:development"
             }
           },
           "defaultConfiguration": "development"
@@ -88,7 +88,7 @@
         "extract-i18n": {
           "builder": "@angular-devkit/build-angular:extract-i18n",
           "options": {
-            "browserTarget": "virsa_tunes:build"
+            "browserTarget": "test_app:build"
           }
         },
         "test": {
@@ -111,7 +111,7 @@
           "builder": "@angular/fire:deploy",
           "options": {
             "version": 2,
-            "browserTarget": "virsa_tunes:build:production"
+            "browserTarget": "test_app:build:production"
           }
         }
       }
