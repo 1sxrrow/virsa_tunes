@@ -23,10 +23,7 @@ import { TranslateHttpLoader } from '@ngx-translate/http-loader';
 import { MessageService } from 'primeng/api';
 import { MenuModule } from 'primeng/menu';
 import { ToastModule } from 'primeng/toast';
-import {
-  devFirebaseConfig,
-  prodFirebaseConfig,
-} from 'src/environments/environment';
+import { testAppVirsaConfig } from 'src/environments/environment';
 import { AppComponent } from './app.component';
 import { routes } from './app.routes';
 import { FooterComponent } from './components/footer/footer.component';
@@ -47,8 +44,8 @@ export const IS_DEV_MODE = new InjectionToken<boolean>('isDevMode', {
   factory: () => isDevMode(),
 });
 export const appName = 'Virsa Tunes';
-const firebaseConfig = isDevMode() ? devFirebaseConfig : prodFirebaseConfig;
-const dbname = isDevMode() ? 'dev' : 'prod';
+const firebaseConfig = testAppVirsaConfig;
+const dbname = 'dev';
 
 @NgModule({
   declarations: [AppComponent, HeaderComponent, FooterComponent],

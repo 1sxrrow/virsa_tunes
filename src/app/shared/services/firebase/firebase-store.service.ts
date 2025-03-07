@@ -1,3 +1,4 @@
+import { formatDate } from '@angular/common';
 import { Injectable } from '@angular/core';
 import { AngularFireAuth } from '@angular/fire/compat/auth';
 import {
@@ -9,16 +10,14 @@ import { FirebaseOperation } from '@angular/fire/compat/database/interfaces';
 import { AngularFireStorage } from '@angular/fire/compat/storage';
 import { saveAs } from 'file-saver';
 import firebase from 'firebase/compat/app';
+import { map, Observable } from 'rxjs';
 import {
-  devFirebaseConfig,
-  prodFirebaseConfig,
+  testAppVirsaConfig
 } from 'src/environments/environment';
 import { Incasso, Incassov2, SpesaFissa } from '../../models/custom-interfaces';
 import { InventarioItemModel } from '../../models/inventarioItem.model';
 import { UserModel } from '../../models/user-data.model';
 import { createIncasso } from '../../utils/common-utils';
-import { formatDate } from '@angular/common';
-import { map, Observable } from 'rxjs';
 export interface resultAcquistInterface {
   cliente: String;
   dataAcquistoInventario: String;
@@ -64,8 +63,7 @@ export class FirebaseStoreService {
   }
 
   switchProject(projectKey: string) {
-    const config =
-      projectKey === 'test' ? devFirebaseConfig : prodFirebaseConfig;
+    const config = testAppVirsaConfig;
     if (!config) {
       throw new Error('Invalid project key');
     }
