@@ -43,14 +43,14 @@ export const IS_DEV_MODE = new InjectionToken<boolean>('isDevMode', {
   providedIn: 'root',
   factory: () => isDevMode(),
 });
-export const appName = 'Test App';
+export const appName = 'Virsa Tunes';
 const firebaseConfig = testAppVirsaConfig;
 const dbname = 'dev';
 
 @NgModule({
   declarations: [AppComponent, HeaderComponent, FooterComponent],
   imports: [
-    CommonModule, 
+    CommonModule,
     BrowserModule,
     BrowserAnimationsModule,
     ToastModule,

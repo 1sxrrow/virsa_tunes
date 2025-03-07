@@ -13,8 +13,8 @@ export class AuthService {
     this.userState = userState;
     this.isAdmin =
       userState &&
-      (userState.email === 'virsatunes20@gmail.com' ||
-        userState.email === 'test@test.com');
+      (userState.email === process.env.ADMIN_USER ||
+        userState.email === process.env.SECOND_ADMIN_USER);
   }
 
   getUserState() {

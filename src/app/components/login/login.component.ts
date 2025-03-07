@@ -2,15 +2,14 @@ import {
   Component,
   ElementRef,
   Inject,
+  OnInit,
   ViewChild,
   ViewEncapsulation,
 } from '@angular/core';
-import { AngularFireAuth } from '@angular/fire/compat/auth';
 import { Router } from '@angular/router';
 import { updateProfile } from 'firebase/auth';
-import { environmentValues } from 'src/app/shared/utils/enviromentValues';
-import { AuthService } from './auth.service';
 import { appName, IS_DEV_MODE } from 'src/app/app.module';
+import { AuthService } from './auth.service';
 
 @Component({
   selector: 'app-login',
@@ -18,7 +17,7 @@ import { appName, IS_DEV_MODE } from 'src/app/app.module';
   styleUrls: ['./login.component.scss'],
   encapsulation: ViewEncapsulation.None,
 })
-export class LoginComponent {
+export class LoginComponent implements OnInit {
   appName: string;
   passwordValue: string;
   emailValue: string;
@@ -36,13 +35,11 @@ export class LoginComponent {
     private authService: AuthService,
     private router: Router,
     @Inject(IS_DEV_MODE) public isDevMode: boolean
-  ) {
+  ) {}
+
+  ngOnInit(): void {
     this.appName = appName;
-    if (this.isDevMode) {
-      this.emailValue = environmentValues.emailValue;
-      this.passwordValue = environmentValues.passwordValue;
-      this.CheckLogin();
-    }
+    this.autoLogin();
   }
 
   CheckLogin() {
@@ -101,6 +98,14 @@ export class LoginComponent {
       });
     } else {
       console.log('displayName already set!');
+    }
+  }
+
+  private autoLogin() {
+    if (this.isDevMode && process.env.AUTO_LOGIN == 'true') {
+      this.emailValue = process.env.SECOND_ADMIN_USER;
+      this.passwordValue = process.env.SECOND_ADMIN_PWD;
+      this.CheckLogin();
     }
   }
 }
