@@ -67,4 +67,4 @@ jobs:
         with:
           args: deploy --only hosting
         env:
-          GCP_SA_KEY: ${{secrets.FIREBASE_SERVICE_ACCOUNT_TEST_APP_DATABASE}}
+          GCP_SA_KEY: ${{secrets.FIREBASE_SERVICE_ACCOUNT_TEST_APP}}
