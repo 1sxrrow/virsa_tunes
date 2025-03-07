@@ -35,64 +35,64 @@
         ]"
         [styleClass]="'p-datatable-sm'"
       >
+        <ng-template pTemplate="caption" class="p-0">
+          <p-toolbar>
+            <div class="p-toolbar-group-start">
+              <p-button
+                icon="pi pi-user-plus"
+                pTooltip="Aggiungi Utente"
+                tooltipPosition="top"
+                (click)="addUser()"
+                styleClass="p-button-success"
+              ></p-button>
+            </div>
+            <div class="p-toolbar-group-center flex-container">
+              <span class="p-input-icon-left responsive-input">
+                <i class="pi pi-search"></i>
+                <input
+                  type="text"
+                  pInputText
+                  (input)="dt1.filterGlobal($event.target.value, 'contains')"
+                  placeholder="Ricerca Cliente"
+                  class="fields fieldsSearch"
+                  id="search_field_user_list"
+                />
+              </span>
+            </div>
+            <div class="p-toolbar-group-end">
+              <p-button
+                *ngIf="this.authService.getIsAdmin()"
+                icon="pi pi-wrench"
+                pTooltip="Admin Tools"
+                tooltipPosition="top"
+                (click)="showAdminToolsModal()"
+                styleClass="p-button-info"
+              ></p-button>
+            </div>
+          </p-toolbar>
+        </ng-template>
+        <ng-template pTemplate="header">
+          <tr>
+            <th style="width: 20%">
+              {{ "user_data.nome" | translate }}
+              <p-columnFilter type="text" field="nome" display="menu" />
+            </th>
+            <th style="width: 20%">
+              {{ "user_data.cognome" | translate }}
+              <p-columnFilter type="text" field="cognome" display="menu" />
+            </th>
+            <th style="width: 20%">
+              {{ "user_data.interventi" | translate }}
+            </th>
+            <th style="width: 20%">
+              {{ "user_data.data_ins" | translate }}
+            </th>
+            <th style="width: 20%">
+              {{ "user_data.azioni" | translate }}
+            </th>
+          </tr>
+        </ng-template>
         <ng-container *ngIf="users && users.length > 0">
-          <ng-template pTemplate="caption" class="p-0">
-            <p-toolbar>
-              <div class="p-toolbar-group-start">
-                <p-button
-                  icon="pi pi-user-plus"
-                  pTooltip="Aggiungi Utente"
-                  tooltipPosition="top"
-                  (click)="addUser()"
-                  styleClass="p-button-success"
-                ></p-button>
-              </div>
-              <div class="p-toolbar-group-center flex-container">
-                <span class="p-input-icon-left responsive-input">
-                  <i class="pi pi-search"></i>
-                  <input
-                    type="text"
-                    pInputText
-                    (input)="dt1.filterGlobal($event.target.value, 'contains')"
-                    placeholder="Ricerca Cliente"
-                    class="fields fieldsSearch"
-                    id="search_field_user_list"
-                  />
-                </span>
-              </div>
-              <div class="p-toolbar-group-end">
-                <p-button
-                  *ngIf="this.authService.getIsAdmin()"
-                  icon="pi pi-wrench"
-                  pTooltip="Admin Tools"
-                  tooltipPosition="top"
-                  (click)="showAdminToolsModal()"
-                  styleClass="p-button-info"
-                ></p-button>
-              </div>
-            </p-toolbar>
-          </ng-template>
-          <ng-template pTemplate="header">
-            <tr>
-              <th style="width: 20%">
-                {{ "user_data.nome" | translate }}
-                <p-columnFilter type="text" field="nome" display="menu" />
-              </th>
-              <th style="width: 20%">
-                {{ "user_data.cognome" | translate }}
-                <p-columnFilter type="text" field="cognome" display="menu" />
-              </th>
-              <th style="width: 20%">
-                {{ "user_data.interventi" | translate }}
-              </th>
-              <th style="width: 20%">
-                {{ "user_data.data_ins" | translate }}
-              </th>
-              <th style="width: 20%">
-                {{ "user_data.azioni" | translate }}
-              </th>
-            </tr>
-          </ng-template>
           <ng-template pTemplate="body" let-user *ngIf="!showModal">
             <tr [pSelectableRowDblClick]="user">
               <td>
@@ -144,12 +144,16 @@
               </td>
             </tr>
           </ng-template>
-          <!-- <ng-template pTemplate="emptymessage">
-            <tr>
-              <td colspan="7">Nessun cliente trovato.</td>
-            </tr>
-          </ng-template> -->
         </ng-container>
+
+        <ng-template
+          *ngIf="users.length === 0"
+          pTemplate="emptymessage"
+        >
+          <tr>
+            <td colspan="7">Nessun cliente trovato.</td>
+          </tr>
+        </ng-template>
       </p-table>
     </p-card>
 

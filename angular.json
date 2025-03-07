@@ -17,7 +17,8 @@
               "exceljs",
               "file-saver",
               "crypto-js",
-              "lodash"
+              "lodash",
+              "pako"
             ],
             "outputPath": "dist/virsa_tunes",
             "index": "src/index.html",
