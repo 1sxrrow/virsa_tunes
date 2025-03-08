@@ -154,7 +154,6 @@ export class InventarioModalComponent implements OnInit {
           );
           this.loading = false;
         } else {
-          debugger;
           this.formData.patchValue({ data: new Date().toISOString() });
           if (this.formData.value['dataAcquistoInventario'] !== '') {
             this.formData.patchValue({

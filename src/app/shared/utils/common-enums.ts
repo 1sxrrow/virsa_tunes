@@ -1,6 +1,7 @@
 export enum tipoIntervento {
   'Vendita',
   'Riparazione',
+  'Acquisto',
 }
 
 export enum canaleComunicazione {
@@ -48,6 +49,7 @@ export enum garanzia {
   'Senza Garanzia',
   '1 mese',
   '3 mesi',
+  '6 mesi',
   '12 mesi',
   'Apple',
   'Motorola',
@@ -84,6 +86,7 @@ export enum marcaInventario {
   'HP',
   'HP (Hewlett-Packard)',
   'Honor',
+  'Htc',
   'Huawei',
   'Infinix',
   'Lenovo',
@@ -116,6 +119,7 @@ export enum gradoInventario {
   'A',
   'AB',
   'B',
+  'A+BOX',
 }
 
 export enum Filtri {

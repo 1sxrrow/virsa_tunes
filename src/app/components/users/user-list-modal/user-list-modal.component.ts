@@ -207,4 +207,12 @@ export class UserListModalComponent implements OnInit {
       this.addNewUser();
     }
   }
+  
+  get numeroTelefonoWp() {
+    if (this.formData.get('numero_telefono')?.value) {
+      return `39${this.formData.get('numero_telefono')?.value}`;
+    } else {
+      return null;
+    }
+  }
 }

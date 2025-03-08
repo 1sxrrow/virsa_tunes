@@ -5,3 +5,13 @@
   padding: 0.75rem /* 12px */;
   margin-bottom: 0.5rem /* 8px */;
 }
+
+.buttonLabel {
+  display: flex;
+  align-content: center;
+  align-items: center;
+  flex-direction: row;
+  & .label {
+    margin-bottom: 0px;
+  }
+}

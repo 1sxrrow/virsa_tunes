@@ -60,7 +60,16 @@
     "costoCambio": "Replacement Cost (€)",
     "aggiungi": "Add",
     "modifica": "Update",
-    "note": "Notes"
+    "note": "Notes",
+    "colore": "Color",
+    "memoria": "Storage (GB)",
+    "grado": "Grade",
+    "percentuale": "Battery Percentage %",
+    "data_acquisto": "Purchase Date",
+    "prezzo_acquisto": "Purchase Price €",
+    "prezzo_negozio": "Shop Price €",
+    "prezzo_online": "Online Price €",
+    "fornitore": "Supplier"
   },
   "inventario": {
     "marca": "Brand",
@@ -109,6 +118,31 @@
       "Dec"
     ],
     "today": "Today",
-    "weekHeader": "Set"
+    "weekHeader": "Set",
+    "choose": "Choose"
+  },
+  "modals": {
+    "telefoni": {
+      "title": "list of clients with phone numbers",
+      "cliente": "User",
+      "telefono": "Phonenumber"
+    },
+    "acquisti": {
+      "title": "List of items purchased by customers",
+      "imei": "IMEI",
+      "negozio": "Shop",
+      "dataAcquistoInventario": "Purchase date",
+      "marca": "Brand",
+      "garanzia": "Warranty",
+      "colore": "Color",
+      "fornitore": "Supplier",
+      "quantita": "Quantity",
+      "memoria": "Storage",
+      "grado": "Grade",
+      "percentuale": "Battery Percentage %",
+      "prezzo_acquisto": "Purchase Price €",
+      "prezzo_online": "Online Price €",
+      "prezzo_negozio": "Shop Price €"
+    }
   }
 }

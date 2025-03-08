@@ -40,9 +40,19 @@
       </div>
       <div class="grid grid-cols-2 mb-2">
         <div class="mb-1 mr-2">
-          <label class="label" for="numero_telefono">
-            {{ "user_data.telefono" | translate }}
-          </label>
+          <div class="buttonLabel">
+            <label class="label" for="numero_telefono">
+              {{ "user_data.telefono" | translate }}
+            </label>
+            <a
+              [href]="'whatsapp://send?phone=' + numeroTelefonoWp"
+              target="_blank"
+              class="ml-2"
+              disabled="!numeroTelefonoWp"
+            >
+              <i class="pi pi-whatsapp text-xl"></i>
+            </a>
+          </div>
           <input
             id="numero_telefono"
             pInputText

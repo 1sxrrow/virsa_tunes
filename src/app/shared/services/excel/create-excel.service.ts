@@ -14,7 +14,6 @@ export class CreateExcelService {
     @Inject(LOCALE_ID) public locale: string
   ) {}
   createExcel(specificData: SpecificDataModel, userData: UserModel) {
-    debugger;
     const path =
       specificData.tipo_intervento === 'Vendita'
         ? '/assets/template_vendita.xlsx'

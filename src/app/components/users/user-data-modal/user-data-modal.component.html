@@ -56,7 +56,7 @@
         ></virsa-select>
       </div>
 
-      <div class="mb-1">
+      <div class="mb-1" *ngIf="!showFieldsAcquisto">
         <label for="marca_telefono_user_data_modal" class="label">
           {{ "user_data.marca_telefono" | translate }}
         </label>
@@ -69,7 +69,7 @@
         />
       </div>
 
-      <div class="mb-1">
+      <div class="mb-1" *ngIf="!showFieldsAcquisto">
         <!-- <virsa-text-input
           formControlName="modello_telefono"
           label="Modello Telefono"
@@ -189,7 +189,7 @@
         <p-progressBar [value]="percentage" />
       </div>
 
-      <div class="mb-1">
+      <div class="mb-1" *ngIf="!showFieldsAcquisto">
         <label for="costo_user_data_modal" class="label">
           {{ "user_data.costo" | translate }}</label
         >
@@ -316,6 +316,166 @@
         />
       </div>
 
+      <div class="mb-1" *ngIf="showFieldsAcquisto">
+        <label for="nome_user_data_modal" class="label">
+          {{ "user_data.nome" | translate }}
+        </label>
+        <input
+          type="text"
+          name="nome_user_data_modal"
+          id="nome_user_data_modal"
+          class="fields"
+          formControlName="nome"
+        />
+      </div>
+      <div class="mb-1" *ngIf="showFieldsAcquisto">
+        <virsa-select
+          [label]="'user_data.marca' | translate"
+          [dataSet]="marcaDataSet"
+          specificName="marca_user_data_modal"
+          formControlName="marca"
+          [group]="formData"
+          [externalValue]="formData ? formData.get('marca').value : ''"
+        ></virsa-select>
+      </div>
+      <div class="mb-1" *ngIf="showFieldsAcquisto">
+        <virsa-select
+          [label]="'user_data.garanzia' | translate"
+          [dataSet]="mesiGaranziaDataSet"
+          specificName="garanzia_user_data_modal"
+          formControlName="garanzia_mesi"
+          [group]="formData"
+          [externalValue]="formData.get('garanzia_mesi').value"
+        ></virsa-select>
+      </div>
+      <div class="mb-1" *ngIf="showFieldsAcquisto">
+        <label for="colore_user_data_modal" class="label">
+          {{ "user_data.colore" | translate }}
+        </label>
+        <input
+          type="text"
+          name="colore_user_data_modal"
+          id="colore_user_data_modal"
+          class="fields"
+          formControlName="colore"
+        />
+      </div>
+
+      <div class="mb-1" *ngIf="showFieldsAcquisto">
+        <label for="fornitore_user_data_modal" class="label">{{
+          "user_data.fornitore" | translate
+        }}</label>
+        <input
+          type="text"
+          class="fields"
+          name="fornitore_user_data_modal"
+          id="fornitore_user_data_modal"
+          formControlName="fornitore"
+        />
+      </div>
+
+      <div class="mb-1" *ngIf="showFieldsAcquisto">
+        <label for="quantita_user_data_modal" class="label">
+          {{ "user_data.quantita" | translate }}
+        </label>
+        <input
+          type="number"
+          name="quantita_user_data_modal"
+          id="quantita_user_data_modal"
+          class="fields"
+          formControlName="quantita"
+        />
+      </div>
+
+      <div class="mb-1" *ngIf="showFieldsAcquisto">
+        <label for="memoria_user_data_modal" class="label">
+          {{ "user_data.memoria" | translate }}
+        </label>
+        <input
+          type="number"
+          name="memoria_user_data_modal"
+          id="memoria_user_data_modal"
+          class="fields"
+          formControlName="memoria"
+        />
+      </div>
+
+      <div class="mb-1" *ngIf="showFieldsAcquisto">
+        <virsa-select
+          [label]="'user_data.grado' | translate"
+          [dataSet]="gradoDataSet"
+          specificName="grado_user_data_modal"
+          formControlName="grado"
+          [group]="formData"
+          [externalValue]="formData ? formData.get('grado')?.value : ''"
+        ></virsa-select>
+      </div>
+
+      <div class="mb-1" *ngIf="showFieldsAcquisto">
+        <label for="percentuale_user_data_modal" class="label">
+          {{ "user_data.percentuale" | translate }}
+        </label>
+        <input
+          type="number"
+          name="percentuale_user_data_modal"
+          id="percentuale_user_data_modal"
+          class="fields"
+          formControlName="perc_batteria"
+        />
+      </div>
+
+      <div class="mb-1" *ngIf="showFieldsAcquisto">
+        <label for="prezzo_acquisto_user_data_modal" class="label">
+          {{ "user_data.prezzo_acquisto" | translate }}
+        </label>
+        <input
+          type="number"
+          name="prezzo_acquisto_user_data_modal"
+          id="prezzo_acquisto_user_data_modal"
+          class="fields"
+          formControlName="prezzo_acquisto"
+        />
+      </div>
+      <div class="mb-1" *ngIf="showFieldsAcquisto">
+        <label for="prezzo_online_user_data_modal" class="label">
+          {{ "user_data.prezzo_online" | translate }}
+        </label>
+        <input
+          type="number"
+          name="prezzo_online_user_data_modal"
+          id="prezzo_online_user_data_modal"
+          class="fields"
+          formControlName="prezzo_online"
+        />
+      </div>
+
+      <div class="mb-1" *ngIf="showFieldsAcquisto">
+        <label for="prezzo_negozio_user_data_modal" class="label">
+          {{ "user_data.prezzo_negozio" | translate }}
+        </label>
+        <input
+          type="number"
+          name="prezzo_negozio_user_data_modal"
+          id="prezzo_negozio_user_data_modal"
+          class="fields"
+          formControlName="prezzo_negozio"
+        />
+      </div>
+
+      <div class="mb-1" *ngIf="showFieldsAcquisto">
+        <label for="data_acquisto_user_data_modal" class="label">
+          {{ "user_data.data_acquisto" | translate }}
+        </label>
+        <p-calendar
+          name="data_acquisto_user_data_modal"
+          inputId="data_acquisto_user_data_modal"
+          [style]="{ width: '100%' }"
+          [showButtonBar]="true"
+          dateFormat="dd/mm/yy"
+          formControlName="dataAcquistoInventario"
+        ></p-calendar>
+      </div>
+
       <div class="mb-1">
         <virsa-select
           [label]="'user_data.negozio' | translate"
@@ -343,7 +503,7 @@
         </textarea>
       </div>
 
-      <div class="col-span-2 mb-1">
+      <div class="col-span-2 mb-1" *ngIf="!showFieldsAcquisto">
         <label for="prodotti_aggiuntivi_user_data_modal" class="mr-2">{{
           "user_data.prodotti_aggiuntivi" | translate
         }}</label>

@@ -6,7 +6,7 @@ import {
   MessageService,
 } from 'primeng/api';
 import { Table } from 'primeng/table';
-import { map, Subscription } from 'rxjs';
+import { finalize, map, Subscription } from 'rxjs';
 import { InventarioItemModel } from 'src/app/shared/models/inventarioItem.model';
 import { FirebaseStoreService } from 'src/app/shared/services/firebase/firebase-store.service';
 import {
@@ -15,6 +15,8 @@ import {
 } from 'src/app/shared/utils/common-utils';
 import { AuthService } from '../../login/auth.service';
 import { InventarioModalStorage } from '../inventario-modal/inventario-modal-storage.service';
+import { UserModel } from 'src/app/shared/models/user-data.model';
+import { UserDataService } from '../../users/user-data/user-data.service';
 
 @Component({
   selector: 'app-inventario-item-list',
@@ -35,16 +37,19 @@ export class InventarioItemListComponent implements OnInit, OnDestroy {
 
   selectedItem: InventarioItemModel;
   showModal: boolean = false;
+  showExcelUploadModal: boolean = false;
+
   key: string;
   subscription: Subscription;
   negozioSwitch = false; // false: Negozio I, true: Negozio B
   isFilterNegozio = false;
 
   constructor(
-    private firebaseStoreService: FirebaseStoreService,
     private authService: AuthService,
-    private confirmationService: ConfirmationService,
     private messageService: MessageService,
+    private userDataService: UserDataService,
+    private confirmationService: ConfirmationService,
+    private firebaseStoreService: FirebaseStoreService,
     private inventarioModalStorage: InventarioModalStorage
   ) {}
 
@@ -110,19 +115,50 @@ export class InventarioItemListComponent implements OnInit, OnDestroy {
   /**
    * Cancella articolo
    **/
-  confirmDeleteItem(key: string) {
+  confirmDeleteItem(key: string, item: any) {
     this.confirmationService.confirm({
       message: 'Sei sicuro di voler procedere?',
       header: 'Conferma',
       icon: 'pi pi-exclamation-triangle',
       accept: () => {
-        this.firebaseStoreService.deleteArticoloInventario(key);
-        callModalToast(
-          this.messageService,
-          'Eliminato',
-          'Articolo rimosso',
-          'info'
-        );
+        if (item['idUtente']) {
+          this.subscription.add(
+            this.firebaseStoreService
+              .GetUser(item['idUtente'])
+              .valueChanges()
+              .subscribe((user: UserModel) => {
+                if (user && user.specific_data) {
+                  let intervento = user.specific_data.find(
+                    (itemIntervento) => itemIntervento['idArticolo'] === key
+                  );
+                  this.userDataService.deleteIntervento(intervento.id, user);
+                  this.firebaseStoreService.deleteArticoloInventario(key);
+                  callModalToast(
+                    this.messageService,
+                    'Eliminato',
+                    'Articolo rimosso',
+                    'info'
+                  );
+                } else {
+                  this.firebaseStoreService.deleteArticoloInventario(key);
+                  callModalToast(
+                    this.messageService,
+                    'Eliminato con errore',
+                    'Articolo rimosso ma non su entry utente',
+                    'warn'
+                  );
+                }
+              })
+          );
+        } else {
+          this.firebaseStoreService.deleteArticoloInventario(key);
+          callModalToast(
+            this.messageService,
+            'Eliminato',
+            'Articolo rimosso',
+            'info'
+          );
+        }
       },
       reject: (type: ConfirmEventType) => {
         callModalToast(
@@ -175,5 +211,13 @@ export class InventarioItemListComponent implements OnInit, OnDestroy {
       return result;
     }
     return false;
+  }
+
+  openExcelUploadModal() {
+    this.showExcelUploadModal = !this.showExcelUploadModal;
+  }
+
+  handleShowExcelUploadModalChange(show: boolean) {
+    this.showExcelUploadModal = show;
   }
 }

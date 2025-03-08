@@ -7,6 +7,8 @@ import { SpeseFisseModalComponent } from './spese-fisse-modal/spese-fisse-modal.
 import { CommonModule } from '@angular/common';
 import { ListIncassiModalComponent } from './list-incassi-modal/list-incassi-modal.component';
 import { StatsModalComponent } from './stats-modal/stats-modal.component';
+import { AcquistiModalComponent } from './acquisti-modal/acquisti-modal.component';
+import { TelefoniModalComponent } from './telefoni-modal/telefoni-modal.component';
 
 @NgModule({
   declarations: [
@@ -16,6 +18,8 @@ import { StatsModalComponent } from './stats-modal/stats-modal.component';
     ListIncassiModalComponent,
     AdminToolsModalComponent,
     StatsModalComponent,
+    AcquistiModalComponent,
+    TelefoniModalComponent,
   ],
   imports: [CommonModule, SharedModule],
   exports: [
@@ -25,6 +29,8 @@ import { StatsModalComponent } from './stats-modal/stats-modal.component';
     ListIncassiModalComponent,
     AdminToolsModalComponent,
     StatsModalComponent,
+    AcquistiModalComponent,
+    TelefoniModalComponent,
   ],
 })
 export class ModalComponentsModule {}

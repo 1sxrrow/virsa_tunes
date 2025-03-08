@@ -11,9 +11,18 @@
       "prefix": "app",
       "architect": {
         "build": {
-          "builder": "@angular-devkit/build-angular:browser",
+          "builder": "@angular-builders/custom-webpack:browser",
           "options": {
-            "allowedCommonJsDependencies": ["exceljs", "file-saver", "crypto-js", "lodash"],
+            "customWebpackConfig": {
+              "path": "webpack.config.js"
+            },
+            "allowedCommonJsDependencies": [
+              "exceljs",
+              "file-saver",
+              "crypto-js",
+              "lodash",
+              "pako"
+            ],
             "outputPath": "dist/virsa_tunes",
             "index": "src/index.html",
             "main": "src/main.ts",
@@ -26,15 +35,17 @@
                 "glob": "**/*.css",
                 "input": "src/assets/themes/",
                 "output": "/assets/themes/"
+              },
+              {
+                "glob": "**/*",
+                "input": "src/app/shared/workers",
+                "output": "/assets/workers"
               }
             ],
-            "styles": [
-              "src/styles.scss"
-            ],
+            "styles": ["src/styles.scss"],
             "stylePreprocessorOptions": {
               "includePaths": ["src/styles"]
             },
-
             "scripts": []
           },
           "configurations": {
@@ -65,7 +76,10 @@
           "defaultConfiguration": "production"
         },
         "serve": {
-          "builder": "@angular-devkit/build-angular:dev-server",
+          "builder": "@angular-builders/custom-webpack:dev-server",
+          "options": {
+            "browserTarget": "virsa_tunes:build"
+          },
           "configurations": {
             "production": {
               "browserTarget": "virsa_tunes:build:production"

@@ -19,5 +19,6 @@
   "angularCompilerOptions": {
     "enableI18nLegacyMessageIdFormat": false
   },
-  "typeRoots": ["node_modules/@types"]
+  "typeRoots": ["node_modules/@types"],
+  "exclude": ["src/app/shared/workers/**/*.ts"]
 }

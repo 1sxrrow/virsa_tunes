@@ -22,12 +22,14 @@ import { callModalToast, UploadEvent } from 'src/app/shared/utils/common-utils';
 export class AdminToolsModalComponent implements OnInit {
   @Input() showAdminModal: boolean;
   @Output() showAdminModalChange = new EventEmitter<boolean>();
+
   showIncassiModal: boolean;
+  showAcquistiModal: boolean;
+  showTelefoniModal: boolean;
   showUploadComponent: boolean;
   showStatsModal: boolean;
   ambiente: string;
   FileJSON: File;
-
 
   constructor(
     private firebaseApp: FirebaseApp,
@@ -48,7 +50,15 @@ export class AdminToolsModalComponent implements OnInit {
   handleShowIncassiModalChange(show: boolean) {
     this.showIncassiModal = show;
   }
-  
+
+  handleShowAcquistiModalChange(show: boolean) {
+    this.showAcquistiModal = show;
+  }
+
+  handleShowTelefoniModalChange(show: boolean) {
+    this.showTelefoniModal = show;
+  }
+
   handleShowStatsModalChange(show: boolean) {
     this.showStatsModal = show;
   }
@@ -63,6 +73,14 @@ export class AdminToolsModalComponent implements OnInit {
 
   showStatsModalMethod() {
     this.showStatsModal = !this.showStatsModal;
+  }
+
+  showAcquistiModalMethod() {
+    this.showAcquistiModal = !this.showAcquistiModal;
+  }
+
+  showTelefoniModalMethod() {
+    this.showTelefoniModal = !this.showTelefoniModal;
   }
 
   async exportFirebaseDatabaseToJSON() {

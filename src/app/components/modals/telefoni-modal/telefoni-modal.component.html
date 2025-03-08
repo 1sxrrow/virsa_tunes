@@ -1,0 +1,80 @@
+<p-dialog
+  [(visible)]="showTelefoniModal"
+  [style]="{ width: '60%' }"
+  [modal]="true"
+  (onHide)="handleClose()"
+>
+  <ng-template pTemplate="header">
+    <div
+      class="flex align-items-center justify-between gap-2 w-full col-span-3"
+    >
+      <span class="font-bold text-2xl">
+        {{ "modals.telefoni.title" | translate }}
+      </span>
+    </div>
+    <p-button
+      icon="pi pi-file-excel"
+      class="w-full mr-2"
+      [ngStyle]="{ width: 'inherit' }"
+      (click)="exportToCSV()"
+      severity="primary"
+    ></p-button>
+  </ng-template>
+  <span class="p-input-icon-left w-full mb-2 mt-2">
+    <i class="pi pi-search"></i>
+    <input
+      type="text"
+      pInputText
+      placeholder="Ricerca Cliente"
+      class="fields fieldsSearch"
+      (input)="table.filterGlobal($event.target.value, 'contains')"
+    />
+  </span>
+  <ng-container *ngIf="telefoniShow$ | async as telefoniShow; else loading">
+    <p-table
+      #table
+      [value]="telefoniShow"
+      [loading]="loadingTable"
+      [globalFilterFields]="['cliente', 'telefono']"
+    >
+      <ng-template pTemplate="header">
+        <tr>
+          <th>{{ "modals.telefoni.cliente" | translate }}</th>
+          <th>{{ "modals.telefoni.telefono" | translate }}</th>
+        </tr>
+      </ng-template>
+      <ng-template pTemplate="body" let-rowData>
+        <tr>
+          <td>{{ rowData.cliente }}</td>
+          <td>
+            +39 {{ rowData.telefono }}
+            <a
+              [href]="'whatsapp://send?phone=' + rowData.telefono"
+              target="_blank"
+              class="ml-2"
+              [attr.disabled]="!rowData.telefono ? true : null"
+            >
+              <i class="pi pi-whatsapp text-xl"></i>
+            </a>
+          </td>
+        </tr>
+      </ng-template>
+      <ng-template pTemplate="emptymessage">
+        <tr>
+          <td colspan="13" class="text-center">
+            {{ "Nessun acquisto disponibile" | translate }}
+          </td>
+        </tr>
+      </ng-template>
+    </p-table>
+  </ng-container>
+  <ng-template #loading>
+    <p-table [loading]="true">
+      <ng-template pTemplate="header">
+        <tr>
+          <th>Loading...</th>
+        </tr>
+      </ng-template>
+    </p-table>
+  </ng-template>
+</p-dialog>

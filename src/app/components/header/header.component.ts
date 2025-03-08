@@ -3,6 +3,7 @@ import {
   ChangeDetectionStrategy,
   Component,
   EventEmitter,
+  OnInit,
   Output,
   ViewEncapsulation,
 } from '@angular/core';
@@ -13,6 +14,7 @@ import { Observable } from 'rxjs';
 import { PrintService } from 'src/app/shared/services/print/recipe-print.service';
 import { ThemeService } from 'src/app/shared/services/theme/theme.service';
 import { AuthService } from '../login/auth.service';
+import { appName } from 'src/app/app.module';
 
 @Component({
   selector: 'app-header',
@@ -21,13 +23,18 @@ import { AuthService } from '../login/auth.service';
   encapsulation: ViewEncapsulation.None,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class HeaderComponent implements AfterViewInit {
+export class HeaderComponent implements OnInit, AfterViewInit {
+  @Output() isSidenavOpen = new EventEmitter<boolean>();
+
+  appName: string;
+
   currentTheme$: Observable<string>;
   currentTheme: string;
-  @Output() isSidenavOpen = new EventEmitter<boolean>();
+
   isSidenavOpenChange = false;
   isLogin = true;
   isRotated = false;
+
   databaseObj = {
     label: 'Database',
     icon: 'pi pi-database',
@@ -52,7 +59,16 @@ export class HeaderComponent implements AfterViewInit {
     },
   };
 
+  logoutObj = {
+    label: 'Logout',
+    icon: 'pi pi-sign-out',
+    command: () => {
+      this.logout();
+    },
+  };
+
   items: MenuItem[] | undefined = [
+    this.logoutObj,
     this.stampanteObj,
     this.inventarioObj,
     // this.prodEnv,
@@ -64,7 +80,11 @@ export class HeaderComponent implements AfterViewInit {
     private printService: PrintService,
     private firebaseApp: FirebaseApp,
     private themeService: ThemeService
-  ) {
+  ) {}
+
+  ngOnInit(): void {
+    debugger;
+    this.appName = appName;
     this.router.events.subscribe((event) => {
       if (event instanceof NavigationEnd) {
         if (event.urlAfterRedirects.includes('inventario')) {
@@ -137,6 +157,11 @@ export class HeaderComponent implements AfterViewInit {
 
   toggleTheme(): void {
     this.themeService.switchTheme();
+  }
+
+  logout(): void {
+    this.authService.logout();
+    this.router.navigate(['login']);
   }
 
   get buttonTheme() {

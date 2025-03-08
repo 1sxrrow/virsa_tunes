@@ -5,35 +5,65 @@
   [(visible)]="showAdminModal"
   (onHide)="handleClose()"
 >
-  <div class="grid grid-cols-4 p-3 place-items-center gap-2">
+  <div class="grid grid-cols-3 lg:grid-cols-6 p-3 place-items-center gap-2">
     <p-button
-      label="Export DB"
+      icon="pi pi-file-export"
+      pTooltip="Export Db"
+      tooltipPosition="bottom"
       (click)="exportFirebaseDatabaseToJSON()"
-      class="mr-2 truncate"
+      class="lg:mr-2"
+      [ngStyle]="{ width: 'inherit' }"
       styleClass="p-button-secondary"
     ></p-button>
     <p-button
-      label="Import DB"
+      icon="pi pi-file-import"
+      pTooltip="Import Db"
+      tooltipPosition="bottom"
       (click)="showUploadComponentMethod()"
-      class="mr-2 truncate"
+      class="lg:mr-2"
+      [ngStyle]="{ width: 'inherit' }"
       styleClass="p-button-secondary"
     ></p-button>
     <p-button
-      label="Incassi"
+      icon="pi pi-euro"
+      pTooltip="Incassi"
+      tooltipPosition="bottom"
       (click)="showIncassiModalMethod()"
-      class="mr-2 truncate"
+      class="lg:mr-2 w-full"
+      [ngStyle]="{ width: 'inherit' }"
       styleClass="p-button-secondary"
     ></p-button>
     <p-button
-      label="Statistiche"
-      class="truncate"
+      icon="pi pi-chart-bar"
+      pTooltip="Statistiche"
+      tooltipPosition="bottom"
+      class="w-full"
+      [ngStyle]="{ width: 'inherit' }"
       (click)="showStatsModalMethod()"
+      styleClass="p-button-secondary"
+    ></p-button>
+    <p-button
+      icon="pi pi-shopping-bag"
+      pTooltip="Lista acquisti"
+      tooltipPosition="bottom"
+      class="w-full"
+      [ngStyle]="{ width: 'inherit' }"
+      (click)="showAcquistiModalMethod()"
+      styleClass="p-button-secondary"
+    ></p-button>
+    <p-button
+      icon="pi pi-mobile"
+      pTooltip="Lista numeri telefoni"
+      tooltipPosition="bottom"
+      class="w-full"
+      [ngStyle]="{ width: 'inherit' }"
+      (click)="showTelefoniModalMethod()"
       styleClass="p-button-secondary"
     ></p-button>
     <p-button
       [hidden]="true"
       [label]="ambiente === 'test' ? 'Passa a Produzione' : 'Passa a Test'"
-      class="truncate"
+      class="w-full"
       (click)="passaggioAmbiente()"
       styleClass="p-button-info"
     ></p-button>
@@ -68,4 +98,14 @@
   [(showStatsModal)]="showStatsModal"
   [canaleComResults]="canaleComResults"
   (showIncassiModalChange)="handleShowStatsModalChange($event)"
+/>
+<acquisti-modal
+  *ngIf="showAcquistiModal"
+  [(showAcquistiModal)]="showAcquistiModal"
+  (showAcquistiModalChange)="handleShowAcquistiModalChange($event)"
+/>
+<telefoni-modal
+  *ngIf="showTelefoniModal"
+  [(showTelefoniModal)]="showTelefoniModal"
+  (showTelefoniModalChange)="handleShowTelefoniModalChange($event)"
 />

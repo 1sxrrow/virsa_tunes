@@ -7,10 +7,10 @@ import { HttpClient, HttpClientModule } from '@angular/common/http';
 import localeIt from '@angular/common/locales/it';
 import {
   APP_INITIALIZER,
+  InjectionToken,
   isDevMode,
   LOCALE_ID,
   NgModule,
-  InjectionToken,
 } from '@angular/core';
 import { initializeApp, provideFirebaseApp } from '@angular/fire/app';
 import { FIREBASE_OPTIONS } from '@angular/fire/compat';
@@ -31,8 +31,8 @@ import { AppComponent } from './app.component';
 import { routes } from './app.routes';
 import { FooterComponent } from './components/footer/footer.component';
 import { HeaderComponent } from './components/header/header.component';
-import { SharedModule } from './shared/shared.module';
 import { ThemeService } from './shared/services/theme/theme.service';
+import { SharedModule } from './shared/shared.module';
 registerLocaleData(localeIt);
 
 export function HttpLoaderFactory(httpClient: HttpClient) {
@@ -46,6 +46,7 @@ export const IS_DEV_MODE = new InjectionToken<boolean>('isDevMode', {
   providedIn: 'root',
   factory: () => isDevMode(),
 });
+export const appName = process.env.APP_NAME;
 const firebaseConfig = isDevMode() ? devFirebaseConfig : prodFirebaseConfig;
 const dbname = isDevMode() ? 'dev' : 'prod';
 

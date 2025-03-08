@@ -7,7 +7,6 @@ import { UserDataComponent } from './user-data/user-data.component';
 import { UserDataModalComponent } from './user-data-modal/user-data-modal.component';
 import { ModalComponentsModule } from '../modals/modals.module';
 import { UserListModalComponent } from './user-list-modal/user-list-modal.component';
-import { CircleSpinnerComponent } from 'src/app/shared/components/circle-spinner/circle-spinner.component';
 
 @NgModule({
   declarations: [

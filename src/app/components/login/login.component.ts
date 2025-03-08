@@ -2,15 +2,14 @@ import {
   Component,
   ElementRef,
   Inject,
+  OnInit,
   ViewChild,
   ViewEncapsulation,
 } from '@angular/core';
-import { AngularFireAuth } from '@angular/fire/compat/auth';
 import { Router } from '@angular/router';
 import { updateProfile } from 'firebase/auth';
-import { environmentValues } from 'src/app/shared/utils/enviromentValues';
+import { appName, IS_DEV_MODE } from 'src/app/app.module';
 import { AuthService } from './auth.service';
-import { IS_DEV_MODE } from 'src/app/app.module';
 
 @Component({
   selector: 'app-login',
@@ -18,7 +17,8 @@ import { IS_DEV_MODE } from 'src/app/app.module';
   styleUrls: ['./login.component.scss'],
   encapsulation: ViewEncapsulation.None,
 })
-export class LoginComponent {
+export class LoginComponent implements OnInit {
+  appName: string;
   passwordValue: string;
   emailValue: string;
   emailError = false;
@@ -32,38 +32,28 @@ export class LoginComponent {
   @ViewChild('emailHelp') emailHelp: ElementRef;
 
   constructor(
-    public afAuth: AngularFireAuth,
     private authService: AuthService,
     private router: Router,
     @Inject(IS_DEV_MODE) public isDevMode: boolean
-  ) {
-    if (this.isDevMode) {
-      this.emailValue = environmentValues.emailValue;
-      this.passwordValue = environmentValues.passwordValue;
-      this.CheckLogin();
-    }
+  ) {}
+
+  ngOnInit(): void {
+    this.appName = appName;
+    this.autoLogin();
   }
 
   CheckLogin() {
     this.loading = true;
-    this.afAuth
-      .signInWithEmailAndPassword(this.emailValue, this.passwordValue)
-      .then((result) => {
-        this.authService.setUserState(result.user);
-        //set user in memory
-        localStorage.setItem(
-          'user',
-          JSON.stringify(this.authService.getUserState())
-        );
-        JSON.parse(localStorage.getItem('user'));
-
+    this.authService.login(this.emailValue, this.passwordValue).subscribe(
+      (result) => {
         this.checkUsername(result.user);
         this.router.navigate(['/users']);
-      })
-      .catch((error) => {
+      },
+      (error) => {
         this.loading = false;
         this.checkError(error);
-      });
+      }
+    );
   }
 
   checkError(error) {
@@ -88,6 +78,10 @@ export class LoginComponent {
         this.errorMessage = 'Campo email errato';
         this.emailError = true;
         break;
+      case 'Firebase: Error (auth/invalid-login-credentials).':
+        this.errorMessage = 'Credenziali errate';
+        this.emailError = true;
+        break;
       default:
         console.log('entrato in default');
         break;
@@ -108,6 +102,14 @@ export class LoginComponent {
       });
     } else {
       console.log('displayName already set!');
+    }
+  }
+
+  private autoLogin() {
+    if (this.isDevMode && process.env.AUTO_LOGIN == 'true') {
+      this.emailValue = process.env.SECOND_ADMIN_USER;
+      this.passwordValue = process.env.SECOND_ADMIN_PWD;
+      this.CheckLogin();
     }
   }
 }

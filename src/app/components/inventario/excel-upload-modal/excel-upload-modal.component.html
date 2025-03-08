@@ -1,0 +1,39 @@
+<p-dialog
+  [header]="modalTitle"
+  [(visible)]="showModal"
+  [style]="{ 'min-width': '600px' }"
+  [modal]="true"
+  (onHide)="handleClose()"
+  [style]="{
+    'overflow-y': 'hidden',
+    width: 'full',
+    'max-width': '1400px',
+    'min-width': '700px'
+  }"
+>
+  <p-fileUpload
+    [showUploadButton]="false"
+    [showCancelButton]="false"
+    (onSelect)="onUploadFile($event)"
+    [multiple]="false"
+    mode="advanced"
+    [accept]="'.xls,.xlsx,.xlsm'"
+  >
+  </p-fileUpload>
+  <div class="mt-2">
+    <p-progressBar
+      *ngIf="carica"
+      mode="indeterminate"
+      [style]="{ height: '6px' }"
+    ></p-progressBar>
+  </div>
+  <div class="grid grid-cols-4 p-3">
+    <p-button
+      label="Carica"
+      [disabled]="!FileExcel"
+      (click)="onUpload()"
+      class="col-start-4 flex justify-end"
+      styleClass="p-button-info"
+    ></p-button>
+  </div>
+</p-dialog>
