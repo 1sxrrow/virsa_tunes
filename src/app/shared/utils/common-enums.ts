@@ -18,6 +18,7 @@ export enum canaleComunicazione {
   'Nessuno',
   'Sub',
   'WEFIX',
+  'DGTALE',
 }
 
 export enum condizioniProdotto {
