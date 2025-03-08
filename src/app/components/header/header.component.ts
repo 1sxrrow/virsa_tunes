@@ -24,13 +24,17 @@ import { appName } from 'src/app/app.module';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class HeaderComponent implements OnInit, AfterViewInit {
+  @Output() isSidenavOpen = new EventEmitter<boolean>();
+
   appName: string;
+
   currentTheme$: Observable<string>;
   currentTheme: string;
-  @Output() isSidenavOpen = new EventEmitter<boolean>();
+
   isSidenavOpenChange = false;
   isLogin = true;
   isRotated = false;
+
   databaseObj = {
     label: 'Database',
     icon: 'pi pi-database',
@@ -79,6 +83,7 @@ export class HeaderComponent implements OnInit, AfterViewInit {
   ) {}
 
   ngOnInit(): void {
+    debugger;
     this.appName = appName;
     this.router.events.subscribe((event) => {
       if (event instanceof NavigationEnd) {
