@@ -78,14 +78,14 @@
         "serve": {
           "builder": "@angular-builders/custom-webpack:dev-server",
           "options": {
-            "browserTarget": "virsa_tunes:build"
+            "buildTarget": "virsa_tunes:build"
           },
           "configurations": {
             "production": {
-              "browserTarget": "virsa_tunes:build:production"
+              "buildTarget": "virsa_tunes:build:production"
             },
             "development": {
-              "browserTarget": "virsa_tunes:build:development"
+              "buildTarget": "virsa_tunes:build:development"
             }
           },
           "defaultConfiguration": "development"
@@ -93,7 +93,7 @@
         "extract-i18n": {
           "builder": "@angular-devkit/build-angular:extract-i18n",
           "options": {
-            "browserTarget": "virsa_tunes:build"
+            "buildTarget": "virsa_tunes:build"
           }
         },
         "test": {
@@ -116,7 +116,7 @@
           "builder": "@angular/fire:deploy",
           "options": {
             "version": 2,
-            "browserTarget": "virsa_tunes:build:production"
+            "buildTarget": "virsa_tunes:build:production"
           }
         }
       }

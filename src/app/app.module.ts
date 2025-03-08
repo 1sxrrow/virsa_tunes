@@ -12,7 +12,7 @@ import {
   LOCALE_ID,
   NgModule,
 } from '@angular/core';
-import { initializeApp, provideFirebaseApp } from '@angular/fire/app';
+import { AngularFireModule } from '@angular/fire/compat';
 import { FIREBASE_OPTIONS } from '@angular/fire/compat';
 import { getDatabase, provideDatabase } from '@angular/fire/database';
 import { BrowserModule } from '@angular/platform-browser';
@@ -68,11 +68,11 @@ const dbname = isDevMode() ? 'dev' : 'prod';
       },
     }),
     HttpClientModule,
-    provideFirebaseApp(() => initializeApp(firebaseConfig, dbname)),
-    provideDatabase(() => getDatabase()),
+    AngularFireModule.initializeApp(firebaseConfig, dbname),
   ],
   providers: [
     { provide: FIREBASE_OPTIONS, useValue: firebaseConfig },
+    provideDatabase(() => getDatabase()),
     CurrencyPipe,
     { provide: LOCALE_ID, useValue: 'it-IT' },
     MessageService,

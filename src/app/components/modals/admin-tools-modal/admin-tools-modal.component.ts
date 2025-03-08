@@ -6,7 +6,6 @@ import {
   Output,
   ViewEncapsulation,
 } from '@angular/core';
-import { FirebaseApp } from '@angular/fire/app';
 import {
   ConfirmationService,
   ConfirmEventType,
@@ -32,14 +31,12 @@ export class AdminToolsModalComponent implements OnInit {
   FileJSON: File;
 
   constructor(
-    private firebaseApp: FirebaseApp,
     private messageService: MessageService,
     private firebaseStoreService: FirebaseStoreService,
     private confirmationService: ConfirmationService
   ) {}
 
   ngOnInit(): void {
-    this.ambiente = this.firebaseApp.name;
   }
 
   handleClose() {

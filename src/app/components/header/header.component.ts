@@ -7,7 +7,6 @@ import {
   Output,
   ViewEncapsulation,
 } from '@angular/core';
-import { FirebaseApp } from '@angular/fire/app';
 import { NavigationEnd, Router } from '@angular/router';
 import { MenuItem } from 'primeng/api';
 import { Observable } from 'rxjs';
@@ -78,7 +77,6 @@ export class HeaderComponent implements OnInit, AfterViewInit {
     private router: Router,
     private authService: AuthService,
     private printService: PrintService,
-    private firebaseApp: FirebaseApp,
     private themeService: ThemeService
   ) {}
 
