@@ -59,7 +59,7 @@ jobs:
 
       - name: Build the project
         if: success()
-        run: npm run build --prod
+        run: npm run build --omit=dev
         env:
           ENV: "production"
           APP_NAME: "Virsa Tunes"

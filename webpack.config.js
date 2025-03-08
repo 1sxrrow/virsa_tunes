@@ -13,52 +13,24 @@ if (process.env.ENV !== "production") {
   );
 } else {
   plugins.push(
-    new webpack.DefinePlugin({
-      "process.env.ENV": JSON.stringify(process.env.ENV),
-      "process.env.APP_NAME": JSON.stringify(process.env.APP_NAME),
-      "process.env.PROD_FIREBASE_API_KEY": JSON.stringify(
-        process.env.PROD_FIREBASE_API_KEY
-      ),
-      "process.env.PROD_FIREBASE_AUTH_DOMAIN": JSON.stringify(
-        process.env.PROD_FIREBASE_AUTH_DOMAIN
-      ),
-      "process.env.PROD_FIREBASE_DATABASE_URL": JSON.stringify(
-        process.env.PROD_FIREBASE_DATABASE_URL
-      ),
-      "process.env.PROD_FIREBASE_PROJECT_ID": JSON.stringify(
-        process.env.PROD_FIREBASE_PROJECT_ID
-      ),
-      "process.env.PROD_FIREBASE_STORAGE_BUCKET": JSON.stringify(
-        process.env.PROD_FIREBASE_STORAGE_BUCKET
-      ),
-      "process.env.PROD_FIREBASE_MESSAGING_SENDER_ID": JSON.stringify(
-        process.env.PROD_FIREBASE_MESSAGING_SENDER_ID
-      ),
-      "process.env.PROD_FIREBASE_APP_ID": JSON.stringify(
-        process.env.PROD_FIREBASE_APP_ID
-      ),
-      "process.env.DEV_FIREBASE_API_KEY": JSON.stringify(
-        process.env.DEV_FIREBASE_API_KEY
-      ),
-      "process.env.DEV_FIREBASE_AUTH_DOMAIN": JSON.stringify(
-        process.env.DEV_FIREBASE_AUTH_DOMAIN
-      ),
-      "process.env.DEV_FIREBASE_DATABASE_URL": JSON.stringify(
-        process.env.DEV_FIREBASE_DATABASE_URL
-      ),
-      "process.env.DEV_FIREBASE_PROJECT_ID": JSON.stringify(
-        process.env.DEV_FIREBASE_PROJECT_ID
-      ),
-      "process.env.DEV_FIREBASE_STORAGE_BUCKET": JSON.stringify(
-        process.env.DEV_FIREBASE_STORAGE_BUCKET
-      ),
-      "process.env.DEV_FIREBASE_MESSAGING_SENDER_ID": JSON.stringify(
-        process.env.DEV_FIREBASE_MESSAGING_SENDER_ID
-      ),
-      "process.env.DEV_FIREBASE_APP_ID": JSON.stringify(
-        process.env.DEV_FIREBASE_APP_ID
-      ),
-    })
+    new webpack.EnvironmentPlugin([
+      "ENV",
+      "APP_NAME",
+      "PROD_FIREBASE_API_KEY",
+      "PROD_FIREBASE_AUTH_DOMAIN",
+      "PROD_FIREBASE_DATABASE_URL",
+      "PROD_FIREBASE_PROJECT_ID",
+      "PROD_FIREBASE_STORAGE_BUCKET",
+      "PROD_FIREBASE_MESSAGING_SENDER_ID",
+      "PROD_FIREBASE_APP_ID",
+      "DEV_FIREBASE_API_KEY",
+      "DEV_FIREBASE_AUTH_DOMAIN",
+      "DEV_FIREBASE_DATABASE_URL",
+      "DEV_FIREBASE_PROJECT_ID",
+      "DEV_FIREBASE_STORAGE_BUCKET",
+      "DEV_FIREBASE_MESSAGING_SENDER_ID",
+      "DEV_FIREBASE_APP_ID",
+    ])
   );
 }
 
