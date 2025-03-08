@@ -48,3 +48,4 @@ Thumbs.db
 
 # Env
 *.env
+*.env_test_app
