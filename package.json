@@ -1,6 +1,6 @@
 {
   "name": "test_app",
-  "version": "1.0.5",
+  "version": "1.0.6",
   "scripts": {
     "ng": "ng",
     "start": "node -r dotenv/config ./node_modules/@angular/cli/bin/ng serve",
