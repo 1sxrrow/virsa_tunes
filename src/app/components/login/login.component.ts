@@ -78,6 +78,10 @@ export class LoginComponent implements OnInit {
         this.errorMessage = 'Campo email errato';
         this.emailError = true;
         break;
+      case 'Firebase: Error (auth/invalid-login-credentials).':
+        this.errorMessage = 'Credenziali errate';
+        this.emailError = true;
+        break;
       default:
         console.log('entrato in default');
         break;
