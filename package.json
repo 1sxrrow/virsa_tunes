@@ -11,17 +11,17 @@
   "postcss:watch": "postcss src/style.css --use postcss-import --dir public --watch",
   "private": true,
   "dependencies": {
-    "@angular/animations": "^16.0.0",
+    "@angular/animations": "^17.3.12",
     "@angular/cdk": "^16.2.12",
-    "@angular/common": "^16.0.0",
-    "@angular/compiler": "^16.0.0",
-    "@angular/core": "^16.0.0",
+    "@angular/common": "^17.3.12",
+    "@angular/compiler": "^17.3.12",
+    "@angular/core": "^17.3.12",
     "@angular/fire": "^7.6.1",
-    "@angular/forms": "^16.0.0",
+    "@angular/forms": "^17.3.12",
     "@angular/material": "^16.2.12",
-    "@angular/platform-browser": "^16.0.0",
-    "@angular/platform-browser-dynamic": "^16.0.0",
-    "@angular/router": "^16.0.0",
+    "@angular/platform-browser": "^17.3.12",
+    "@angular/platform-browser-dynamic": "^17.3.12",
+    "@angular/router": "^17.3.12",
     "@manhnd/esc-pos-encoder": "^1.0.25",
     "@ng-bootstrap/ng-bootstrap": "^15.0.1",
     "@ng-select/ng-select": "^11.2.0",
@@ -57,14 +57,14 @@
     "web-animations-js": "^2.3.2",
     "webpack": "^5.98.0",
     "webpack-cli": "^6.0.1",
-    "zone.js": "^0.13.3"
+    "zone.js": "^0.14.10"
   },
   "devDependencies": {
     "@angular-builders/custom-webpack": "^16.0.1",
     "@angular-devkit/build-angular": "^16.0.1",
     "@angular/cli": "^18.2.11",
-    "@angular/compiler-cli": "^16.0.0",
-    "@angular/localize": "^16.0.0",
+    "@angular/compiler-cli": "^17.3.12",
+    "@angular/localize": "^17.3.12",
     "@types/crypto-js": "^4.2.2",
     "@types/jasmine": "~4.3.0",
     "@types/lodash": "^4.17.13",
@@ -78,6 +78,6 @@
     "postcss-import": "^15.1.0",
     "postcss-nesting": "^12.0.2",
     "tailwindcss": "^3.3.2",
-    "typescript": "~5.0.2"
+    "typescript": "~5.4.5"
   }
 }

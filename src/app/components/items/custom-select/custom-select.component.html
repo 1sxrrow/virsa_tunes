@@ -14,7 +14,7 @@
     [name]="specificName"
     [id]="specificName"
     (change)="onSelectionChange($event)"
-    [(ngModel)]="formControlName ? selectElement : internalValue"
+    [ngModel]="formControlName ? selectElement : internalValue" (ngModelChange)="formControlName ? selectElement : internalValue = $event"
     [disabled]="isDisabled"
   >
     <option [ngValue]="null" disabled>Seleziona {{ label }}</option>
