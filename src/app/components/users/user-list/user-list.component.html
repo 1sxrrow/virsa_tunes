@@ -43,7 +43,7 @@
                 pTooltip="Aggiungi Utente"
                 tooltipPosition="top"
                 (click)="addUser()"
-                styleClass="p-button-success"
+                severity="primary"
               ></p-button>
             </div>
             <div class="p-toolbar-group-center flex-container">
@@ -66,7 +66,6 @@
                 pTooltip="Admin Tools"
                 tooltipPosition="top"
                 (click)="showAdminToolsModal()"
-                styleClass="p-button-info"
               ></p-button>
             </div>
           </p-toolbar>
@@ -127,29 +126,22 @@
                 <p-button
                   pTooltip="Info"
                   tooltipPosition="bottom"
-                  type="button"
                   icon="pi pi-info-circle"
                   class="mr-2"
                   (click)="editUser(user)"
-                  styleClass="p-button-info"
                 />
                 <p-button
                   pTooltip="Cancella Utente"
                   tooltipPosition="bottom"
-                  type="button"
                   icon="pi pi-times-circle"
                   (click)="confirmDeleteUser(user.id)"
-                  styleClass="p-button-danger"
                 />
               </td>
             </tr>
           </ng-template>
         </ng-container>
 
-        <ng-template
-          *ngIf="users.length === 0"
-          pTemplate="emptymessage"
-        >
+        <ng-template *ngIf="users.length === 0" pTemplate="emptymessage">
           <tr>
             <td colspan="7">Nessun cliente trovato.</td>
           </tr>

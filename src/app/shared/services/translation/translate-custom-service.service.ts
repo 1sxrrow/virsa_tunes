@@ -1,11 +1,11 @@
 import { Injectable } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
-import { PrimeNGConfig } from 'primeng/api';
+import { PrimeNG } from 'primeng/config';
 
 @Injectable({ providedIn: 'root' })
 export class TranslateCustomService {
   constructor(
-    public primeNgConfig: PrimeNGConfig,
+    public primeNgConfig: PrimeNG,
     public translateService: TranslateService
   ) {
     this.translateService.addLangs(['it', 'en']);

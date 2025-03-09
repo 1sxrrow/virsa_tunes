@@ -14,7 +14,7 @@ import { DropdownModule } from 'primeng/dropdown';
 import { FileUploadModule } from 'primeng/fileupload';
 import { InputNumberModule } from 'primeng/inputnumber';
 import { InputTextModule } from 'primeng/inputtext';
-import { InputTextareaModule } from 'primeng/inputtextarea';
+import { TextareaModule } from 'primeng/textarea';
 import { KeyFilterModule } from 'primeng/keyfilter';
 import { OverlayPanelModule } from 'primeng/overlaypanel';
 import { ProgressBarModule } from 'primeng/progressbar';
@@ -54,7 +54,7 @@ import { TruncatePipe } from './pipes/truncate.pipe';
     BreadcrumbModule,
     FileUploadModule,
     ProgressBarModule,
-    InputTextareaModule,
+    TextareaModule,
     NgbModule,
     ButtonModule,
     TranslateModule,
@@ -80,7 +80,7 @@ import { TruncatePipe } from './pipes/truncate.pipe';
     BreadcrumbModule,
     FileUploadModule,
     ProgressBarModule,
-    InputTextareaModule,
+    TextareaModule,
     TableModule,
     NgbModule,
     DialogModule,

@@ -33,6 +33,7 @@ import { FooterComponent } from './components/footer/footer.component';
 import { HeaderComponent } from './components/header/header.component';
 import { ThemeService } from './shared/services/theme/theme.service';
 import { SharedModule } from './shared/shared.module';
+import { providePrimeNG } from 'primeng/config';
 registerLocaleData(localeIt);
 
 export function HttpLoaderFactory(httpClient: HttpClient) {
@@ -49,6 +50,9 @@ export const IS_DEV_MODE = new InjectionToken<boolean>('isDevMode', {
 export const appName = process.env.APP_NAME;
 const firebaseConfig = isDevMode() ? devFirebaseConfig : prodFirebaseConfig;
 const dbname = isDevMode() ? 'dev' : 'prod';
+import Aura from '@primeng/themes/aura';
+import { MyPreset } from 'src/mytheme';
+import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
 
 @NgModule({
   declarations: [AppComponent, HeaderComponent, FooterComponent],
@@ -83,6 +87,17 @@ const dbname = isDevMode() ? 'dev' : 'prod';
       multi: true,
     },
     { provide: IS_DEV_MODE, useFactory: () => isDevMode() },
+    provideAnimationsAsync(),
+    providePrimeNG({
+      theme: {
+        preset: MyPreset,
+        options: {
+          prefix: 'p',
+          darkModeSelector: 'system',
+          cssLayer: false,
+        },
+      },
+    }),
   ],
   bootstrap: [AppComponent],
 })

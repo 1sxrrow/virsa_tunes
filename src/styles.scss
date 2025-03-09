@@ -9,7 +9,8 @@
 /* PrimeNG */
 @import "src/assets/themes/lara-light-blue.css";
 @import "app/shared-styles.scss";
-@import "primeng/resources/primeng.css";
+// @import "primeng/resources/themes/lara-light-blue/theme.css"; // Update this line
+// @import "primeng/resources/primeng.min.css"; // Update this line
 @import "primeicons/primeicons.css";
 
 @import "~@ng-select/ng-select/themes/default.theme.css";
