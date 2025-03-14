@@ -1,6 +1,6 @@
 {
   "name": "virsa_tunes",
-  "version": "3.4.2",
+  "version": "3.4.3",
   "scripts": {
     "ng": "ng",
     "start": "node -r dotenv/config ./node_modules/@angular/cli/bin/ng serve",
