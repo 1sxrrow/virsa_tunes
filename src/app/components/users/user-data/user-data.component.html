@@ -137,7 +137,7 @@
             €
           </td>
           <td
-            class="grid grid-cols-4 md:grid-cols-4 sm:grid-cols-2 p-2 sm:p-6 place-items-center"
+            class="grid grid-cols-4 md:grid-cols-4 sm:grid-cols-2 p-2 sm:p-6 place-items-center gap-1"
           >
             <p-button
               styleClass="p-button-danger"
@@ -167,6 +167,13 @@
               pTooltip="Pdf Acquisto"
               tooltipPosition="bottom"
               (click)="createPdf(specificData)"
+            ></p-button>
+            <p-button
+              styleClass="p-button-success"
+              icon="pi pi-whatsapp"
+              pTooltip="Chat whatsapp"
+              tooltipPosition="bottom"
+              (click)="chatWhatsapp()"
             ></p-button>
           </td>
         </tr>

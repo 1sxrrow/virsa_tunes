@@ -123,7 +123,9 @@
                     : "Nessuna data presente"
                 }}
               </td>
-              <td>
+              <td
+                class="grid grid-cols-4 md:grid-cols-4 sm:grid-cols-2 p-2 sm:p-6 place-items-center gap-1"
+              >
                 <p-button
                   pTooltip="Info"
                   tooltipPosition="bottom"
@@ -141,15 +143,19 @@
                   (click)="confirmDeleteUser(user.id)"
                   styleClass="p-button-danger"
                 />
+                <p-button
+                  styleClass="p-button-success"
+                  icon="pi pi-whatsapp"
+                  pTooltip="Chat whatsapp"
+                  tooltipPosition="bottom"
+                  (click)="chatWhatsapp(user.numero_telefono)"
+                ></p-button>
               </td>
             </tr>
           </ng-template>
         </ng-container>
 
-        <ng-template
-          *ngIf="users.length === 0"
-          pTemplate="emptymessage"
-        >
+        <ng-template *ngIf="users.length === 0" pTemplate="emptymessage">
           <tr>
             <td colspan="7">Nessun cliente trovato.</td>
           </tr>

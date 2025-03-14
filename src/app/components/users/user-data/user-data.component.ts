@@ -392,4 +392,10 @@ export class UserDataComponent implements OnInit, OnDestroy {
       `${this.userData.nome}_${this.userData.cognome}_modulo_acquisto_cellulare.pdf`
     );
   }
+
+  chatWhatsapp() {
+    let whatsappCommand =
+      'whatsapp://send?phone=' + this.userData.numero_telefono;
+    window.location.href = whatsappCommand;
+  }
 }
