@@ -1,34 +1,43 @@
-import { Injectable } from '@angular/core';
+import { Injectable, OnDestroy } from '@angular/core';
+import { Subject, takeUntil } from 'rxjs';
+import { FirebaseListService } from 'src/app/shared/services/firebase/firebase-list.service';
 import { selectDataSet } from 'src/app/shared/types/custom-types';
-import {
-  garanzia,
-  gradoInventario,
-  marcaInventario,
-  negozioInventario,
-} from 'src/app/shared/utils/common-enums';
 
 @Injectable({ providedIn: 'root' })
-export class InventarioModalService {
+export class InventarioModalService implements OnDestroy {
   private negozioDataSet: selectDataSet[];
   private marcaDataSet: selectDataSet[];
   private gradoDataSet: selectDataSet[];
   private garanziaDataSet: selectDataSet[];
-  constructor() {}
 
-  private createDataSet(data: any): selectDataSet[] {
-    return Object.keys(data)
-      .filter((key) => isNaN(+key))
-      .map((key) => ({
-        value: key,
-        label: key,
-      }));
-  }
+  private destroy$ = new Subject<void>();
+  constructor(private firebaseListService: FirebaseListService) {}
 
   valDataSet() {
-    this.negozioDataSet = this.createDataSet(negozioInventario);
-    this.marcaDataSet = this.createDataSet(marcaInventario);
-    this.gradoDataSet = this.createDataSet(gradoInventario);
-    this.garanziaDataSet = this.createDataSet(garanzia);
+    this.firebaseListService
+      .getListValue('negozio')
+      .pipe(takeUntil(this.destroy$))
+      .subscribe((data) => {
+        this.negozioDataSet = data;
+      });
+    this.firebaseListService
+      .getListValue('marca')
+      .pipe(takeUntil(this.destroy$))
+      .subscribe((data) => {
+        this.marcaDataSet = data;
+      });
+    this.firebaseListService
+      .getListValue('grado')
+      .pipe(takeUntil(this.destroy$))
+      .subscribe((data) => {
+        this.gradoDataSet = data;
+      });
+    this.firebaseListService
+      .getListValue('garanzia')
+      .pipe(takeUntil(this.destroy$))
+      .subscribe((data) => {
+        this.garanziaDataSet = data;
+      });
   }
 
   getGradoDataSet(): selectDataSet[] {
@@ -45,5 +54,10 @@ export class InventarioModalService {
 
   getGaranziaDataSet(): selectDataSet[] {
     return this.garanziaDataSet;
+  }
+
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete;
   }
 }

@@ -1,21 +1,12 @@
-import { Injectable } from '@angular/core';
-import { selectDataSet } from 'src/app/shared/types/custom-types';
-import {
-  condizioniProdotto,
-  garanzia,
-  gradoInventario,
-  marcaInventario,
-  negozioInventario,
-  tipoIntervento,
-  tipoPagamento,
-  tipoParte,
-} from 'src/app/shared/utils/common-enums';
-import { UserDataService } from '../user-data/user-data.service';
+import { Injectable, OnDestroy } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
+import { Subject, takeUntil } from 'rxjs';
 import { SpecificDataModel } from 'src/app/shared/models/specific-data.model';
+import { FirebaseListService } from 'src/app/shared/services/firebase/firebase-list.service';
+import { selectDataSet } from 'src/app/shared/types/custom-types';
 
 @Injectable({ providedIn: 'root' })
-export class UserDataModalService {
+export class UserDataModalService implements OnDestroy {
   private tipoInterventoDataSet: selectDataSet[];
   private condizioniProdottoDataSet: selectDataSet[];
   private tipoPagamentoDataSet: selectDataSet[];
@@ -25,28 +16,61 @@ export class UserDataModalService {
   private gradoDataSet: selectDataSet[];
   private marcaDataSet: selectDataSet[];
 
-  constructor(private userDataService: UserDataService) {
+  private destroy$ = new Subject<void>();
+
+  constructor(private firebaseListService: FirebaseListService) {
     this.valDataSet();
   }
 
-  private createDataSet(data: any): selectDataSet[] {
-    return Object.keys(data)
-      .filter((key) => isNaN(+key))
-      .map((key) => ({
-        value: key,
-        label: key,
-      }));
-  }
-
   valDataSet() {
-    this.tipoInterventoDataSet = this.createDataSet(tipoIntervento);
-    this.condizioniProdottoDataSet = this.createDataSet(condizioniProdotto);
-    this.tipoPagamentoDataSet = this.createDataSet(tipoPagamento);
-    this.mesiGaranziaDataSet = this.createDataSet(garanzia);
-    this.tipoParteDataSet = this.createDataSet(tipoParte);
-    this.negozioDataSet = this.createDataSet(negozioInventario);
-    this.gradoDataSet = this.createDataSet(gradoInventario);
-    this.marcaDataSet = this.createDataSet(marcaInventario);
+    this.firebaseListService
+      .getListValue('tipoIntervento')
+      .pipe(takeUntil(this.destroy$))
+      .subscribe((data) => {
+        this.tipoInterventoDataSet = data;
+      });
+    this.firebaseListService
+      .getListValue('condizioniProdotto')
+      .pipe(takeUntil(this.destroy$))
+      .subscribe((data) => {
+        this.condizioniProdottoDataSet = data;
+      });
+    this.firebaseListService
+      .getListValue('tipoPagamento')
+      .pipe(takeUntil(this.destroy$))
+      .subscribe((data) => {
+        this.tipoPagamentoDataSet = data;
+      });
+    this.firebaseListService
+      .getListValue('garanzia')
+      .pipe(takeUntil(this.destroy$))
+      .subscribe((data) => {
+        this.mesiGaranziaDataSet = data;
+      });
+    this.firebaseListService
+      .getListValue('tipoParte')
+      .pipe(takeUntil(this.destroy$))
+      .subscribe((data) => {
+        this.tipoParteDataSet = data;
+      });
+    this.firebaseListService
+      .getListValue('negozio')
+      .pipe(takeUntil(this.destroy$))
+      .subscribe((data) => {
+        this.negozioDataSet = data;
+      });
+    this.firebaseListService
+      .getListValue('grado')
+      .pipe(takeUntil(this.destroy$))
+      .subscribe((data) => {
+        this.gradoDataSet = data;
+      });
+    this.firebaseListService
+      .getListValue('marca')
+      .pipe(takeUntil(this.destroy$))
+      .subscribe((data) => {
+        this.marcaDataSet = data;
+      });
   }
 
   getTipoInterventoDataSet(): selectDataSet[] {
@@ -257,5 +281,10 @@ export class UserDataModalService {
     });
 
     return filteredData;
+  }
+
+  ngOnDestroy() {
+    this.destroy$.next();
+    this.destroy$.complete();
   }
 }

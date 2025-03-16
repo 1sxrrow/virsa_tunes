@@ -28,6 +28,8 @@ export class AdminToolsModalComponent implements OnInit {
   showTelefoniModal: boolean;
   showUploadComponent: boolean;
   showStatsModal: boolean;
+  showListeModal: boolean;
+
   ambiente: string;
   FileJSON: File;
 
@@ -58,6 +60,10 @@ export class AdminToolsModalComponent implements OnInit {
   handleShowTelefoniModalChange(show: boolean) {
     this.showTelefoniModal = show;
   }
+  
+  handleShowListeModalChange(show: boolean) {
+    this.showListeModal = show;
+  }
 
   handleShowStatsModalChange(show: boolean) {
     this.showStatsModal = show;
@@ -81,6 +87,10 @@ export class AdminToolsModalComponent implements OnInit {
 
   showTelefoniModalMethod() {
     this.showTelefoniModal = !this.showTelefoniModal;
+  }
+  
+  showListeModalMethod() {
+    this.showListeModal = !this.showListeModal;
   }
 
   async exportFirebaseDatabaseToJSON() {

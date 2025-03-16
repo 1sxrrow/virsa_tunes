@@ -143,6 +143,9 @@
       "prezzo_acquisto": "Purchase Price €",
       "prezzo_online": "Online Price €",
       "prezzo_negozio": "Shop Price €"
+    },
+    "liste": {
+      "title": "Dropdown personalization"
     }
   }
 }

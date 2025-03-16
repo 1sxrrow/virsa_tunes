@@ -160,6 +160,9 @@
       "prezzo_acquisto": "Prezzo Acquisto €",
       "prezzo_online": "Prezzo Online €",
       "prezzo_negozio": "Prezzo Negozio €"
+    },
+    "liste": {
+      "title": "Personalizzazione dropdown"
     }
   }
 }
