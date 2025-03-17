@@ -3,7 +3,7 @@ import {
   CurrencyPipe,
   registerLocaleData,
 } from '@angular/common';
-import { HttpClient, HttpClientModule } from '@angular/common/http';
+import { HttpClient, provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
 import localeIt from '@angular/common/locales/it';
 import {
   APP_INITIALIZER,
@@ -54,51 +54,45 @@ import Aura from '@primeng/themes/aura';
 import { MyPreset } from 'src/mytheme';
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
 
-@NgModule({
-  declarations: [AppComponent, HeaderComponent, FooterComponent],
-  imports: [
-    CommonModule,
-    BrowserModule,
-    BrowserAnimationsModule,
-    ToastModule,
-    MenuModule,
-    SharedModule,
-    RouterModule.forRoot(routes),
-    TranslateModule.forRoot({
-      loader: {
-        provide: TranslateLoader,
-        useFactory: HttpLoaderFactory,
-        deps: [HttpClient],
-      },
-    }),
-    HttpClientModule,
-    AngularFireModule.initializeApp(firebaseConfig, dbname),
-  ],
-  providers: [
-    { provide: FIREBASE_OPTIONS, useValue: firebaseConfig },
-    provideDatabase(() => getDatabase()),
-    CurrencyPipe,
-    { provide: LOCALE_ID, useValue: 'it-IT' },
-    MessageService,
-    {
-      provide: APP_INITIALIZER,
-      useFactory: initializeThemeApp,
-      deps: [ThemeService],
-      multi: true,
-    },
-    { provide: IS_DEV_MODE, useFactory: () => isDevMode() },
-    provideAnimationsAsync(),
-    providePrimeNG({
-      theme: {
-        preset: MyPreset,
-        options: {
-          prefix: 'p',
-          darkModeSelector: 'system',
-          cssLayer: false,
+@NgModule({ declarations: [AppComponent, HeaderComponent, FooterComponent],
+    bootstrap: [AppComponent], imports: [CommonModule,
+        BrowserModule,
+        BrowserAnimationsModule,
+        ToastModule,
+        MenuModule,
+        SharedModule,
+        RouterModule.forRoot(routes),
+        TranslateModule.forRoot({
+            loader: {
+                provide: TranslateLoader,
+                useFactory: HttpLoaderFactory,
+                deps: [HttpClient],
+            },
+        }),
+        AngularFireModule.initializeApp(firebaseConfig, dbname)], providers: [
+        { provide: FIREBASE_OPTIONS, useValue: firebaseConfig },
+        provideDatabase(() => getDatabase()),
+        CurrencyPipe,
+        { provide: LOCALE_ID, useValue: 'it-IT' },
+        MessageService,
+        {
+            provide: APP_INITIALIZER,
+            useFactory: initializeThemeApp,
+            deps: [ThemeService],
+            multi: true,
         },
-      },
-    }),
-  ],
-  bootstrap: [AppComponent],
-})
+        { provide: IS_DEV_MODE, useFactory: () => isDevMode() },
+        provideAnimationsAsync(),
+        providePrimeNG({
+            theme: {
+                preset: MyPreset,
+                options: {
+                    prefix: 'p',
+                    darkModeSelector: 'system',
+                    cssLayer: false,
+                },
+            },
+        }),
+        provideHttpClient(withInterceptorsFromDi()),
+    ] })
 export class AppModule {}
