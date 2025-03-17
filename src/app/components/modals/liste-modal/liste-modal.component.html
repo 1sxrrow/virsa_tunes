@@ -1,0 +1,95 @@
+<p-dialog
+  [(visible)]="showListeModal"
+  [style]="{ width: '60%' }"
+  [modal]="true"
+  (onHide)="handleClose()"
+>
+  <ng-template pTemplate="header">
+    <div
+      class="flex align-items-center justify-between gap-2 w-full col-span-3"
+    >
+      <span class="font-bold text-2xl">
+        {{ "modals.liste.title" | translate }}
+      </span>
+    </div>
+  </ng-template>
+  <ng-container *ngIf="listeShow$ | async as listeShow; else loading">
+    <div class="gridDisplay">
+      <div *ngFor="let item of listeShow" class="allListContainer">
+        <div class="listHeader">
+          <span class="listName">{{ item.listName }}</span>
+          <i class="pi pi-plus" (click)="opAddWrap($event)"></i>
+        </div>
+        <p-overlayPanel #opAdd>
+          <label for="opAddlistValue" class="label">Valore</label>
+          <div class="flex w-full items-center flex-col">
+            <input
+              pInputText
+              label="valore"
+              id="opAddlistValue"
+              name="opAddlistValue"
+              [(ngModel)]="listValue"
+              class="fields mb-2"
+            />
+            <p-button
+              icon="pi pi-plus"
+              label="Aggiungi"
+              (click)="addItemList($event, item.listName)"
+            ></p-button>
+          </div>
+        </p-overlayPanel>
+        <div class="listContainer">
+          <div *ngFor="let singleItem of item.values" class="itemList">
+            <div class="itemListDisplay">
+              <span class="mr-2">{{ singleItem.value }}</span>
+              <div class="itemListDisplayActions">
+                <i
+                  class="pi pi-pencil"
+                  (click)="
+                    opEditWrap(
+                      $event,
+                      singleItem.value,
+                      singleItem.id,
+                      item.listName
+                    )
+                  "
+                ></i>
+                <p-overlayPanel #opEdit>
+                  <label for="opEditlistValue" class="label">Valore</label>
+                  <div class="flex w-full items-center flex-col">
+                    <input
+                      pInputText
+                      label="valore"
+                      id="opEditlistValue"
+                      name="opEditlistValue"
+                      [(ngModel)]="listValue"
+                      class="fields mb-2"
+                    />
+                    <p-button
+                      icon="pi pi-pencil"
+                      label="Modifica"
+                      (click)="editItemList()"
+                    ></p-button>
+                  </div>
+                </p-overlayPanel>
+                <i
+                  class="pi pi-times"
+                  (click)="removeItemList(item.listName, singleItem.id)"
+                ></i>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </ng-container>
+  <ng-template #loading>
+    <p-table [loading]="true">
+      <ng-template pTemplate="header">
+        <tr>
+          <th>Loading...</th>
+        </tr>
+      </ng-template>
+    </p-table>
+  </ng-template>
+</p-dialog>

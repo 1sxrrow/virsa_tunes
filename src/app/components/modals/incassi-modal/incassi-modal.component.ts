@@ -8,15 +8,17 @@ import {
   Output,
   ViewEncapsulation,
 } from '@angular/core';
-import { BehaviorSubject, Observable, Subscription } from 'rxjs';
+import {
+  BehaviorSubject,
+  Observable,
+  Subject,
+  Subscription,
+  takeUntil,
+} from 'rxjs';
 import { Incassov2, SpesaFissa } from 'src/app/shared/models/custom-interfaces';
+import { FirebaseListService } from 'src/app/shared/services/firebase/firebase-list.service';
 import { FirebaseStoreService } from 'src/app/shared/services/firebase/firebase-store.service';
 import { selectDataSet } from 'src/app/shared/types/custom-types';
-import {
-  negozioInventario,
-  tipoIntervento,
-} from 'src/app/shared/utils/common-enums';
-import { ListIncassiModalService } from '../list-incassi-modal/list-incassi-modal.service';
 
 @Component({
   selector: 'incassi-modal',
@@ -36,8 +38,8 @@ export class IncassiModalComponent implements OnInit, OnDestroy {
   showListIncassiModal: boolean = false;
 
   selectedTipoIntervento: string = '';
-  filterNegozio: { value: string; label: string }[];
-  filterTipoIntervento: { value: string; label: string }[];
+  filterNegozio: selectDataSet[];
+  filterTipoIntervento: selectDataSet[];
   loadingTable: boolean = true;
   mesiSpesaFissa: string[] = [];
   mesiSpeseFisseList: string[] = [];
@@ -46,11 +48,16 @@ export class IncassiModalComponent implements OnInit, OnDestroy {
   meseInputListIncassiModal: string;
 
   private subscriptions: Subscription = new Subscription();
+  private destroy$ = new Subject<void>();
+
   private incassiShowSubject = new BehaviorSubject<Incassov2[]>([]);
   incassiShow$: Observable<Incassov2[]> =
     this.incassiShowSubject.asObservable();
 
-  constructor(private firebaseStoreService: FirebaseStoreService) {}
+  constructor(
+    private firebaseStoreService: FirebaseStoreService,
+    private firebaseListService: FirebaseListService
+  ) {}
 
   ngOnInit(): void {
     this.evalSelectDataSet();
@@ -60,6 +67,8 @@ export class IncassiModalComponent implements OnInit, OnDestroy {
 
   ngOnDestroy(): void {
     this.subscriptions.unsubscribe();
+    this.destroy$.next();
+    this.destroy$.complete();
   }
 
   handleClose() {
@@ -158,19 +167,18 @@ export class IncassiModalComponent implements OnInit, OnDestroy {
   }
 
   evalSelectDataSet() {
-    this.filterNegozio = Object.keys(negozioInventario)
-      .filter((key) => key !== 'Magazzino' && isNaN(+key))
-      .map((key) => ({
-        value: key,
-        label: key,
-      }));
-
-    this.filterTipoIntervento = Object.keys(tipoIntervento)
-      .filter((key) => isNaN(+key))
-      .map((key) => ({
-        value: key,
-        label: key,
-      }));
+    this.firebaseListService
+      .getListValue('negozio')
+      .pipe(takeUntil(this.destroy$))
+      .subscribe((data) => {
+        this.filterNegozio = data;
+      });
+    this.firebaseListService
+      .getListValue('tipoIntervento')
+      .pipe(takeUntil(this.destroy$))
+      .subscribe((data) => {
+        this.filterTipoIntervento = data;
+      });
   }
 
   getListSpeseFisse(mese: string) {

@@ -122,7 +122,9 @@
                     : "Nessuna data presente"
                 }}
               </td>
-              <td>
+              <td
+                class="grid grid-cols-4 md:grid-cols-4 sm:grid-cols-2 p-2 sm:p-6 place-items-center gap-1"
+              >
                 <p-button
                   pTooltip="Info"
                   tooltipPosition="bottom"
@@ -136,6 +138,13 @@
                   icon="pi pi-times-circle"
                   (click)="confirmDeleteUser(user.id)"
                 />
+                <p-button
+                  styleClass="p-button-success"
+                  icon="pi pi-whatsapp"
+                  pTooltip="Chat whatsapp"
+                  tooltipPosition="bottom"
+                  (click)="chatWhatsapp(user.numero_telefono)"
+                ></p-button>
               </td>
             </tr>
           </ng-template>

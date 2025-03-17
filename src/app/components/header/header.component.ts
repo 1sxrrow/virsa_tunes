@@ -81,7 +81,6 @@ export class HeaderComponent implements OnInit, AfterViewInit {
   ) {}
 
   ngOnInit(): void {
-    debugger;
     this.appName = appName;
     this.router.events.subscribe((event) => {
       if (event instanceof NavigationEnd) {

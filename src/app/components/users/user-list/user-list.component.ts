@@ -207,4 +207,9 @@ export class UserListComponent implements OnInit, AfterViewInit {
   }
 
   myModelChanged(event) {}
+
+  chatWhatsapp(telefono: string) {
+    let whatsappCommand = 'whatsapp://send?phone=' + telefono;
+    window.location.href = whatsappCommand;
+  }
 }

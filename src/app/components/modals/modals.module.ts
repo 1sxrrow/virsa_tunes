@@ -9,6 +9,7 @@ import { ListIncassiModalComponent } from './list-incassi-modal/list-incassi-mod
 import { StatsModalComponent } from './stats-modal/stats-modal.component';
 import { AcquistiModalComponent } from './acquisti-modal/acquisti-modal.component';
 import { TelefoniModalComponent } from './telefoni-modal/telefoni-modal.component';
+import { ListeModalComponent } from './liste-modal/liste-modal.component';
 
 @NgModule({
   declarations: [
@@ -20,6 +21,7 @@ import { TelefoniModalComponent } from './telefoni-modal/telefoni-modal.componen
     StatsModalComponent,
     AcquistiModalComponent,
     TelefoniModalComponent,
+    ListeModalComponent,
   ],
   imports: [CommonModule, SharedModule],
   exports: [
@@ -31,6 +33,7 @@ import { TelefoniModalComponent } from './telefoni-modal/telefoni-modal.componen
     StatsModalComponent,
     AcquistiModalComponent,
     TelefoniModalComponent,
+    ListeModalComponent,
   ],
 })
 export class ModalComponentsModule {}

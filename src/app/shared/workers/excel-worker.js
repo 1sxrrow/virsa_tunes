@@ -5,6 +5,18 @@ function normalizeString(value) {
   if (!value) return "";
   return value.charAt(0).toUpperCase() + value.slice(1).toLowerCase();
 }
+function formatDate(rawDate) {
+  if (rawDate instanceof Date) {
+    const day = rawDate.getDate().toString().padStart(2, "0");
+    const month = (rawDate.getMonth() + 1).toString().padStart(2, "0");
+    const year = rawDate.getFullYear().toString();
+    return `${day}/${month}/${year}`;
+  } else if (typeof rawDate === "string") {
+    const [day, month, year] = rawDate.split("/");
+    const formattedYear = year.length === 2 ? "20" + year : year; // Assuming the year is in the 2000s
+    return `${day.padStart(2, "0")}/${month.padStart(2, "0")}/${formattedYear}`;
+  }
+}
 
 self.addEventListener("message", async (event) => {
   const { file } = event.data;
@@ -57,14 +69,39 @@ self.addEventListener("message", async (event) => {
           case "3mesi":
             garanzia = "3 mesi";
             break;
+          case "3 Mesi":
+            garanzia = "3 mesi";
+            break;
+          case 3:
+            garanzia = "3 mesi";
+            break;
           case "6mesi":
+            garanzia = "6 mesi";
+            break;
+          case "6 Mesi":
+            garanzia = "6 mesi";
+            break;
+          case 6:
             garanzia = "6 mesi";
             break;
           case "12mesi":
             garanzia = "12 mesi";
             break;
+          case "12mesi":
+            garanzia = "12 mesi";
+            break;
+          case "12 Mesi":
+            garanzia = "12 mesi";
+            break;
+          case 12:
+            garanzia = "12 mesi";
+            break;
         }
+        const rawDate = rowData[1];
+        const formattedDate = formatDate(rawDate);
+
         const itemData = {
+          dataAcquistoInventario: formattedDate !== undefined ? formattedDate : "",
           marca: rowData[2] !== undefined ? normalizeString(rowData[2]) : "",
           nome: rowData[3] !== undefined ? rowData[3] : "",
           IMEI: rowData[4] !== undefined ? rowData[4] : "",

@@ -1,17 +1,29 @@
-import { Injectable, NgModule } from '@angular/core';
-import { canaleComunicazione } from 'src/app/shared/utils/common-enums';
+import { Injectable, OnDestroy } from '@angular/core';
+import { BehaviorSubject, Subject, takeUntil } from 'rxjs';
+import { FirebaseListService } from 'src/app/shared/services/firebase/firebase-list.service';
 import { UserDataService } from '../../users/user-data/user-data.service';
-import { BehaviorSubject, Subject } from 'rxjs';
 
 @Injectable({
   providedIn: 'root',
 })
-export class StatsModalService {
+export class StatsModalService implements OnDestroy {
   private canaleComunicazioniResultSubject: BehaviorSubject<
     { name: string; value: number }[]
   > = new BehaviorSubject<{ name: string; value: number }[]>([]);
 
-  constructor(private userDataService: UserDataService) {
+  private destroy$ = new Subject<void>();
+
+  canaleComunicazione: any[];
+  constructor(
+    private userDataService: UserDataService,
+    private firebaseListService: FirebaseListService
+  ) {
+    this.firebaseListService
+      .getListValue('tipoIntervento')
+      .pipe(takeUntil(this.destroy$))
+      .subscribe((data) => {
+        this.canaleComunicazione = data;
+      });
     this.getCanaleComResults();
   }
 
@@ -22,8 +34,7 @@ export class StatsModalService {
   getCanaleComResults() {
     const canaleComunicazioniCount: { [key: string]: number } = {};
     this.userDataService.users.forEach((user) => {
-      const canaleCom: canaleComunicazione =
-        user.canale_com as unknown as canaleComunicazione;
+      const canaleCom = user.canale_com as string;
       if (canaleComunicazioniCount[canaleCom]) {
         canaleComunicazioniCount[canaleCom]++;
       } else {
@@ -38,5 +49,10 @@ export class StatsModalService {
       })
     );
     this.canaleComunicazioniResultSubject.next(result);
+  }
+
+  ngOnDestroy() {
+    this.destroy$.next();
+    this.destroy$.complete();
   }
 }
