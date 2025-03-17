@@ -47,17 +47,18 @@
               ></p-button>
             </div>
             <div class="p-toolbar-group-center flex-container">
-              <span class="p-input-icon-left responsive-input">
-                <i class="pi pi-search"></i>
+              <p-inputGroup>
+                <p-inputGroupAddon>
+                  <i class="pi pi-search"></i>
+                </p-inputGroupAddon>
                 <input
                   type="text"
                   pInputText
                   (input)="dt1.filterGlobal($event.target.value, 'contains')"
                   placeholder="Ricerca Cliente"
-                  class="fields fieldsSearch"
                   id="search_field_user_list"
                 />
-              </span>
+              </p-inputGroup>
             </div>
             <div class="p-toolbar-group-end">
               <p-button

@@ -37,7 +37,7 @@ import { UserListModalStorage } from '../user-list-modal/user-list-modal-storage
   encapsulation: ViewEncapsulation.None,
 })
 export class UserListComponent implements OnInit, AfterViewInit {
-  items: MenuItem[] | undefined = [{ label: 'Database', routerLink: '/users' }];
+  items: MenuItem[] | undefined = [];
   home: MenuItem | undefined = getBreadcrumbHome();
 
   interventiCounts: { [userId: number]: number } = {};
@@ -66,6 +66,7 @@ export class UserListComponent implements OnInit, AfterViewInit {
   ) {}
 
   ngOnInit(): void {
+    this.items = [{ label: 'Database' }];
     this.initializePrintService();
     this.userValues();
   }

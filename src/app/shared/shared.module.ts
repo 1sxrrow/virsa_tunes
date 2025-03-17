@@ -27,6 +27,7 @@ import { CustomSelectComponent } from '../components/items/custom-select/custom-
 import { UppercaseFirstLetterPipe } from './pipes/uppercase.pipe';
 import { CircleSpinnerComponent } from './components/circle-spinner/circle-spinner.component';
 import { TruncatePipe } from './pipes/truncate.pipe';
+import { InputGroupModule } from 'primeng/inputgroup';
 
 @NgModule({
   declarations: [
@@ -62,6 +63,7 @@ import { TruncatePipe } from './pipes/truncate.pipe';
     ReactiveFormsModule,
     OverlayPanelModule,
     PersonalConfirmDialogModule,
+    InputGroupModule,
   ],
   exports: [
     TableModule,
@@ -94,6 +96,7 @@ import { TruncatePipe } from './pipes/truncate.pipe';
     UppercaseFirstLetterPipe,
     TruncatePipe,
     CircleSpinnerComponent,
+    InputGroupModule,
   ],
 })
 export class SharedModule {}
