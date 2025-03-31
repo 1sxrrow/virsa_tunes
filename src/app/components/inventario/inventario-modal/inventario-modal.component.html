@@ -33,7 +33,7 @@
         <div class="mb-1 mr-2">
           <virsa-select
             [label]="'inventario.negozio' | translate"
-            [dataSet]="negozioDataSet"
+            [dataSet]="negozioDataSet$ | async"
             specificName="negozio_inventario_modal"
             formControlName="negozio"
             [group]="formData"
@@ -53,7 +53,7 @@
         <div class="mb-1 mr-2">
           <virsa-select
             [label]="'inventario.marca' | translate"
-            [dataSet]="marcaDataSet"
+            [dataSet]="marcaDataSet$ | async"
             specificName="marca_inventario_modal"
             formControlName="marca"
             [group]="formData"
@@ -83,7 +83,7 @@
         <div class="mb-1">
           <virsa-select
             [label]="'inventario.grado' | translate"
-            [dataSet]="gradoDataSet"
+            [dataSet]="gradoDataSet$ | async"
             specificName="grado_inventario_modal"
             formControlName="grado"
             [group]="formData"
@@ -93,7 +93,7 @@
         <div class="mb-1 mr-2">
           <virsa-select
             [label]="'inventario.garanzia' | translate"
-            [dataSet]="garanziaDataSet"
+            [dataSet]="garanziaDataSet$ | async"
             specificName="garanzia_mesi_inventario_modal"
             formControlName="garanzia_mesi"
             [group]="formData"

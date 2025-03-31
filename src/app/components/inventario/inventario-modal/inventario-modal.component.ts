@@ -1,9 +1,11 @@
+import { formatDate } from '@angular/common';
 import {
   Component,
   EventEmitter,
   Inject,
   Input,
   LOCALE_ID,
+  OnDestroy,
   OnInit,
   Output,
   ViewEncapsulation,
@@ -15,9 +17,13 @@ import {
   Validators,
 } from '@angular/forms';
 import { MessageService } from 'primeng/api';
+import { BehaviorSubject, Observable } from 'rxjs';
 import { IS_DEV_MODE } from 'src/app/app.module';
+import { costoStorico } from 'src/app/shared/models/custom-interfaces';
 import { InventarioItemModel } from 'src/app/shared/models/inventarioItem.model';
+import { FirebaseListService } from 'src/app/shared/services/firebase/firebase-list.service';
 import { FirebaseStoreService } from 'src/app/shared/services/firebase/firebase-store.service';
+import { selectDataSet } from 'src/app/shared/types/custom-types';
 import {
   callModalToast,
   createForm,
@@ -25,16 +31,13 @@ import {
 } from 'src/app/shared/utils/common-utils';
 import { AuthService } from '../../login/auth.service';
 import { InventarioModalStorage } from './inventario-modal-storage.service';
-import { InventarioModalService } from './inventario-modal.service';
-import { formatDate } from '@angular/common';
-import { costoStorico } from 'src/app/shared/models/custom-interfaces';
 
 @Component({
   selector: 'inventario-modal',
   templateUrl: './inventario-modal.component.html',
   encapsulation: ViewEncapsulation.None,
 })
-export class InventarioModalComponent implements OnInit {
+export class InventarioModalComponent implements OnInit, OnDestroy {
   @Input() formData: FormGroup = undefined;
   @Input() showModal: boolean = false;
   @Output() showModalChange = new EventEmitter();
@@ -47,19 +50,44 @@ export class InventarioModalComponent implements OnInit {
 
   listaStorico: costoStorico[] = [];
 
+  private negozioDataSetSubject = new BehaviorSubject<selectDataSet[]>([]);
+  public negozioDataSet$: Observable<selectDataSet[]> =
+    this.negozioDataSetSubject.asObservable();
+  private gradoDataSetSubject = new BehaviorSubject<selectDataSet[]>([]);
+  public gradoDataSet$: Observable<selectDataSet[]> =
+    this.gradoDataSetSubject.asObservable();
+  private garanziaDataSetSubject = new BehaviorSubject<selectDataSet[]>([]);
+  public garanziaDataSet$: Observable<selectDataSet[]> =
+    this.garanziaDataSetSubject.asObservable();
+  private marcaDataSetSubject = new BehaviorSubject<selectDataSet[]>([]);
+  public marcaDataSet$: Observable<selectDataSet[]> =
+    this.marcaDataSetSubject.asObservable();
+
   constructor(
     private fb: FormBuilder,
-    private storage: InventarioModalStorage,
-    private inventarioModalService: InventarioModalService,
-    private firebaseStoreService: FirebaseStoreService,
     private authService: AuthService,
     private messageService: MessageService,
+    private storage: InventarioModalStorage,
+    private firebaseListService: FirebaseListService,
+    private firebaseStoreService: FirebaseStoreService,
     @Inject(IS_DEV_MODE) public isDevMode: boolean,
     @Inject(LOCALE_ID) public locale: string
   ) {}
 
   ngOnInit(): void {
-    this.inventarioModalService.valDataSet();
+    this.firebaseListService.getListValue('negozio').subscribe((data) => {
+      this.negozioDataSetSubject.next(data);
+    });
+    this.firebaseListService.getListValue('grado').subscribe((data) => {
+      this.gradoDataSetSubject.next(data);
+    });
+    this.firebaseListService.getListValue('garanzia').subscribe((data) => {
+      this.garanziaDataSetSubject.next(data);
+    });
+    this.firebaseListService.getListValue('marca').subscribe((data) => {
+      this.marcaDataSetSubject.next(data);
+    });
+
     this.isAdmin = this.authService.getIsAdmin();
     this.mode = this.storage.input.mode;
     if (this.mode === 'Edit') {
@@ -88,21 +116,11 @@ export class InventarioModalComponent implements OnInit {
       this.initForm();
       this.modalTitle = 'Aggiungi Articolo';
     }
-  }
-  get garanziaDataSet() {
-    return this.inventarioModalService.getGaranziaDataSet();
+    this.forceUpdateSelectValues();
   }
 
-  get gradoDataSet() {
-    return this.inventarioModalService.getGradoDataSet();
-  }
-
-  get marcaDataSet() {
-    return this.inventarioModalService.getMarcaDataSet();
-  }
-
-  get negozioDataSet() {
-    return this.inventarioModalService.getNegozioDataSet();
+  ngOnDestroy(): void {
+    this.formData.reset();
   }
 
   handleClose() {
@@ -232,5 +250,15 @@ export class InventarioModalComponent implements OnInit {
 
   public findInvalidControls() {
     findInvalidControls(this.formData);
+  }
+
+  private forceUpdateSelectValues(): void {
+    const controlsToUpdate = ['negozio', 'marca', 'grado', 'garanzia_mesi'];
+    controlsToUpdate.forEach((controlName) => {
+      const control = this.formData.get(controlName);
+      if (control) {
+        control.setValue(control.value, { emitEvent: true });
+      }
+    });
   }
 }

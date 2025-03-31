@@ -99,9 +99,9 @@ self.addEventListener("message", async (event) => {
         }
         const rawDate = rowData[1];
         const formattedDate = formatDate(rawDate);
-
         const itemData = {
-          dataAcquistoInventario: formattedDate !== undefined ? formattedDate : "",
+          dataAcquistoInventario:
+            formattedDate !== undefined ? formattedDate : "",
           marca: rowData[2] !== undefined ? normalizeString(rowData[2]) : "",
           nome: rowData[3] !== undefined ? rowData[3] : "",
           IMEI: rowData[4] !== undefined ? rowData[4] : "",
