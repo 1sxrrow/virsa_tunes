@@ -373,6 +373,8 @@ export class UserDataComponent implements OnInit, OnDestroy {
 
     const memoriaField = form.getTextField('memoria');
     memoriaField.setText(specificData.memoria.toString() || '');
+    const prezzoField = form.getTextField('somma');
+    prezzoField.setText(specificData.prezzo_acquisto.toString() || '');
     const dataField = form.getTextField('data_oggi');
     const date = new Date();
     const formattedDate = `${date.getDate().toString().padStart(2, '0')}/${(
